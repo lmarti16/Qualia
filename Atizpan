@@ -209,7 +209,7 @@ scale_fill_manual(values = c("MUY ALTO" = "blue",
                              "BAJO" = "#FF3300",
                              "MUY BAJO" = "brown",
                              "No determinado" = "#808080"), name = "Estructura socioeconómica\nPreponderante en la manzana") +
-labs(title = "¿Cúales son las Estructuras Socioeconómica preponderantes en Atizapán?",
+labs(title = "¿Cúales son las Estructuras Socioeconómicas\npreponderantes en Atizapán?",
 subtitle = "Por manzanas habitadas",
 caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
 format(Sys.Date(), "%d/%m/%Y"))) +
