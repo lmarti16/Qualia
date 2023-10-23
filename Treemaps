@@ -1,0 +1,53 @@
+# Cargar las librerías necesarias
+library(ggplot2)
+library(treemapify)
+library(ggthemes)
+
+# Crear un data frame con los datos de la lista nominal
+lista_nominal <- data.frame(
+    Generacion = c("GEN_Z", "Millennials", "Generacion_X", "Baby_Boomers", "Silent Generation"),
+    Cantidad = c(56200, 123209, 73820, 61727, 80385),
+    Porcentaje = c(16, 32, 18, 15, 19)
+)
+
+# Definir una paleta de colores estilo "The Economist"
+economist_colors <- c("#f26d7d", "#01a2d9", "#00887d", "#6794a7", "#ff9500")
+
+# Crear el treemap con ggplot2 y treemapify usando la paleta de colores
+treemap_plot <- ggplot(lista_nominal,
+                       aes(area = Cantidad,
+                           fill = (Porcentaje),
+                           label = paste(Generacion,
+                                         "\n",
+                                         format(Cantidad, big.mark = ",", scientific = FALSE),
+                                         "\n",
+                                         Porcentaje,
+                                         "%",
+                                         sep = ""))) +
+    geom_treemap() +
+    geom_treemap_text(colour = "white",
+                      place = "centre",
+                      grow = TRUE) +
+    scale_fill_gradientn(colors = economist_colors) +  # Aplicar la paleta de colores
+    labs(
+        title = "Distribución de Votantes por Generación en Atizapán para 2024",
+        subtitle = "En 2024, casi la mitad de los votantes serán menores de 24 años",
+        caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                         format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist() +
+    theme(legend.position = "none",
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+          
+# Imprimir el treemap
+print(treemap_plot)
