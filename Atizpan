@@ -1,3 +1,31 @@
+resultados_atizapan <- filter(Resultados_edo23, ID_MUNICIPIO == 13)
+
+# Agrega columna con quintiles
+quintilesD <- quantile(resultados_atizapan$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesM <- quantile(resultados_atizapan$Votos_JHH, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesF <- quantile(resultados_atizapan$Votos_FAM, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+resultados_atizapan$quintilD <- cut(resultados_atizapan$diferencia, breaks = quintilesD, include.lowest = TRUE)
+resultados_atizapan$quintilM <- cut(resultados_atizapan$Votos_JHH, breaks = quintilesM, include.lowest = TRUE)
+resultados_atizapan$quintilF <- cut(resultados_atizapan$Votos_FAM, breaks = quintilesF, include.lowest = TRUE)
+
+# Crear quintiles
+quintilesz <- quantile(resultados_atizapan$Porcentaje_GEN_Z, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMi <- quantile(resultados_atizapan$Porcentaje_Millennials, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesgx <- quantile(resultados_atizapan$Porcentaje_Generacion_X, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesSi <- quantile(resultados_atizapan$Porcentaje_Silent_Generation, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesbb <- quantile(resultados_atizapan$Porcentaje_Baby_Boomers, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+# Agrega columna con quintiles
+resultados_atizapan$quintilZ <- cut(resultados_atizapan$Porcentaje_GEN_Z, breaks = quintilesz, include.lowest = TRUE)
+resultados_atizapan$quintilMI <- cut(resultados_atizapan$Porcentaje_Millennials, breaks = quintilesMi, include.lowest = TRUE)
+resultados_atizapan$quintilGX <- cut(resultados_atizapan$Porcentaje_Generacion_X, breaks = quintilesgx, include.lowest = TRUE)
+resultados_atizapan$quintilSI <- cut(resultados_atizapan$Porcentaje_Silent_Generation, breaks = quintilesSi, include.lowest = TRUE)
+resultados_atizapan$quintilBB <- cut(resultados_atizapan$Porcentaje_Baby_Boomers, breaks = quintilesbb, include.lowest = TRUE)
+
+
+Mapa_Atizapn <- left_join(Manzanas_atizapan, resultados_atizapan, by = c("SECCION"))
+
 #FAM
 
 ggplot() +
