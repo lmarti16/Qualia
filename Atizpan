@@ -363,3 +363,54 @@ ggplot() +
           plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
     guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+
+
+
+
+#Datos de los resultados Electorales de la elección de 2023 en el edomex
+sum(resultados_atizapan$CASILLAS,na.rm = all()) #Casillas Totales en 2023
+sum(resultados_atizapan$PRI,na.rm = all())
+sum(resultados_atizapan$PRD,na.rm = all())
+sum(resultados_atizapan$PVEM_PT_MORENA,na.rm = all())
+sum(resultados_atizapan$NAEM,na.rm = all())
+sum(resultados_atizapan$PAN_PRI_PRD_NAEM,na.rm = all())
+sum(resultados_atizapan$PAN_PRI_PRD,na.rm = all())
+sum(resultados_atizapan$PAN_PRD_NAEM,na.rm = all())
+sum(resultados_atizapan$PRI_PRD_NAEM,na.rm = all())
+sum(resultados_atizapan$PAN_PRI,na.rm = all())
+sum(resultados_atizapan$PAN_PRD,na.rm = all())
+sum(resultados_atizapan$PAN_NAEM,na.rm = all())
+sum(resultados_atizapan$PRI_PRD,na.rm = all())
+sum(resultados_atizapan$PRI_NAEM,na.rm = all())
+sum(resultados_atizapan$PRD_NAEM,na.rm = all())
+sum(resultados_atizapan$NUM_VOTOS_VALIDOS,na.rm = all())
+sum(resultados_atizapan$NUM_VOTOS_CAN_NREG,na.rm = all())
+sum(resultados_atizapan$NUM_VOTOS_NULOS,na.rm = all())
+sum(resultados_atizapan$TOTAL_VOTOS,na.rm = all())
+sum(resultados_atizapan$LISTA_NOMINAL,na.rm = all())
+sum(resultados_atizapan$Votos_FAM,na.rm = all())
+sum(resultados_atizapan$Votos_JHH,na.rm = all())
+table(resultados_atizapan$quintilF) #Intervalo Votos del Frente Amplio
+table(resultados_atizapan$quintilM) #Intervalo Votos de JHH
+table(resultados_atizapan$Ganador_Partido) #Que partido ganó cada Sección electoral
+table(resultados_atizapan$Ganador_Coalición_21)#Que Coalición ganó cada Sección electoral el 21
+table(resultados_atizapan$Ganador_Coalicion)#Que Coalición ganó cada Sección electoral el 23
+table(resultados_atizapan$Gene_prepo) #Generacion preponderante por secccion electoral
+
+
+#Datos Electorales para 2024
+
+sum(resultados_atizapan$LN24,na.rm = all()) #Lista Nominal para 2024
+sum(resultados_atizapan$LISTA_HOMBRES,na.rm = all())#Lista Nominal para 2024 (solo Hombres)
+sum(resultados_atizapan$LISTA_MUJERES,na.rm = all())#Lista Nominal para 2024 (solo Mujeres)
+sum(resultados_atizapan$GEN_Z,na.rm = all())
+sum(resultados_atizapan$Millennials,na.rm = all())
+sum(resultados_atizapan$Baby_Boomers,na.rm = all())
+sum(resultados_atizapan$Generacion_X,na.rm = all())
+sum(resultados_atizapan$Silent_Generation,na.rm = all())
+mean(resultados_atizapan$Porcentaje_GEN_Z ,na.rm = all())
+mean(resultados_atizapan$Porcentaje_Generacion_X,na.rm = all())
+mean(resultados_atizapan$Millennials,na.rm = all())
+mean(resultados_atizapan$Baby_Boomers,na.rm = all())
+mean(resultados_atizapan$Silent_Generation,na.rm = all())
+table(resultados_atizapan$NSE_2021) #Estratos Socioeconomicos
