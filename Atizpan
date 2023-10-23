@@ -1,0 +1,202 @@
+#FAM
+
+ggplot() +
+annotation_map_tile(type = "osm", zoom = 15) +
+geom_sf(data = Mapa_Atizapn, aes(fill = quintilF), alpha = .7, color = NA) +
+geom_sf(data = secciones_Atizapan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+scale_fill_brewer(palette = "Spectral", name = "Competitividad\nDe la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+labs(title = "Competitividad Electoral del FAM\nEn Atizapán de Zaragoza",
+subtitle = "Por manzanas habitadas",
+caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+format(Sys.Date(), "%d/%m/%Y"))) +
+theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+theme(legend.position = "bottom",
+legend.background = element_rect(fill = "#6794a7"),
+legend.text = element_text(size = 10, color = "white"),
+legend.title = element_text(size = 12, color = "white", face = "bold"),
+axis.text = element_blank(),  # Quitar texto de los ejes
+axis.title = element_blank(),  # Quitar título de los ejes
+axis.line = element_blank(),   # Quitar línea de los ejes
+panel.background = element_blank(),  # Quitar fondo del panel
+panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+guides(fill = guide_legend(nrow = 2))  # Dos filas en la caja de leyendas
+
+
+#Morena
+
+ggplot() +
+annotation_map_tile(type = "osm", zoom = 15) +
+geom_sf(data = Mapa_Atizapn, aes(fill = quintilM), alpha = .7, color = NA) +
+geom_sf(data = secciones_Atizapan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+scale_fill_brewer(palette = "Paired", name = "Competitividad\nDe la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+labs(title = "Competitividad Electoral de JHH\nEn Atizapán de Zaragoza",
+subtitle = "Por manzanas habitadas",
+caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+format(Sys.Date(), "%d/%m/%Y"))) +
+theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+theme(legend.position = "bottom",
+legend.background = element_rect(fill = "#6794a7"),
+legend.text = element_text(size = 10, color = "white"),
+legend.title = element_text(size = 12, color = "white", face = "bold"),
+axis.text = element_blank(),  # Quitar texto de los ejes
+axis.title = element_blank(),  # Quitar título de los ejes
+axis.line = element_blank(),   # Quitar línea de los ejes
+panel.background = element_blank(),  # Quitar fondo del panel
+panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+guides(fill = guide_legend(nrow = 2))  # Dos filas en la caja de leyendas
+
+
+
+#Diferencia
+ggplot() +
+annotation_map_tile(type = "osm", zoom = 15) +
+geom_sf(data = Mapa_Atizapn, aes(fill = quintilD), alpha = .7, color = NA) +
+geom_sf(data = secciones_Atizapan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+scale_fill_brewer(palette = "RdYlBu", name = "Competitividad\nDe la manzana", labels = c("Muy alta competividad para JHH", "Alta competividad para JHH", "Zona a competir", "Alta Competitividad para el FAM", "Muy alta Competitividad para el FAM")) +
+labs(title = "Competitividad Electoral Comparada\nEn Atizapán de Zaragoza",
+subtitle = "Por manzanas habitadas",
+caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+format(Sys.Date(), "%d/%m/%Y"))) +
+theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+theme(legend.position = "bottom",
+legend.background = element_rect(fill = "#6794a7"),
+legend.text = element_text(size = 10, color = "white"),
+legend.title = element_text(size = 12, color = "white", face = "bold"),
+axis.text = element_blank(),  # Quitar texto de los ejes
+axis.title = element_blank(),  # Quitar título de los ejes
+axis.line = element_blank(),   # Quitar línea de los ejes
+panel.background = element_blank(),  # Quitar fondo del panel
+panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+
+#Ganador_Coalicion
+ggplot() +
+annotation_map_tile(type = "osm", zoom = 15) +
+geom_sf(data = Mapa_Atizapn, aes(fill = Ganador_Coalicion), alpha = .7, color = NA) +
+geom_sf(data = secciones_Atizapan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+scale_fill_manual(values = c("JHH" = "brown", "FAM" = "blue","EMPATE" = "yellow" ), name = "Resultado electoral\n de la sección") +
+labs(title = "Competitividad Electoral Comparada\nEn Atizapán de Zaragoza",
+subtitle = "Por manzanas habitadas",
+caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+format(Sys.Date(), "%d/%m/%Y"))) +
+theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+theme(legend.position = "bottom",
+legend.background = element_rect(fill = "#6794a7"),
+legend.text = element_text(size = 10, color = "white"),
+legend.title = element_text(size = 12, color = "white", face = "bold"),
+axis.text = element_blank(),  # Quitar texto de los ejes
+axis.title = element_blank(),  # Quitar título de los ejes
+axis.line = element_blank(),   # Quitar línea de los ejes
+panel.background = element_blank(),  # Quitar fondo del panel
+panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+
+
+#Ganador_Partido
+ggplot() +
+annotation_map_tile(type = "osm", zoom = 15) +
+geom_sf(data = Mapa_Atizapn, aes(fill = Ganador_Partido), alpha = .7, color = NA) +
+geom_sf(data = secciones_Atizapan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+scale_fill_manual(values = c("PVEM_PT_MORENA" = "brown", "PAN" = "lightblue","EMPATE" = "yellow" ), name = "Resultado electoral\n de la sección") +
+labs(title = "¿Qué partido ganado en cada manzana?",
+subtitle = "Voto por Partido, no coalición",
+caption = paste0("Elaborado por Qualia: Consultoria Especializada\n(Fuente: INEGI e INE/)\n",
+format(Sys.Date(), "%d/%m/%Y"))) +
+theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+theme(legend.position = "bottom",
+legend.background = element_rect(fill = "#6794a7"),
+legend.text = element_text(size = 10, color = "white"),
+legend.title = element_text(size = 12, color = "white", face = "bold"),
+axis.text = element_blank(),  # Quitar texto de los ejes
+axis.title = element_blank(),  # Quitar título de los ejes
+axis.line = element_blank(),   # Quitar línea de los ejes
+panel.background = element_blank(),  # Quitar fondo del panel
+panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+
+
+#Gene_Prepo
+ggplot() +
+annotation_map_tile(type = "osm", zoom = 15) +
+geom_sf(data = Mapa_Atizapn, aes(fill = Gene_prepo), alpha = .7, color = NA) +
+geom_sf(data = secciones_Atizapan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+scale_fill_manual(values = c("Millennials" = "#FFB6C1", "Silent_Generation" = "#98FB98","NA" = "grey" ), name = "Generación Preponderante\nEn la manzana") +
+labs(title = "¿Qué generación es la preponderante en Atizapán?",
+subtitle = "Por manzanas habitadas",
+caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+format(Sys.Date(), "%d/%m/%Y"))) +
+theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+theme(legend.position = "bottom",
+legend.background = element_rect(fill = "#6794a7"),
+legend.text = element_text(size = 10, color = "white"),
+legend.title = element_text(size = 12, color = "white", face = "bold"),
+axis.text = element_blank(),  # Quitar texto de los ejes
+axis.title = element_blank(),  # Quitar título de los ejes
+axis.line = element_blank(),   # Quitar línea de los ejes
+panel.background = element_blank(),  # Quitar fondo del panel
+panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+
+#ESEM
+ggplot() +
+annotation_map_tile(type = "osm", zoom = 15) +
+geom_sf(data = Mapa_Atizapn, aes(fill = NSE_2021), alpha = .7, color = NA) +
+geom_sf(data = secciones_Atizapan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+scale_fill_manual(values = c("MUY ALTO" = "blue",
+                             "ALTO" = "#00CC00",
+                             "MEDIO ALTO" = "#99FF99",
+                             "MEDIO" = "#FFFF99",
+                             "MEDIO BAJO" = "#FFCC99",
+                             "BAJO" = "#FF3300",
+                             "MUY BAJO" = "brown",
+                             "No determinado" = "#808080"), name = "Estructura socioeconómica\nPreponderante en la manzana") +
+labs(title = "¿Cúales son las Estructuras Socioeconómica preponderantes en Atizapán?",
+subtitle = "Por manzanas habitadas",
+caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+format(Sys.Date(), "%d/%m/%Y"))) +
+theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+theme(legend.position = "bottom",
+legend.background = element_rect(fill = "#6794a7"),
+legend.text = element_text(size = 10, color = "white"),
+legend.title = element_text(size = 12, color = "white", face = "bold"),
+axis.text = element_blank(),  # Quitar texto de los ejes
+axis.title = element_blank(),  # Quitar título de los ejes
+axis.line = element_blank(),   # Quitar línea de los ejes
+panel.background = element_blank(),  # Quitar fondo del panel
+panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
