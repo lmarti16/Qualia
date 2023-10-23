@@ -104,4 +104,52 @@ treemap_plot <- ggplot(secciones_estratos,
 print(treemap_plot)
 
 
+#Treemap Generos
+Genero_colors <- c("purple" , "#66A3FF")
+
+# Crear un data frame con los datos de la lista nominal
+Genero_porcentaje <- data.frame(
+    Genero = c("Hombres", "Mujeres"),
+    Cantidad = c(188358, 206983),
+    Porcentaje = c(52, 48)
+)
+
+# Crear el treemap con ggplot2 y treemapify usando la paleta de colores
+treemap_plot <- ggplot(Genero_porcentaje,
+                       aes(area = Cantidad,
+                           fill = (Porcentaje),
+                           label = paste(Genero,
+                                         "\n",
+                                         format(Cantidad, big.mark = ",", scientific = FALSE),
+                                         "\n",
+                                         Porcentaje,
+                                         "%",
+                                         sep = ""))) +
+    geom_treemap() +
+    geom_treemap_text(colour = "white",
+                      place = "centre",
+                      grow = TRUE) +
+    scale_fill_gradientn(colors = Genero_colors) +  # Aplicar la paleta de colores
+    labs(
+        title = "Distribución de Generos en Atizapán",
+        subtitle = paste("La lista nominal para 2024 será de 395,341 electores"),
+        caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                         format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist() +
+    theme(legend.position = "none",
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+
+# Imprimir el treemap
+print(treemap_plot)
 
