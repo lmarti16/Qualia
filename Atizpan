@@ -121,7 +121,7 @@ geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = 
 scale_fill_manual(values = c("PVEM_PT_MORENA" = "brown", "PAN" = "lightblue","EMPATE" = "yellow" ), name = "Resultado electoral\n de la sección") +
 labs(title = "¿Qué partido ganado en cada manzana?",
 subtitle = "Voto por Partido, no coalición",
-caption = paste0("Elaborado por Qualia: Consultoria Especializada\n(Fuente: INEGI e INE/)\n",
+caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
 format(Sys.Date(), "%d/%m/%Y"))) +
 theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
 theme(legend.position = "bottom",
