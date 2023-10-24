@@ -1,0 +1,39 @@
+
+library(dplyr)
+
+resultados_atizapan <- resultados_atizapan %>%
+  mutate(Porcentaje_FAM = ifelse(is.na(Votos_FAM) | !is.numeric(Votos_FAM) | is.na(NUM_VOTOS_VALIDOS) | !is.numeric(NUM_VOTOS_VALIDOS), 0, Votos_FAM / NUM_VOTOS_VALIDOS),
+         Porcentaje_JHH = ifelse(is.na(Votos_JHH) | !is.numeric(Votos_JHH) | is.na(NUM_VOTOS_VALIDOS) | !is.numeric(NUM_VOTOS_VALIDOS), 0, Votos_JHH / NUM_VOTOS_VALIDOS))
+
+
+
+# Crear el modelo de regresión lineal
+modelo1 <- lm(Porcentaje_JHH ~ Porcentaje_GEN_Z, data = resultados_atizapan)
+modelo2 <- lm(Porcentaje_FAM ~ Porcentaje_GEN_Z, data = resultados_atizapan)
+
+modelo3 <- lm(Porcentaje_JHH ~ Porcentaje_Millennials, data = resultados_atizapan)
+modelo4 <- lm(Porcentaje_FAM ~ Porcentaje_Millennials, data = resultados_atizapan)
+
+modelo5 <- lm(Porcentaje_JHH ~ Porcentaje_Generacion_X, data = resultados_atizapan)
+modelo6 <- lm(Porcentaje_FAM ~ Porcentaje_Generacion_X, data = resultados_atizapan)
+
+modelo7 <- lm(Porcentaje_JHH ~ Porcentaje_Baby_Boomers, data = resultados_atizapan)
+modelo8 <- lm(Porcentaje_FAM ~ Porcentaje_Baby_Boomers, data = resultados_atizapan)
+
+modelo9 <- lm(Porcentaje_JHH ~ Porcentaje_Silent_Generation, data = resultados_atizapan)
+modelo10 <- lm(Porcentaje_FAM ~ Porcentaje_Silent_Generation, data = resultados_atizapan)
+
+
+summary(modelo1)
+summary(modelo2)
+summary(modelo3)
+summary(modelo4)
+summary(modelo5)
+summary(modelo6)
+summary(modelo7)
+summary(modelo8)
+summary(modelo9)
+summary(modelo10)
+
+
+
