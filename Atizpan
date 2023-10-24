@@ -34,7 +34,7 @@ geom_sf(data = Mapa_Atizapn, aes(fill = quintilF), alpha = .7, color = NA) +
 geom_sf(data = secciones_Atizapan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
 geom_sf_label(data = secciones_Atizapan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
 scale_fill_brewer(palette = "Spectral", name = "Competitividad\nDe la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
-labs(title = "¿Qué partido ganado en cada manzana?",
+labs(title = "Competitividad Electoral del FAM\nEn Atizapán de Zaragoza",
 subtitle = "Voto por Partido, no coalición",
 caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
 format(Sys.Date(), "%d/%m/%Y"))) +
