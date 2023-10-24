@@ -111,7 +111,7 @@ Genero_colors <- c("purple" , "#66A3FF")
 Genero_porcentaje <- data.frame(
     Genero = c("Hombres", "Mujeres"),
     Cantidad = c(188358, 206983),
-    Porcentaje = c(52, 48)
+    Porcentaje = c(48, 52)
 )
 
 # Crear el treemap con ggplot2 y treemapify usando la paleta de colores
