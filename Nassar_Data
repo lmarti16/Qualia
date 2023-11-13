@@ -81,7 +81,7 @@ ggplot() +
     geom_sf(data = mapaMOAXCapital, aes(fill = Ganador_coalición), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
-    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Frente Amplio", "Juntos Haremos Historia")) +
+    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia")) +
     labs(title = "¿Qué coalición Ganaría en Oaxaca Capital?",
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
