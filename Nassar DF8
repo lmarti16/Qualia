@@ -1,0 +1,100 @@
+
+# Cargar librerías
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(reshape2)	
+library(tidyr)
+library(readxl)
+library(colorspace)
+library(ggspatial)
+library(ggthemes)
+library(wesanderson)
+
+# Leer archivo SHP usando read_sf()
+Manzanas_OAX<- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\MANZANA.shp")
+Secciones_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\SECCION.shp")
+Resultados <- read_sf("D:\\52556\\Documents\\Nassar-oax\\R_SeccionesGO.csv")
+DF_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_FEDERAL.shp")
+DL_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_LOCAL.shp")
+
+# Convertir datos en números
+
+Resultados  <- Resultados  %>%
+    mutate_at(vars(-c("Ganador_coalición", "Ganador_original", "Ganador_Partido")),
+              as.numeric)
+
+#Columnas de Porcentajes
+
+Resultados <- Resultados %>% 
+    mutate(participacion = Total / Lista_nom * 100,
+  PorcentajeFAM = FAM / Total * 100,
+  PorcentajeFAM_PRI = FAM_PRI / Total * 100,
+  PorcentajeMC = MC / Total * 100,
+  PorcentajePAN = PAN / Total * 100,
+  porcentaje_JHH = JHH / Total * 100)
+
+#crear diferencias
+Resultados <- Resultados %>% 
+    mutate( diferenciaPF = PorcentajeFAM - porcentaje_JHH,
+  diferenciaTF = FAM - JHH,
+diferenciaPFP = PorcentajeFAM_PRI - porcentaje_JHH,
+  diferenciaTFP = FAM_PRI  - JHH
+)SeccionesR_DF8 <- filter(Resultados, DISTRITO == 8)
+Secciones_DF8 <- filter(Secciones_OAX, DISTRITO == 8)
+Manzanas_DF8 <- filter(Manzanas_OAX, DISTRITO_F == 8)
+
+# Crear quintiles
+quintilesF <- quantile(SeccionesR_DF8$FAM, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesFP <- quantile(SeccionesR_DF8$FAM_PRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesP <- quantile(SeccionesR_DF8$PAN, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesJ <- quantile(SeccionesR_DF8$JHH, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPF <- quantile(SeccionesR_DF8$diferenciaPF, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTF <- quantile(SeccionesR_DF8$diferenciaTF, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPFP <- quantile(SeccionesR_DF8$diferenciaPFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTFP <- quantile(SeccionesR_DF8$diferenciaTFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+# Agrega columna con quintiles
+
+SeccionesR_DF8$quintilF <- cut(SeccionesR_DF8$FAM, breaks = quintilesF, include.lowest = TRUE)
+SeccionesR_DF8$quintilFP <- cut(SeccionesR_DF8$FAM_PRI, breaks = quintilesFP, include.lowest = TRUE)
+SeccionesR_DF8$quintilP <- cut(SeccionesR_DF8$PAN, breaks = quintilesP, include.lowest = TRUE)
+SeccionesR_DF8$quintilJ <- cut(SeccionesR_DF8$JHH, breaks = quintilesJ, include.lowest = TRUE)
+SeccionesR_DF8$quintilPF <- cut(SeccionesR_DF8$diferenciaPF, breaks = quintilesPF, include.lowest = TRUE)
+SeccionesR_DF8$quintilTF <- cut(SeccionesR_DF8$diferenciaTF, breaks = quintilesTF, include.lowest = TRUE)
+SeccionesR_DF8$quintilPFP <- cut(SeccionesR_DF8$diferenciaPFP, breaks = quintilesPFP, include.lowest = TRUE)
+SeccionesR_DF8$quintilTFP <- cut(SeccionesR_DF8$diferenciaTFP, breaks = quintilesTFP, include.lowest = TRUE)
+
+# CREAR el mapa manzanas
+mapaMDF8 <- left_join(Manzanas_OaxacaCapital, SeccionesR_DF8, by = c("SECCION", "DISTRITO_L","MUNICIPIO" ))
+
+# CREAR el mapa secciones
+mapaSDF8 <- left_join(Secciones_OaxacaCapital, SeccionesR_DF8, by = c("SECCION", "DISTRITO", "DISTRITO_L","MUNICIPIO" ))
+
+#Mapa Resultados
+ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDF8, aes(fill = Ganador_coalición), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DF8, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DF8, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia")) +
+    labs(title = "¿Qué coalición Ganaría en Oaxaca Capital?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
