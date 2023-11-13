@@ -1,0 +1,20 @@
+
+# Cargar librerías
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(reshape2)	
+library(tidyr)
+library(readxl)
+library(colorspace)
+library(ggspatial)
+library(ggthemes)
+library(wesanderson)
+
+# Leer archivo SHP usando read_sf()
+Manzanas_OAX<- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\MANZANA.shp")
+Secciones_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\SECCION.shp")
+Resultados <- read_sf("D:\\52556\\Documents\\Nassar-oax\\R_SeccionesGO.csv")
+DF_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_FEDERAL.shp")
+DL_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_LOCAL.shp")
