@@ -25,27 +25,6 @@ Resultados  <- Resultados  %>%
     mutate_at(vars(-c("Ganador_coalición", "Ganador_original", "Ganador_Partido")),
               as.numeric)
 
-names(Resultados)
- [1] "DISTRITO"                     "DISTRITO_L"                  
- [3] "MUNICIPIO"                    "SECCION"                     
- [5] "Lista_nom"                    "PAN"                         
- [7] "PRI"                          "PRD"                         
- [9] "PT"                           "PVEM"                        
-[11] "MC"                           "PUP"                         
-[13] "MORENA"                       "NAO"                         
-[15] "CII MAURICIO"                 "CII JESUS"                   
-[17] "CANDIDATURA COMÚN PRI-PRD"    "COALICIÓN PT-PVEM-PUP-MORENA"
-[19] "PT-PVEM-PUP"                  "PT-PVEM-MORENA"              
-[21] "PT-PUP-MORENA"                "PVEM-PUP-MORENA"             
-[23] "PT-PVEM"                      "PT-PUP"                      
-[25] "PT-MORENA"                    "PVEM-PUP"                    
-[27] "PVEM-MORENA"                  "PUP-MORENA"                  
-[29] "NO_REG"                       "NULOS"                       
-[31] "Total"                        "Ganador_Partido"             
-[33] "FAM"                          "JHH"                         
-[35] "Ganador_coalición"            "FAM_PRI"                     
-[37] "Ganador_original" 
-
 #Columnas de Porcentajes
 
 Resultados <- Resultados %>% 
@@ -90,5 +69,8 @@ SeccionesR_OaxacaCapital$quintilTF <- cut(SeccionesR_OaxacaCapital$diferenciaTF,
 SeccionesR_OaxacaCapital$quintilPFP <- cut(SeccionesR_OaxacaCapital$diferenciaPFP, breaks = quintilesPFP, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilTFP <- cut(SeccionesR_OaxacaCapital$diferenciaTFP, breaks = quintilesTFP, include.lowest = TRUE)
 
+# CREAR el mapa manzanas
+mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO","MUNICIPIO" ))
 
-
+# CREAR el mapa secciones
+mapaSOAXCapital <- left_join(Secciones_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO", "DISTRITO_L","MUNICIPIO" ))
