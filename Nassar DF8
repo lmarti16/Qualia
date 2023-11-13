@@ -67,10 +67,10 @@ SeccionesR_DF8$quintilPFP <- cut(SeccionesR_DF8$diferenciaPFP, breaks = quintile
 SeccionesR_DF8$quintilTFP <- cut(SeccionesR_DF8$diferenciaTFP, breaks = quintilesTFP, include.lowest = TRUE)
 
 # CREAR el mapa manzanas
-mapaMDF8 <- left_join(Manzanas_OaxacaCapital, SeccionesR_DF8, by = c("SECCION", "DISTRITO_L","MUNICIPIO" ))
+mapaMDF8 <- left_join(Manzanas_DF8, SeccionesR_DF8, by = c("SECCION", "DISTRITO_L","MUNICIPIO" ))
 
 # CREAR el mapa secciones
-mapaSDF8 <- left_join(Secciones_OaxacaCapital, SeccionesR_DF8, by = c("SECCION", "DISTRITO", "DISTRITO_L","MUNICIPIO" ))
+mapaSDF8 <- left_join(Secciones_DF8, SeccionesR_DF8, by = c("SECCION", "DISTRITO", "DISTRITO_L","MUNICIPIO" ))
 
 #Mapa Resultados
 ggplot() +
@@ -78,8 +78,8 @@ ggplot() +
     geom_sf(data = mapaMDF8, aes(fill = Ganador_coalición), alpha = .7, color = NA) +
     geom_sf(data = Secciones_DF8, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_DF8, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
-    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia")) +
-    labs(title = "¿Qué coalición Ganaría en Oaxaca Capital?",
+    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey","NA" = "purple" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia","Casilla Eliminada")) +
+    labs(title = "¿Qué coalición Ganaría en el Distrito Federal 8?",
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
