@@ -18,3 +18,77 @@ Secciones_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\SECCION.shp"
 Resultados <- read_sf("D:\\52556\\Documents\\Nassar-oax\\R_SeccionesGO.csv")
 DF_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_FEDERAL.shp")
 DL_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_LOCAL.shp")
+
+# Convertir datos en números
+
+Resultados  <- Resultados  %>%
+    mutate_at(vars(-c("Ganador_coalición", "Ganador_original", "Ganador_Partido")),
+              as.numeric)
+
+names(Resultados)
+ [1] "DISTRITO"                     "DISTRITO_L"                  
+ [3] "MUNICIPIO"                    "SECCION"                     
+ [5] "Lista_nom"                    "PAN"                         
+ [7] "PRI"                          "PRD"                         
+ [9] "PT"                           "PVEM"                        
+[11] "MC"                           "PUP"                         
+[13] "MORENA"                       "NAO"                         
+[15] "CII MAURICIO"                 "CII JESUS"                   
+[17] "CANDIDATURA COMÚN PRI-PRD"    "COALICIÓN PT-PVEM-PUP-MORENA"
+[19] "PT-PVEM-PUP"                  "PT-PVEM-MORENA"              
+[21] "PT-PUP-MORENA"                "PVEM-PUP-MORENA"             
+[23] "PT-PVEM"                      "PT-PUP"                      
+[25] "PT-MORENA"                    "PVEM-PUP"                    
+[27] "PVEM-MORENA"                  "PUP-MORENA"                  
+[29] "NO_REG"                       "NULOS"                       
+[31] "Total"                        "Ganador_Partido"             
+[33] "FAM"                          "JHH"                         
+[35] "Ganador_coalición"            "FAM_PRI"                     
+[37] "Ganador_original" 
+
+#Columnas de Porcentajes
+
+Resultados <- Resultados %>% 
+    mutate(participacion = Total / Lista_nom * 100,
+  PorcentajeFAM = FAM / Total * 100,
+  PorcentajeFAM_PRI = FAM_PRI / Total * 100,
+  PorcentajeMC = MC / Total * 100,
+  PorcentajePAN = PAN / Total * 100,
+  porcentaje_JHH = JHH / Total * 100)
+
+#crear diferencias
+Resultados <- Resultados %>% 
+    mutate( diferenciaPF = PorcentajeFAM - porcentaje_JHH,
+  diferenciaTF = FAM - JHH,
+diferenciaPFP = PorcentajeFAM_PRI - porcentaje_JHH,
+  diferenciaTFP = FAM_PRI  - JHH
+)
+
+# Solo Oaxaca Capital
+SeccionesR_OaxacaCapital <- filter(Resultados, MUNICIPIO == 66)
+Secciones_OaxacaCapital <- filter(Secciones_OAX, MUNICIPIO == 66)
+Manzanas_OaxacaCapital <- filter(Manzanas_OAX, MUNICIPIO == 66)
+
+# Crear quintiles
+quintilesF <- quantile(SeccionesR_OaxacaCapital$FAM, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesFP <- quantile(SeccionesR_OaxacaCapital$FAM_PRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesP <- quantile(SeccionesR_OaxacaCapital$PAN, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesJ <- quantile(SeccionesR_OaxacaCapital$JHH, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPF <- quantile(SeccionesR_OaxacaCapital$diferenciaPF, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTF <- quantile(SeccionesR_OaxacaCapital$diferenciaTF, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPFP <- quantile(SeccionesR_OaxacaCapital$diferenciaPFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTFP <- quantile(SeccionesR_OaxacaCapital$diferenciaTFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+# Agrega columna con quintiles
+
+SeccionesR_OaxacaCapital$quintilF <- cut(SeccionesR_OaxacaCapital$FAM, breaks = quintilesF, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilFP <- cut(SeccionesR_OaxacaCapital$FAM_PRI, breaks = quintilesFP, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilP <- cut(SeccionesR_OaxacaCapital$PAN, breaks = quintilesP, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilJ <- cut(SeccionesR_OaxacaCapital$JHH, breaks = quintilesJ, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilPF <- cut(SeccionesR_OaxacaCapital$diferenciaPF, breaks = quintilesPF, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilTF <- cut(SeccionesR_OaxacaCapital$diferenciaTF, breaks = quintilesTF, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilPFP <- cut(SeccionesR_OaxacaCapital$diferenciaPFP, breaks = quintilesPFP, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilTFP <- cut(SeccionesR_OaxacaCapital$diferenciaTFP, breaks = quintilesTFP, include.lowest = TRUE)
+
+
+
