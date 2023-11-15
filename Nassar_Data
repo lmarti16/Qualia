@@ -18,6 +18,18 @@ Secciones_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\SECCION.shp"
 Resultados <- read_sf("D:\\52556\\Documents\\Nassar-oax\\R_SeccionesGO.csv")
 DF_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_FEDERAL.shp")
 DL_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_LOCAL.shp")
+ESEM_Oax <- read_sf("D:\\Descargas\\OAXACA_SHP\\OAXACA.shp")
+
+# Renombrar las clases sociales
+ESEM_Oax$NIVEL <- recode(ESEM_Oax$NIVEL,
+                          "A/B" = "Muy Alto",
+                          "C" = "Alto",
+                          "C-" = "Medio alto",
+                          "C+" = "Medio",
+                          "D" = "Medio bajo",
+                          "D+" = "Bajo",
+                          "E" = "Muy Bajo",
+                          "N/D" = "No determinado")
 
 # Convertir datos en números
 
@@ -47,6 +59,17 @@ diferenciaPFP = PorcentajeFAM_PRI - porcentaje_JHH,
 SeccionesR_OaxacaCapital <- filter(Resultados, MUNICIPIO == 66)
 Secciones_OaxacaCapital <- filter(Secciones_OAX, MUNICIPIO == 66)
 Manzanas_OaxacaCapital <- filter(Manzanas_OAX, MUNICIPIO == 66)
+ESEM_OaxacaCapital <- filter(ESEM_Oax, CVE_MUNC == "20067")
+
+# Definir la paleta de colores
+colores <- c("Muy Alto" = "blue",
+             "Alto" = "#00CC00",
+             "Medio alto" = "#99FF99",
+             "Medio" = "#FFFF99",
+             "Medio bajo" = "#FFCC99",
+             "Bajo" = "#FF3300",
+             "Muy Bajo" = "brown",
+             "No determinado" = "#808080")
 
 # Crear quintiles
 quintilesF <- quantile(SeccionesR_OaxacaCapital$FAM, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -155,3 +178,26 @@ ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+
+# MAPA ESEM
+ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = ESEM_OaxacaCapital, aes(fill = NIVEL), alpha = .7, color = NA) +
+geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = colores,
+                      # Agregar el argumento limits con el orden deseado
+                      limits = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado")) +  
+    labs(title = "Oaxaca y sus estratos sociodemográficos",
+         subtitle = "Por secciones electorales habitadas",
+         caption = paste0("Elaborado por Qualia: Consultoria Especializada con la nueva redistritación 2024\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y")),
+         fill = "Nivel socioeconómico") +
+    guides(fill = guide_legend(labels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado"),
+                               ncol = 4)) +  # Organizar las leyendas en una columna
+    theme_economist() + # Usar un tema más elegante
+    theme(legend.position = "bottom", # Poner la leyenda abajo del mapa
+          legend.text = element_text(size = 10),  # Ajustar el tamaño del texto de la leyenda
+          axis.text = element_blank(), axis.title = element_blank()) + 
+      coord_sf(datum = NA) # Para evitar el recuadro gris    
+
