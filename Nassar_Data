@@ -55,11 +55,17 @@ diferenciaPFP = PorcentajeFAM_PRI - porcentaje_JHH,
   diferenciaTFP = FAM_PRI  - JHH
 )
 
+#Agregar Generaciones
+ListaN_OAX <- filter(Lista_Nominal_Selected, ENTIDAD == 20)
+Resultados <- left_join(Resultados, ListaN_OAX, by = c("SECCION"))
+
 # Solo Oaxaca Capital
 SeccionesR_OaxacaCapital <- filter(Resultados, MUNICIPIO == 66)
 Secciones_OaxacaCapital <- filter(Secciones_OAX, MUNICIPIO == 66)
 Manzanas_OaxacaCapital <- filter(Manzanas_OAX, MUNICIPIO == 66)
 ESEM_OaxacaCapital <- filter(ESEM_Oax, CVE_MUNC == "20067")
+ESEM_OaxacaCapital <- st_transform(ESEM_OaxacaCapital, st_crs(Secciones_OaxacaCapital))
+ESEM_OaxacaCapital <- st_intersection(ESEM_OaxacaCapital, Secciones_OaxacaCapital)
 
 # Definir la paleta de colores
 colores <- c("Muy Alto" = "blue",
@@ -81,8 +87,15 @@ quintilesTF <- quantile(SeccionesR_OaxacaCapital$diferenciaTF, probs = c(0, 0.2,
 quintilesPFP <- quantile(SeccionesR_OaxacaCapital$diferenciaPFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesTFP <- quantile(SeccionesR_OaxacaCapital$diferenciaTFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
-# Agrega columna con quintiles
+# Crear quintiles de generación
+quintilesz <- quantile(SeccionesR_OaxacaCapital$GEN_Z_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMi <- quantile(SeccionesR_OaxacaCapital$MILLENNIALS_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesgx <- quantile(SeccionesR_OaxacaCapital$GEN_X_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesbb <- quantile(SeccionesR_OaxacaCapital$BOOMERS_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesSi <- quantile(SeccionesR_OaxacaCapital$SILENT_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
+
+# Agrega columna con quintiles
 SeccionesR_OaxacaCapital$quintilF <- cut(SeccionesR_OaxacaCapital$FAM, breaks = quintilesF, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilFP <- cut(SeccionesR_OaxacaCapital$FAM_PRI, breaks = quintilesFP, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilP <- cut(SeccionesR_OaxacaCapital$PAN, breaks = quintilesP, include.lowest = TRUE)
@@ -91,6 +104,14 @@ SeccionesR_OaxacaCapital$quintilPF <- cut(SeccionesR_OaxacaCapital$diferenciaPF,
 SeccionesR_OaxacaCapital$quintilTF <- cut(SeccionesR_OaxacaCapital$diferenciaTF, breaks = quintilesTF, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilPFP <- cut(SeccionesR_OaxacaCapital$diferenciaPFP, breaks = quintilesPFP, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilTFP <- cut(SeccionesR_OaxacaCapital$diferenciaTFP, breaks = quintilesTFP, include.lowest = TRUE)
+
+# Agrega columna con quintiles de generacion
+SeccionesR_OaxacaCapital$quintilZ <- cut(SeccionesR_OaxacaCapital$GEN_Z_TOTAL_PORCENTAJE, breaks = quintilesz, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilMI <- cut(SeccionesR_OaxacaCapital$MILLENNIALS_TOTAL_PORCENTAJE, breaks = quintilesMi, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilGX <- cut(SeccionesR_OaxacaCapital$GEN_X_TOTAL_PORCENTAJE, breaks = quintilesgx, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilBB <- cut(SeccionesR_OaxacaCapital$BOOMERS_TOTAL_PORCENTAJE, breaks = quintilesbb, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilSI <- cut(SeccionesR_OaxacaCapital$SILENT_TOTAL_PORCENTAJE, breaks = quintilesSi, include.lowest = TRUE)
+
 
 # CREAR el mapa manzanas
 mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO_L","MUNICIPIO" ))
@@ -209,3 +230,41 @@ ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+
+#Gene_Prepo
+ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = Gene_prepo), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_manual(values = c( "GEN_Z" = "#E41A1C",  # Rojo
+                                  "MILLENNIALS" = "#377EB8",  # Azul
+                                  "GEN_X" = "#4DAF4A",  # Verde
+                                  "BOOMERS" = "#FF7F00",  # Naranja
+                                  "SILENT" = "#984EA3", # Morado
+                                  "Sin datos"= "grey" ), 
+                      name = "Generación Preponderante\nEn la manzana", limits = c("GEN_Z","MILLENNIALS","GEN_X","BOOMERS","SILENT","Sin datos")) +
+    labs(title = "¿Qué generación es la preponderante en Oaxaca de Júarez?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+
+
+
+
+
