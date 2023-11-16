@@ -386,8 +386,8 @@ ggplot() +
     scale_fill_manual(values = c( "GEN_Z" = "#E41A1C",  # Rojo
                                   "MILLENNIALS" = "#377EB8",  # Azul
                                   "GEN_X" = "#4DAF4A",  # Verde
-                                  "BOOMERS" = "#FF7F00",  # Naranja
-                                  "SILENT" = "#984EA3", # Morado
+                                  "BOOMERS" = "#984EA3",  # Naranja
+                                  "SILENT" = "#EFB752", # amarillo
                                   "Sin datos"= "grey" ), 
                       name = "Generación Preponderante\nEn la manzana", limits = c("GEN_Z","MILLENNIALS","GEN_X","BOOMERS","SILENT","Sin datos")) +
     labs(title = "¿Qué generación es la preponderante en Oaxaca de Júarez?",
