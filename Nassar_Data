@@ -326,7 +326,7 @@ ggplot() +
     geom_sf(data = mapaMOAXCapital, aes(fill = quintilDifP), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
-    scale_fill_brewer(palette = "RdYlGn", name = "Votos perdidos\n en la manzana", labels = c("Muy pocos", "Pocos", "media", "Alta", "Muy alta ")) +
+    scale_fill_brewer(palette = "RdYlBU", name = "Votos perdidos\n en la manzana", labels = c("Muy pocos", "Pocos", "media", "Alta", "Muy alta ")) +
     labs(title = "Competitivdad Electoral del FAM\nEn Oaxaca de Júarez",
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
