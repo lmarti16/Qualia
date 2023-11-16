@@ -20,6 +20,29 @@ DF_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_FEDERAL.sh
 DL_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_LOCAL.shp")
 ESEM_Oax <- read_sf("D:\\Descargas\\OAXACA_SHP\\OAXACA.shp")
 
+# Importar los datos de 2021
+ResultadosDF <- read_sf("D:\\52556\\Documents\\Proyecto F\\Resultados_24.csv")
+ResultadosDF <- ResultadosDF %>% select( -"field_1")
+
+# Cambia los nombres para no duplicar
+names(ResultadosDF)[names(ResultadosDF) == "CANDIDATO/A NO REGISTRADO/A"] <- "CANDIDATO/A NO REGISTRADO/A21"
+names(ResultadosDF)[names(ResultadosDF) == "VOTOS NULOS"] <- "VOTOS NULOS21"
+names(ResultadosDF)[names(ResultadosDF) == "TOTAL_VOTOS_CALCULADOS21"] <- "TOTAL_VOTOS_CALCULADOS21"
+names(ResultadosDF)[names(ResultadosDF) == "LISTA_NOMINAL_CASILLA21"] <- "LISTA_NOMINAL_CASILLA21"
+names(ResultadosDF)[names(ResultadosDF) == "porcentaje_VPM"] <- "porcentaje_VPM21"
+names(ResultadosDF)[names(ResultadosDF) == "porcentaje_Morena"] <- "porcentaje_Morena21"
+names(ResultadosDF)[names(ResultadosDF) == "porcentaje_MC"] <- "porcentaje_MC21"
+names(ResultadosDF)[names(ResultadosDF) == "GANADOR"] <- "GANADOR21"
+
+# Renombrar los resultados FAM
+ResultadosDF$GANADOR21 <- recode(ResultadosDF$GANADOR21,
+                          "EMPATE" = "Empate",
+                          "MORENA" = "JHH",
+                          "MC" = "MC")
+
+ResultadosDF_Oax <- filter(ResultadosDF, ENTIDAD == 20)
+Resultados <- left_join(Resultados, ResultadosDF_Oax, by = c("SECCION"))
+
 # Renombrar las clases sociales
 ESEM_Oax$NIVEL <- recode(ESEM_Oax$NIVEL,
                           "A/B" = "Muy Alto",
@@ -57,7 +80,7 @@ diferenciaPFP = PorcentajeFAM_PRI - porcentaje_JHH,
 
 #Agregar Generaciones
 ListaN_OAX <- filter(Lista_Nominal_Selected, ENTIDAD == 20)
-Resultados <- left_join(Resultados, ListaN_OAX, by = c("SECCION"))
+Resultados <- left_join(Resultados, ListaN_OAX, by = c("SECCION", "ENTIDAD"))
 
 # Solo Oaxaca Capital
 SeccionesR_OaxacaCapital <- filter(Resultados, MUNICIPIO == 66)
@@ -112,12 +135,11 @@ SeccionesR_OaxacaCapital$quintilGX <- cut(SeccionesR_OaxacaCapital$GEN_X_TOTAL_P
 SeccionesR_OaxacaCapital$quintilBB <- cut(SeccionesR_OaxacaCapital$BOOMERS_TOTAL_PORCENTAJE, breaks = quintilesbb, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilSI <- cut(SeccionesR_OaxacaCapital$SILENT_TOTAL_PORCENTAJE, breaks = quintilesSi, include.lowest = TRUE)
 
-
 # CREAR el mapa manzanas
-mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO_L","MUNICIPIO" ))
+mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO_L","MUNICIPIO", "ENTIDAD"))
 
 # CREAR el mapa secciones
-mapaSOAXCapital <- left_join(Secciones_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO", "DISTRITO_L","MUNICIPIO" ))
+mapaSOAXCapital <- left_join(Secciones_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO", "DISTRITO_L","MUNICIPIO", "ENTIDAD"))
 
 #Mapa Resultados
 ggplot() +
