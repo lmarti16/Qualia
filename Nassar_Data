@@ -22,26 +22,46 @@ ESEM_Oax <- read_sf("D:\\Descargas\\OAXACA_SHP\\OAXACA.shp")
 
 # Importar los datos de 2021
 ResultadosDF <- read_sf("D:\\52556\\Documents\\Proyecto F\\Resultados_24.csv")
-ResultadosDF <- ResultadosDF %>% select( -"field_1")
 
-# Cambia los nombres para no duplicar
-names(ResultadosDF)[names(ResultadosDF) == "CANDIDATO/A NO REGISTRADO/A"] <- "CANDIDATO/A NO REGISTRADO/A21"
-names(ResultadosDF)[names(ResultadosDF) == "VOTOS NULOS"] <- "VOTOS NULOS21"
-names(ResultadosDF)[names(ResultadosDF) == "TOTAL_VOTOS_CALCULADOS21"] <- "TOTAL_VOTOS_CALCULADOS21"
-names(ResultadosDF)[names(ResultadosDF) == "LISTA_NOMINAL_CASILLA21"] <- "LISTA_NOMINAL_CASILLA21"
-names(ResultadosDF)[names(ResultadosDF) == "porcentaje_VPM"] <- "porcentaje_VPM21"
-names(ResultadosDF)[names(ResultadosDF) == "porcentaje_Morena"] <- "porcentaje_Morena21"
-names(ResultadosDF)[names(ResultadosDF) == "porcentaje_MC"] <- "porcentaje_MC21"
-names(ResultadosDF)[names(ResultadosDF) == "GANADOR"] <- "GANADOR21"
+ResultadosDF $porcentaje_VPM <- as.numeric(ResultadosDF $porcentaje_VPM)
+ResultadosDF $porcentaje_Morena <- as.numeric(ResultadosDF $porcentaje_Morena)
+ResultadosDF $porcentaje_MC <- as.numeric(ResultadosDF $porcentaje_MC)
+
+# Seleccionar columnas y cambiar nombres
+ResultadosDF <- ResultadosDF %>%
+    select(-"field_1") %>%
+    mutate(
+        SECCION = as.numeric(SECCION),
+        ENTIDAD = as.numeric(ENTIDAD),
+        `CANDIDATO/A NO REGISTRADO/A` = as.numeric(`CANDIDATO/A NO REGISTRADO/A`),
+        `VOTOS NULOS` = as.numeric(`VOTOS NULOS`),
+        TOTAL_VOTOS_CALCULADOS = as.numeric(TOTAL_VOTOS_CALCULADOS),
+        LISTA_NOMINAL_CASILLA = as.numeric(LISTA_NOMINAL_CASILLA),
+        VaxMex_21 = as.numeric(VaxMex_21),
+        Morena_21 = as.numeric(Morena_21),
+        MC_21 = as.numeric(MC_21),
+        Otros_21 = as.numeric(Otros_21)
+    ) %>%
+    rename(
+        `CANDIDATO/A_NO_REGISTRADO/A21` = `CANDIDATO/A NO REGISTRADO/A`,
+        `VOTOS_NULOS21` = `VOTOS NULOS`,
+        `TOTAL_VOTOS_CALCULADOS21` = TOTAL_VOTOS_CALCULADOS,
+        `LISTA_NOMINAL_CASILLA21` = LISTA_NOMINAL_CASILLA,
+        `porcentaje_VPM21` = porcentaje_VPM,
+        `porcentaje_Morena21` = porcentaje_Morena,
+        `porcentaje_MC21` = porcentaje_MC,
+        `GANADOR21` = GANADOR
+    )
 
 # Renombrar los resultados FAM
 ResultadosDF$GANADOR21 <- recode(ResultadosDF$GANADOR21,
                           "EMPATE" = "Empate",
+                          "VPM" = "FAM",
                           "MORENA" = "JHH",
                           "MC" = "MC")
 
 ResultadosDF_Oax <- filter(ResultadosDF, ENTIDAD == 20)
-Resultados <- left_join(Resultados, ResultadosDF_Oax, by = c("SECCION"))
+
 
 # Renombrar las clases sociales
 ESEM_Oax$NIVEL <- recode(ESEM_Oax$NIVEL,
@@ -78,9 +98,23 @@ diferenciaPFP = PorcentajeFAM_PRI - porcentaje_JHH,
   diferenciaTFP = FAM_PRI  - JHH
 )
 
-#Agregar Generaciones
+#Agregar Generaciones y resultados 21
 ListaN_OAX <- filter(Lista_Nominal_Selected, ENTIDAD == 20)
-Resultados <- left_join(Resultados, ListaN_OAX, by = c("SECCION", "ENTIDAD"))
+Resultados <- left_join(Resultados, ListaN_OAX, by = c("SECCION"))
+Resultados <- left_join(Resultados, ResultadosDF_Oax, by = c("SECCION","ENTIDAD"))
+
+# Crea la nueva columna "Cambio_Ganador"
+Resultados$Cambio_Ganador <- ifelse(
+    Resultados$GANADOR21 != Resultados$Ganador_coalición & !is.na(Resultados$GANADOR21),
+    as.character(Resultados$Ganador_coalición),
+    "sin cambio"
+)
+
+#crear diferencias en los años
+Resultados <- Resultados %>% 
+    mutate(diferencia_2122 = coalesce(FAM - VaxMex_21, 0),
+           diferencia_2122por = PorcentajeFAM - porcentaje_VPM21,
+    )
 
 # Solo Oaxaca Capital
 SeccionesR_OaxacaCapital <- filter(Resultados, MUNICIPIO == 66)
@@ -109,6 +143,9 @@ quintilesPF <- quantile(SeccionesR_OaxacaCapital$diferenciaPF, probs = c(0, 0.2,
 quintilesTF <- quantile(SeccionesR_OaxacaCapital$diferenciaTF, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesPFP <- quantile(SeccionesR_OaxacaCapital$diferenciaPFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesTFP <- quantile(SeccionesR_OaxacaCapital$diferenciaTFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesDif <- quantile(SeccionesR_OaxacaCapital$diferencia_2122, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesDifp <- quantile(SeccionesR_OaxacaCapital$diferencia_2122por, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
 
 # Crear quintiles de generación
 quintilesz <- quantile(SeccionesR_OaxacaCapital$GEN_Z_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -127,6 +164,8 @@ SeccionesR_OaxacaCapital$quintilPF <- cut(SeccionesR_OaxacaCapital$diferenciaPF,
 SeccionesR_OaxacaCapital$quintilTF <- cut(SeccionesR_OaxacaCapital$diferenciaTF, breaks = quintilesTF, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilPFP <- cut(SeccionesR_OaxacaCapital$diferenciaPFP, breaks = quintilesPFP, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilTFP <- cut(SeccionesR_OaxacaCapital$diferenciaTFP, breaks = quintilesTFP, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilDif <- cut(SeccionesR_OaxacaCapital$diferencia_2122, breaks = quintilesDif, include.lowest = TRUE)
+SeccionesR_OaxacaCapital$quintilDifP <- cut(SeccionesR_OaxacaCapital$diferencia_2122por, breaks = quintilesDifp, include.lowest = TRUE)
 
 # Agrega columna con quintiles de generacion
 SeccionesR_OaxacaCapital$quintilZ <- cut(SeccionesR_OaxacaCapital$GEN_Z_TOTAL_PORCENTAJE, breaks = quintilesz, include.lowest = TRUE)
@@ -135,11 +174,15 @@ SeccionesR_OaxacaCapital$quintilGX <- cut(SeccionesR_OaxacaCapital$GEN_X_TOTAL_P
 SeccionesR_OaxacaCapital$quintilBB <- cut(SeccionesR_OaxacaCapital$BOOMERS_TOTAL_PORCENTAJE, breaks = quintilesbb, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilSI <- cut(SeccionesR_OaxacaCapital$SILENT_TOTAL_PORCENTAJE, breaks = quintilesSi, include.lowest = TRUE)
 
-# CREAR el mapa manzanas
-mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO_L","MUNICIPIO", "ENTIDAD"))
 
+# Seleccionar columnas y cambiar nombres
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+    select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD")
+
+# CREAR el mapa manzanas
+mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION"))
 # CREAR el mapa secciones
-mapaSOAXCapital <- left_join(Secciones_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION", "DISTRITO", "DISTRITO_L","MUNICIPIO", "ENTIDAD"))
+mapaSOAXCapital <- left_join(Secciones_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION"))
 
 #Mapa Resultados
 ggplot() +
@@ -222,6 +265,87 @@ ggplot() +
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 
+#Mapa FAM
+ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilF), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "Spectral", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitivdad Electoral del FAM\nEn Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+
+
+#Mapa Cambios
+ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = Cambio_Ganador), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "Sin cambio" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia","Sin cambio")) +
+    labs(title = "¿Dónde los electores cambiaron su voto\nRespectro de 2021 a 2022?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+
+#Mapa más perdidas (%)
+ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilDifP), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "RdYlGn", name = "Votos perdidos\n en la manzana", labels = c("Muy pocos", "Pocos", "media", "Alta", "Muy alta ")) +
+    labs(title = "Competitivdad Electoral del FAM\nEn Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 
 # MAPA ESEM
 ggplot() +
