@@ -195,6 +195,14 @@ cols_C_JHH_21 <- c("PVEM-PT-MORENA_21", "PVEM-PT_21", "PVEM-MORENA_21", "PT-MORE
 SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
   mutate(C_JHH_21 = rowSums(select(SeccionesR_OaxacaCapital, all_of(cols_C_JHH_21)), na.rm = TRUE))
 
+# Seleccionar las columnas requeridas
+columnas_seleccionadas <- c("SECCION", "PAN", "PRI", "PRD", "PT", "PVEM", "MC", "PUP", "MORENA",
+                             "PAN_21", "PRI_21", "PRD_21", "PVEM_21", "PT_21", "MORENA_21",
+                             "C_FAM", "C_JHH", "C_FAM_21", "C_JHH_21")
+
+# Crear el nuevo DataFrame Cambios_OaxacaCapital
+Cambios_OaxacaCapital <- SeccionesR_OaxacaCapital[columnas_seleccionadas]
+
 # CREAR el mapa manzanas
 mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION"))
 # CREAR el mapa secciones
