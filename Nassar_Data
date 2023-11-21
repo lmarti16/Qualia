@@ -19,84 +19,74 @@ Resultados <- read_sf("D:\\52556\\Documents\\Nassar-oax\\R_SeccionesGO.csv")
 DF_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_FEDERAL.shp")
 DL_OAX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\20 OAXACA\\DISTRITO_LOCAL.shp")
 ESEM_Oax <- read_sf("D:\\Descargas\\OAXACA_SHP\\OAXACA.shp")
+Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Nassar-oax\\Lista_Nominal_Selected.csv")
 
 # Importar los datos de 2021
-ResultadosDF <- read_sf("D:\\52556\\Documents\\Proyecto F\\Resultados_24.csv")
+ResultadosDF <- read_sf("D:\\52556\\Documents\\Distritos Federales 24\\Resultados_2421.csv")
 
-ResultadosDF $porcentaje_VPM <- as.numeric(ResultadosDF $porcentaje_VPM)
-ResultadosDF $porcentaje_Morena <- as.numeric(ResultadosDF $porcentaje_Morena)
-ResultadosDF $porcentaje_MC <- as.numeric(ResultadosDF $porcentaje_MC)
+ResultadosDF $porcentaje_VPM_21 <- as.numeric(ResultadosDF $porcentaje_VPM_21)
+ResultadosDF $porcentaje_JHH_21 <- as.numeric(ResultadosDF $porcentaje_JHH_21)
+ResultadosDF $porcentaje_MC_21 <- as.numeric(ResultadosDF $porcentaje_MC_21)
+ResultadosDF $SECCION <- as.numeric(ResultadosDF $SECCION)
+ResultadosDF $ENTIDAD <- as.numeric(ResultadosDF $ENTIDAD)
+ResultadosDF $VOTOS_NULOS_21 <- as.numeric(ResultadosDF $VOTOS_NULOS_21)
+ResultadosDF $TOTAL_VOTOS_CALCULADOS_21 <- as.numeric(ResultadosDF $TOTAL_VOTOS_CALCULADOS_21)
+ResultadosDF $LISTA_NOMINAL_CASILLA_21 <- as.numeric(ResultadosDF $LISTA_NOMINAL_CASILLA_21)
+ResultadosDF $VaxMex_21 <- as.numeric(ResultadosDF $VaxMex_21)
+ResultadosDF $JHH_21 <- as.numeric(ResultadosDF $JHH_21)
+ResultadosDF $MC_21 <- as.numeric(ResultadosDF $MC_21)
+ResultadosDF $PAN_21 <- as.numeric(ResultadosDF $PAN_21)
+ResultadosDF $PRI_21 <- as.numeric(ResultadosDF $PRI_21)
+ResultadosDF $MORENA_21 <- as.numeric(ResultadosDF $MORENA_21)
 
-# Seleccionar columnas y cambiar nombres
-ResultadosDF <- ResultadosDF %>%
-    select(-"field_1") %>%
-    mutate(
-        SECCION = as.numeric(SECCION),
-        ENTIDAD = as.numeric(ENTIDAD),
-        `CANDIDATO/A NO REGISTRADO/A` = as.numeric(`CANDIDATO/A NO REGISTRADO/A`),
-        `VOTOS NULOS` = as.numeric(`VOTOS NULOS`),
-        TOTAL_VOTOS_CALCULADOS = as.numeric(TOTAL_VOTOS_CALCULADOS),
-        LISTA_NOMINAL_CASILLA = as.numeric(LISTA_NOMINAL_CASILLA),
-        VaxMex_21 = as.numeric(VaxMex_21),
-        Morena_21 = as.numeric(Morena_21),
-        MC_21 = as.numeric(MC_21),
-        Otros_21 = as.numeric(Otros_21)
-    ) %>%
-    rename(
-        `CANDIDATO/A_NO_REGISTRADO/A21` = `CANDIDATO/A NO REGISTRADO/A`,
-        `VOTOS_NULOS21` = `VOTOS NULOS`,
-        `TOTAL_VOTOS_CALCULADOS21` = TOTAL_VOTOS_CALCULADOS,
-        `LISTA_NOMINAL_CASILLA21` = LISTA_NOMINAL_CASILLA,
-        `porcentaje_VPM21` = porcentaje_VPM,
-        `porcentaje_Morena21` = porcentaje_Morena,
-        `porcentaje_MC21` = porcentaje_MC,
-        `GANADOR21` = GANADOR
-    )
+ResultadosDF <- ResultadosDF %>% select( -"DISTRITO",-"DISTRITO_L",-"MUNICIPIO")
 
 # Renombrar los resultados FAM
-ResultadosDF$GANADOR21 <- recode(ResultadosDF$GANADOR21,
-                          "EMPATE" = "Empate",
-                          "VPM" = "FAM",
-                          "MORENA" = "JHH",
-                          "MC" = "MC")
+ResultadosDF$GANADOR_21 <- recode(ResultadosDF$GANADOR_21,
+                                  "EMPATE" = "Empate",
+                                  "VPM" = "FAM",
+                                  "MORENA" = "JHH",
+                                  "MC" = "MC")
 
 ResultadosDF_Oax <- filter(ResultadosDF, ENTIDAD == 20)
 
-
 # Renombrar las clases sociales
 ESEM_Oax$NIVEL <- recode(ESEM_Oax$NIVEL,
-                          "A/B" = "Muy Alto",
-                          "C" = "Alto",
-                          "C-" = "Medio alto",
-                          "C+" = "Medio",
-                          "D" = "Medio bajo",
-                          "D+" = "Bajo",
-                          "E" = "Muy Bajo",
-                          "N/D" = "No determinado")
+                         "A/B" = "Muy Alto",
+                         "C" = "Alto",
+                         "C-" = "Medio alto",
+                         "C+" = "Medio",
+                         "D" = "Medio bajo",
+                         "D+" = "Bajo",
+                         "E" = "Muy Bajo",
+                         "N/D" = "No determinado")
 
 # Convertir datos en números
 
 Resultados  <- Resultados  %>%
     mutate_at(vars(-c("Ganador_coalición", "Ganador_original", "Ganador_Partido")),
               as.numeric)
+Lista_Nominal_Selected  <- Lista_Nominal_Selected  %>%
+    mutate_at(vars(-c("NOMBRE_ENTIDAD", "Gene_prepo")),
+              as.numeric)
 
 #Columnas de Porcentajes
 
 Resultados <- Resultados %>% 
     mutate(participacion = Total / Lista_nom * 100,
-  PorcentajeFAM = FAM / Total * 100,
-  PorcentajeFAM_PRI = FAM_PRI / Total * 100,
-  PorcentajeMC = MC / Total * 100,
-  PorcentajePAN = PAN / Total * 100,
-  porcentaje_JHH = JHH / Total * 100)
+           PorcentajeFAM = FAM / Total * 100,
+           PorcentajeFAM_PRI = FAM_PRI / Total * 100,
+           PorcentajeMC = MC / Total * 100,
+           PorcentajePAN = PAN / Total * 100,
+           porcentaje_JHH = JHH / Total * 100)
 
 #crear diferencias
 Resultados <- Resultados %>% 
     mutate( diferenciaPF = PorcentajeFAM - porcentaje_JHH,
-  diferenciaTF = FAM - JHH,
-diferenciaPFP = PorcentajeFAM_PRI - porcentaje_JHH,
-  diferenciaTFP = FAM_PRI  - JHH
-)
+            diferenciaTF = FAM - JHH,
+            diferenciaPFP = PorcentajeFAM_PRI - porcentaje_JHH,
+            diferenciaTFP = FAM_PRI  - JHH
+    )
 
 #Agregar Generaciones y resultados 21
 ListaN_OAX <- filter(Lista_Nominal_Selected, ENTIDAD == 20)
@@ -105,7 +95,7 @@ Resultados <- left_join(Resultados, ResultadosDF_Oax, by = c("SECCION","ENTIDAD"
 
 # Crea la nueva columna "Cambio_Ganador"
 Resultados$Cambio_Ganador <- ifelse(
-    Resultados$GANADOR21 != Resultados$Ganador_coalición & !is.na(Resultados$GANADOR21),
+    Resultados$GANADOR_21 != Resultados$Ganador_coalición & !is.na(Resultados$GANADOR_21),
     as.character(Resultados$Ganador_coalición),
     "sin cambio"
 )
@@ -113,7 +103,7 @@ Resultados$Cambio_Ganador <- ifelse(
 #crear diferencias en los años
 Resultados <- Resultados %>% 
     mutate(diferencia_2122 = coalesce(FAM - VaxMex_21, 0),
-           diferencia_2122por = PorcentajeFAM - porcentaje_VPM21,
+           diferencia_2122por = PorcentajeFAM - porcentaje_VPM_21,
     )
 
 # Solo Oaxaca Capital
@@ -146,14 +136,12 @@ quintilesTFP <- quantile(SeccionesR_OaxacaCapital$diferenciaTFP, probs = c(0, 0.
 quintilesDif <- quantile(SeccionesR_OaxacaCapital$diferencia_2122, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesDifp <- quantile(SeccionesR_OaxacaCapital$diferencia_2122por, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
-
 # Crear quintiles de generación
 quintilesz <- quantile(SeccionesR_OaxacaCapital$GEN_Z_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesMi <- quantile(SeccionesR_OaxacaCapital$MILLENNIALS_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesgx <- quantile(SeccionesR_OaxacaCapital$GEN_X_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesbb <- quantile(SeccionesR_OaxacaCapital$BOOMERS_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesSi <- quantile(SeccionesR_OaxacaCapital$SILENT_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-
 
 # Agrega columna con quintiles
 SeccionesR_OaxacaCapital$quintilF <- cut(SeccionesR_OaxacaCapital$FAM, breaks = quintilesF, include.lowest = TRUE)
@@ -173,7 +161,6 @@ SeccionesR_OaxacaCapital$quintilMI <- cut(SeccionesR_OaxacaCapital$MILLENNIALS_T
 SeccionesR_OaxacaCapital$quintilGX <- cut(SeccionesR_OaxacaCapital$GEN_X_TOTAL_PORCENTAJE, breaks = quintilesgx, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilBB <- cut(SeccionesR_OaxacaCapital$BOOMERS_TOTAL_PORCENTAJE, breaks = quintilesbb, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilSI <- cut(SeccionesR_OaxacaCapital$SILENT_TOTAL_PORCENTAJE, breaks = quintilesSi, include.lowest = TRUE)
-
 
 # Seleccionar columnas y cambiar nombres
 SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
