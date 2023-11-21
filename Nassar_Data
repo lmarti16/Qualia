@@ -197,7 +197,7 @@ SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
 
 # Seleccionar las columnas requeridas
 columnas_seleccionadas <- c("SECCION", "PAN", "PRI", "PRD", "PT", "PVEM", "MC", "PUP", "MORENA",
-                             "PAN_21", "PRI_21", "PRD_21", "PVEM_21", "PT_21", "MORENA_21",
+                             "PAN_21", "PRI_21", "MC_21", "PRD_21", "PVEM_21", "PT_21", "MORENA_21",
                              "C_FAM", "C_JHH", "C_FAM_21", "C_JHH_21")
 
 # Crear el nuevo DataFrame Cambios_OaxacaCapital
