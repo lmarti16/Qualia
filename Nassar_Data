@@ -1,4 +1,3 @@
-
 # Cargar librerías
 library(sf)
 library(dplyr)
@@ -164,7 +163,37 @@ SeccionesR_OaxacaCapital$quintilSI <- cut(SeccionesR_OaxacaCapital$SILENT_TOTAL_
 
 # Seleccionar columnas y cambiar nombres
 SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
-    select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD")
+    select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD", "-NOMBRE_ENTIDAD")
+
+# Convertir las columnas, excluyendo las que deben permanecer como texto
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+  mutate(across(-c(Ganador_Partido, Ganador_coalición, Ganador_original,
+                   NOMBRE_ENTIDAD, Gene_prepo, NOMBRE_ESTADO,
+                   GANADOR_21, Cambio_Ganador), as.numeric, errors = "coerce"))
+
+# Crear la columna C_FAM
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+  mutate(C_FAM = rowSums(select(SeccionesR_OaxacaCapital, "CANDIDATURA COMÚN PRI-PRD"), na.rm = TRUE))
+
+# Crear la columna C_JHH
+cols_C_JHH <- c("COALICIÓN PT-PVEM-PUP-MORENA", "PT-PVEM-PUP", "PT-PVEM-MORENA",
+                "PT-PUP-MORENA", "PVEM-PUP-MORENA", "PT-PVEM", "PT-PUP",
+                "PT-MORENA", "PVEM-PUP", "PVEM-MORENA", "PUP-MORENA")
+
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+  mutate(C_JHH = rowSums(select(SeccionesR_OaxacaCapital, all_of(cols_C_JHH)), na.rm = TRUE))
+
+# Crear la columna C_FAM_21
+cols_C_FAM_21 <- c("PAN-PRI-PRD_21", "PAN-PRI_21", "PAN-PRD_21", "PRI-PRD_21")
+
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+  mutate(C_FAM_21 = rowSums(select(SeccionesR_OaxacaCapital, all_of(cols_C_FAM_21)), na.rm = TRUE))
+
+# Crear la columna C_JHH_21
+cols_C_JHH_21 <- c("PVEM-PT-MORENA_21", "PVEM-PT_21", "PVEM-MORENA_21", "PT-MORENA_21")
+
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+  mutate(C_JHH_21 = rowSums(select(SeccionesR_OaxacaCapital, all_of(cols_C_JHH_21)), na.rm = TRUE))
 
 # CREAR el mapa manzanas
 mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION"))
