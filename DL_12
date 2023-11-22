@@ -1,10 +1,9 @@
-# Solo Oaxaca Capital
-SeccionesR_OaxacaCapital <- filter(Resultados, MUNICIPIO == 66)
-Secciones_OaxacaCapital <- filter(Secciones_OAX, MUNICIPIO == 66)
-Manzanas_OaxacaCapital <- filter(Manzanas_OAX, MUNICIPIO == 66)
-ESEM_OaxacaCapital <- filter(ESEM_Oax, CVE_MUNC == "20067")
-ESEM_OaxacaCapital <- st_transform(ESEM_OaxacaCapital, st_crs(Secciones_OaxacaCapital))
-ESEM_OaxacaCapital <- st_intersection(ESEM_OaxacaCapital, Secciones_OaxacaCapital)
+# Solo Distrito Local 12
+SeccionesR_DL_12 <- filter(Resultados, DISTRITO == 8)
+Secciones_DL_12 <- filter(Secciones_OAX, DISTRITO == 8)
+Manzanas_DL_12 <- filter(Manzanas_OAX, DISTRITO_F == 8)
+ESEM_Oax <- st_transform(ESEM_Oax, st_crs(Secciones_DL_12))
+ESEM_DL_12 <- st_intersection(ESEM_DL_12, Secciones_DL_12)
 
 # Definir la paleta de colores
 colores <- c("Muy Alto" = "blue",
@@ -17,11 +16,629 @@ colores <- c("Muy Alto" = "blue",
              "No determinado" = "#808080")
 
 # Seleccionar columnas y cambiar nombres
-SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+SeccionesR_DL_12 <- SeccionesR_DL_12 %>%
     select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD", -"NOMBRE_ENTIDAD")
 
 # Convertir las columnas, excluyendo las que deben permanecer como texto
-SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
-  mutate(across(-c(Ganador_Partido, Ganador_coalición, Ganador_original,
-                   Gene_prepo, NOMBRE_ESTADO,
-                   GANADOR_21, Cambio_Ganador), as.numeric, errors = "coerce"))
+SeccionesR_DL_12 <- SeccionesR_DL_12 %>%
+    mutate(across(-c(Ganador_Partido, Ganador_coalición, Ganador_original,
+                     Gene_prepo, NOMBRE_ESTADO,
+                     GANADOR_21, Cambio_Ganador), as.numeric, errors = "coerce"))
+# Crear quintiles
+quintilesF <- quantile(SeccionesR_DL_12$FAM, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesFP <- quantile(SeccionesR_DL_12$FAM_PRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesP <- quantile(SeccionesR_DL_12$PAN, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesJ <- quantile(SeccionesR_DL_12$JHH, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPF <- quantile(SeccionesR_DL_12$diferenciaPF, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTF <- quantile(SeccionesR_DL_12$diferenciaTF, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPFP <- quantile(SeccionesR_DL_12$diferenciaPFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTFP <- quantile(SeccionesR_DL_12$diferenciaTFP, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesDif <- quantile(SeccionesR_DL_12$diferencia_2122, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesDifp <- quantile(SeccionesR_DL_12$diferencia_2122por, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+# Crear quintiles de generación
+quintilesz <- quantile(SeccionesR_DL_12$GEN_Z_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMi <- quantile(SeccionesR_DL_12$MILLENNIALS_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesgx <- quantile(SeccionesR_DL_12$GEN_X_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesbb <- quantile(SeccionesR_DL_12$BOOMERS_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesSi <- quantile(SeccionesR_DL_12$SILENT_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+# Agrega columna con quintiles
+SeccionesR_DL_12$quintilF <- cut(SeccionesR_DL_12$FAM, breaks = quintilesF, include.lowest = TRUE)
+SeccionesR_DL_12$quintilFP <- cut(SeccionesR_DL_12$FAM_PRI, breaks = quintilesFP, include.lowest = TRUE)
+SeccionesR_DL_12$quintilP <- cut(SeccionesR_DL_12$PAN, breaks = quintilesP, include.lowest = TRUE)
+SeccionesR_DL_12$quintilJ <- cut(SeccionesR_DL_12$JHH, breaks = quintilesJ, include.lowest = TRUE)
+SeccionesR_DL_12$quintilPF <- cut(SeccionesR_DL_12$diferenciaPF, breaks = quintilesPF, include.lowest = TRUE)
+SeccionesR_DL_12$quintilTF <- cut(SeccionesR_DL_12$diferenciaTF, breaks = quintilesTF, include.lowest = TRUE)
+SeccionesR_DL_12$quintilPFP <- cut(SeccionesR_DL_12$diferenciaPFP, breaks = quintilesPFP, include.lowest = TRUE)
+SeccionesR_DL_12$quintilTFP <- cut(SeccionesR_DL_12$diferenciaTFP, breaks = quintilesTFP, include.lowest = TRUE)
+SeccionesR_DL_12$quintilDif <- cut(SeccionesR_DL_12$diferencia_2122, breaks = quintilesDif, include.lowest = TRUE)
+SeccionesR_DL_12$quintilDifP <- cut(SeccionesR_DL_12$diferencia_2122por, breaks = quintilesDifp, include.lowest = TRUE)
+
+# Agrega columna con quintiles de generacion
+SeccionesR_DL_12$quintilZ <- cut(SeccionesR_DL_12$GEN_Z_TOTAL_PORCENTAJE, breaks = quintilesz, include.lowest = TRUE)
+SeccionesR_DL_12$quintilMI <- cut(SeccionesR_DL_12$MILLENNIALS_TOTAL_PORCENTAJE, breaks = quintilesMi, include.lowest = TRUE)
+SeccionesR_DL_12$quintilGX <- cut(SeccionesR_DL_12$GEN_X_TOTAL_PORCENTAJE, breaks = quintilesgx, include.lowest = TRUE)
+SeccionesR_DL_12$quintilBB <- cut(SeccionesR_DL_12$BOOMERS_TOTAL_PORCENTAJE, breaks = quintilesbb, include.lowest = TRUE)
+SeccionesR_DL_12$quintilSI <- cut(SeccionesR_DL_12$SILENT_TOTAL_PORCENTAJE, breaks = quintilesSi, include.lowest = TRUE)
+
+# Crear la columna C_FAM
+SeccionesR_DL_12 <- SeccionesR_DL_12 %>%
+    mutate(C_FAM = rowSums(select(SeccionesR_DL_12, "CANDIDATURA COMÚN PRI-PRD"), na.rm = TRUE))
+
+# Crear la columna C_JHH
+cols_C_JHH <- c("COALICIÓN PT-PVEM-PUP-MORENA", "PT-PVEM-PUP", "PT-PVEM-MORENA",
+                "PT-PUP-MORENA", "PVEM-PUP-MORENA", "PT-PVEM", "PT-PUP",
+                "PT-MORENA", "PVEM-PUP", "PVEM-MORENA", "PUP-MORENA","PUP")
+
+SeccionesR_DL_12 <- SeccionesR_DL_12 %>%
+    mutate(C_JHH = rowSums(select(SeccionesR_DL_12, all_of(cols_C_JHH)), na.rm = TRUE))
+
+# Crear la columna C_FAM_21
+cols_C_FAM_21 <- c("PAN-PRI-PRD_21", "PAN-PRI_21", "PAN-PRD_21", "PRI-PRD_21")
+
+SeccionesR_DL_12 <- SeccionesR_DL_12 %>%
+    mutate(C_FAM_21 = rowSums(select(SeccionesR_DL_12, all_of(cols_C_FAM_21)), na.rm = TRUE))
+
+# Crear la columna C_JHH_21
+cols_C_JHH_21 <- c("PVEM-PT-MORENA_21", "PVEM-PT_21", "PVEM-MORENA_21", "PT-MORENA_21")
+
+SeccionesR_DL_12 <- SeccionesR_DL_12 %>%
+    mutate(C_JHH_21 = rowSums(select(SeccionesR_DL_12, all_of(cols_C_JHH_21)), na.rm = TRUE))
+
+# Seleccionar las columnas requeridas
+columnas_seleccionadas <- c("SECCION", "PAN", "PRI", "PRD", "PT", "PVEM", "MC", "MORENA",
+                            "PAN_21", "PRI_21", "MC_21", "PRD_21", "PVEM_21", "PT_21", "MORENA_21",
+                            "C_FAM", "C_JHH", "C_FAM_21", "C_JHH_21","Ganador_coalición","GANADOR_21")
+
+# Crear el nuevo DataFrame Cambios_DL_12
+Cambios_DL_12 <- SeccionesR_DL_12[columnas_seleccionadas]
+
+# Obtener las columnas a modificar
+columnas_a_modificar <- c("PAN", "PRI", "PRD", "PT", "PVEM", "MORENA","MC","C_FAM","C_JHH")
+
+# Renombrar las columnas
+colnames(Cambios_DL_12)[colnames(Cambios_DL_12) %in% columnas_a_modificar] <- paste0(colnames(Cambios_DL_12)[colnames(Cambios_DL_12) %in% columnas_a_modificar], "_22")
+
+# Cambiar el nombre de la columna Ganador_coalición por GANADOR_22
+Cambios_DL_12 <- Cambios_DL_12 %>% 
+    rename(GANADOR_22 = Ganador_coalición)
+
+# CREAR el mapa manzanas
+mapaMDL_12 <- left_join(Manzanas_DL_12, SeccionesR_DL_12, by = c("SECCION"))
+# CREAR el mapa secciones
+mapaSDL_12 <- left_join(Secciones_DL_12, SeccionesR_DL_12, by = c("SECCION"))
+
+# Mapa de Resultados22
+mapa_resultados22 <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = Ganador_coalición), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia")) +
+    labs(title = "¿Qué coalición Ganaría en Distrito Local 12 en 2022?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") +
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\mapa_resultados22.pdf", 
+       plot = mapa_resultados22, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+# Mapa de Resultados21
+mapa_resultados21 <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = GANADOR_21), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia")) +
+    labs(title = "¿Qué coalición ganó en Distrito Local 12 en 2021?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") +
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\mapa_resultados21.pdf", 
+       plot = mapa_resultados21, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa Resultados FAM-sin PAN
+mapa_resultados_sinPAN <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = Ganador_original), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("JHH" = "#654321", "FAM_PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" ), name = "Resultado electoral\n de la Manzana", labels = c("Empate","Frente Amplió Por México", "Juntos Haremos Historia")) + 
+    labs(title = "¿Qué coalición Ganaría en Distrito Local 12?",
+         subtitle = "Por manzanas habitadas y si el PAN fuera solo",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\mapa_resultados_sinPAN.pdf", 
+       plot = mapa_resultados_sinPAN, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa Partidos
+Mapa_Partidos <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = Ganador_Partido), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" ), name = "Resultado electoral\n de la Manzana") +
+    labs(title = "¿Qué Partido Ganaría en Distrito Local 12?",
+         subtitle = "Por manzanas habitadas y sin coalición",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Partidos.pdf", 
+       plot = Mapa_Partidos, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa FAM
+Mapa_FAM <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilF), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "Spectral", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitivdad Electoral del FAM\nEn Distrito Local 12",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_FAM.pdf", 
+       plot = Mapa_FAM, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa JHH
+Mapa_JHH <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilJ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "Paired", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitivdad Electoral de JHH\nEn Distrito Local 12",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_JHH.pdf", 
+       plot = Mapa_JHH, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa Diferencia
+Mapa_Diferencia <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilPF), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "RdYlGn", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitivdad Electoral Comparada\nDel FAM-JHH En Distrito Local 12",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Diferencia.pdf", 
+       plot = Mapa_Diferencia, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa Cambios
+Mapa_Cambios <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = Cambio_Ganador), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "Sin cambio" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia","Sin cambio")) +
+    labs(title = "¿Dónde los electores cambiaron su voto\nRespectro de 2021 a 2022?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Cambios.pdf", 
+       plot = Mapa_Cambios, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa más perdidas (%)
+Mapa_secccionesperdidas <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilDifP), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "RdYlBu", name = "Votos perdidos\n en la manzana", labels = c("Muy pocos", "Pocos", "media", "Alta", "Muy alta ")) +
+    labs(title = "Donde perdió más secciones el FAM\nEn Distrito Local 12 de 2021 a 2022",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_secccionesperdidas.pdf", 
+       plot = Mapa_secccionesperdidas, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+# MAPA ESEM
+Mapa_ESEM <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = ESEM_DL_12, aes(fill = NIVEL), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = colores,
+                      # Agregar el argumento limits con el orden deseado
+                      limits = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado")) +  
+    labs(title = "El Distrito Local 12 y sus estratos sociodemográficos",
+         subtitle = "Por secciones electorales habitadas",
+         fill = "Nivel socioeconómico",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    guides(fill = guide_legend(labels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado"),
+                               ncol = 4)) +  # Organizar las leyendas en una columna
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 12, color = "#014d64", face = "bold"),
+          legend.title = element_text(size = 12, color = "#014d64", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_ESEM.pdf", 
+       plot = Mapa_ESEM, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+
+#Gene_Prepo
+Mapa_GenePrepo <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = Gene_prepo), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_manual(values = c( "GEN_Z" = "#E41A1C",  # Rojo
+                                  "MILLENNIALS" = "#377EB8",  # Azul
+                                  "GEN_X" = "#4DAF4A",  # Verde
+                                  "BOOMERS" = "#984EA3",  # Naranja
+                                  "SILENT" = "#EFB752", # amarillo
+                                  "Sin datos"= "grey" ), 
+                      name = "Generación Preponderante\nEn la manzana", limits = c("GEN_Z","MILLENNIALS","GEN_X","BOOMERS","SILENT","Sin datos")) +
+    labs(title = "¿Qué generación es la preponderante\nen Distrito Local 12?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_GenePrepo.pdf", 
+       plot = Mapa_GenePrepo, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#GenZ
+Mapa_GenZ <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilZ ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "Purples", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de Gen Z\nEn Distrito Local 12",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_GenZ.pdf", 
+       plot = Mapa_GenZ, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Millenials
+Mapa_Millenials <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilMI ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "PuRd", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de Millennials\nEn Distrito Local 12",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Millenials.pdf", 
+       plot = Mapa_Millenials, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#GenX
+Mapa_GenX <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilGX ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "YlOrRd", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de Generación X\nEn Distrito Local 12",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_GenX.pdf", 
+       plot = Mapa_GenX, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Baby Boomers
+Mapa_Boomers <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilBB ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "BuGn", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de Baby Boomers\nEn Distrito Local 12",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Boomers.pdf", 
+       plot = Mapa_Boomers, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Silent
+Mapa_Silent <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMDL_12, aes(fill = quintilSI ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_DL_12, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_DL_12, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "Blues", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de  de mayores de 65\nEn Distrito Local 12",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Silent.pdf", 
+       plot = Mapa_Silent, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+
+
+# Lista de archivos PDF a combinar
+archivos <- c(
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_FAM.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_JHH.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_Diferencia.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_Partidos.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/mapa_resultados_sinPAN.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/mapa_resultados21.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/mapa_resultados22.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_secccionesperdidas.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_Cambios.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_ESEM.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_GenePrepo.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_GenZ.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_Millenials.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_GenX.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_Boomers.pdf",
+    "D:/52556/Documents/Nassar-oax/DL_12/Mapa_Silent.pdf"
+)
+
+# Directorio de salida para el archivo combinado
+archivo_salida <- "D:/52556/Documents/Nassar-oax/DL_12/DL_12_Consolidado.pdf"
+
+# Combina los archivos PDF en uno solo
+pdf_combine(archivos, output = archivo_salida)
