@@ -198,7 +198,7 @@ SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
 # Seleccionar las columnas requeridas
 columnas_seleccionadas <- c("SECCION", "PAN", "PRI", "PRD", "PT", "PVEM", "MC", "MORENA",
                              "PAN_21", "PRI_21", "MC_21", "PRD_21", "PVEM_21", "PT_21", "MORENA_21",
-                             "C_FAM", "C_JHH", "C_FAM_21", "C_JHH_21")
+                             "C_FAM", "C_JHH", "C_FAM_21", "C_JHH_21","Ganador_coalición","GANADOR_21")
 
 # Crear el nuevo DataFrame Cambios_OaxacaCapital
 Cambios_OaxacaCapital <- SeccionesR_OaxacaCapital[columnas_seleccionadas]
@@ -208,6 +208,10 @@ columnas_a_modificar <- c("PAN", "PRI", "PRD", "PT", "PVEM", "MORENA","MC","C_FA
 
 # Renombrar las columnas
 colnames(Cambios_OaxacaCapital)[colnames(Cambios_OaxacaCapital) %in% columnas_a_modificar] <- paste0(colnames(Cambios_OaxacaCapital)[colnames(Cambios_OaxacaCapital) %in% columnas_a_modificar], "_22")
+
+# Cambiar el nombre de la columna Ganador_coalición por GANADOR_22
+Cambios_OaxacaCapital <- Cambios_OaxacaCapital %>% 
+  rename(GANADOR_22 = Ganador_coalición)
 
 # CREAR el mapa manzanas
 mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION"))
