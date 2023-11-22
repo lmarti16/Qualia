@@ -178,7 +178,7 @@ SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
 # Crear la columna C_JHH
 cols_C_JHH <- c("COALICIÓN PT-PVEM-PUP-MORENA", "PT-PVEM-PUP", "PT-PVEM-MORENA",
                 "PT-PUP-MORENA", "PVEM-PUP-MORENA", "PT-PVEM", "PT-PUP",
-                "PT-MORENA", "PVEM-PUP", "PVEM-MORENA", "PUP-MORENA")
+                "PT-MORENA", "PVEM-PUP", "PVEM-MORENA", "PUP-MORENA","PUP")
 
 SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
   mutate(C_JHH = rowSums(select(SeccionesR_OaxacaCapital, all_of(cols_C_JHH)), na.rm = TRUE))
@@ -196,7 +196,7 @@ SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
   mutate(C_JHH_21 = rowSums(select(SeccionesR_OaxacaCapital, all_of(cols_C_JHH_21)), na.rm = TRUE))
 
 # Seleccionar las columnas requeridas
-columnas_seleccionadas <- c("SECCION", "PAN", "PRI", "PRD", "PT", "PVEM", "MC", "PUP", "MORENA",
+columnas_seleccionadas <- c("SECCION", "PAN", "PRI", "PRD", "PT", "PVEM", "MC", "MORENA",
                              "PAN_21", "PRI_21", "MC_21", "PRD_21", "PVEM_21", "PT_21", "MORENA_21",
                              "C_FAM", "C_JHH", "C_FAM_21", "C_JHH_21")
 
