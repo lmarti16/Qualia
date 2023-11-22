@@ -1,4 +1,4 @@
-# Solo Oaxaca Capital
+# Solo Distrito Federal 8
 SeccionesR_DF_8 <- filter(Resultados, DISTRITO == 8)
 Secciones_DF_8 <- filter(Secciones_OAX, DISTRITO == 8)
 Manzanas_DF_8 <- filter(Manzanas_OAX, DISTRITO_F == 8)
@@ -116,7 +116,7 @@ mapa_resultados22 <- ggplot() +
     geom_sf(data = Secciones_DF_8, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_DF_8, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia")) +
-    labs(title = "¿Qué coalición Ganaría en Oaxaca Capital en 2022?",
+    labs(title = "¿Qué coalición Ganaría en Distrito Federal 8 en 2022?",
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
@@ -147,7 +147,7 @@ mapa_resultados21 <- ggplot() +
     geom_sf(data = Secciones_DF_8, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_DF_8, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia")) +
-    labs(title = "¿Qué coalición ganó en Oaxaca Capital en 2021?",
+    labs(title = "¿Qué coalición ganó en Distrito Federal 8 en 2021?",
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
@@ -178,7 +178,7 @@ mapa_resultados_sinPAN <- ggplot() +
     geom_sf(data = Secciones_DF_8, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_DF_8, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("JHH" = "#654321", "FAM_PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" ), name = "Resultado electoral\n de la Manzana", labels = c("Empate","Frente Amplió Por México", "Juntos Haremos Historia")) + 
-    labs(title = "¿Qué coalición Ganaría en Oaxaca Capital?",
+    labs(title = "¿Qué coalición Ganaría en Distrito Federal 8?",
          subtitle = "Por manzanas habitadas y si el PAN fuera solo",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
@@ -209,7 +209,7 @@ Mapa_Partidos <- ggplot() +
     geom_sf(data = Secciones_DF_8, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_DF_8, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" ), name = "Resultado electoral\n de la Manzana") +
-    labs(title = "¿Qué Partido Ganaría en Oaxaca Capital?",
+    labs(title = "¿Qué Partido Ganaría en Distrito Federal 8?",
          subtitle = "Por manzanas habitadas y sin coalición",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
@@ -397,7 +397,7 @@ Mapa_ESEM <- ggplot() +
     scale_fill_manual(values = colores,
                       # Agregar el argumento limits con el orden deseado
                       limits = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado")) +  
-    labs(title = "Oaxaca y sus estratos sociodemográficos",
+    labs(title = "El Distrito Federal 8 y sus estratos sociodemográficos",
          subtitle = "Por secciones electorales habitadas",
          fill = "Nivel socioeconómico",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
