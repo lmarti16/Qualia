@@ -138,7 +138,7 @@ mapa_resultados22 <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\mapa_resultados22.pdf", 
        plot = mapa_resultados22, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 # Mapa de Resultados21
 mapa_resultados21 <- ggplot() +
@@ -169,7 +169,7 @@ mapa_resultados21 <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\mapa_resultados21.pdf", 
        plot = mapa_resultados21, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Mapa Resultados FAM-sin PAN
 mapa_resultados_sinPAN <- ggplot() +
@@ -200,7 +200,7 @@ mapa_resultados_sinPAN <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\mapa_resultados_sinPAN.pdf", 
        plot = mapa_resultados_sinPAN, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Mapa Partidos
 Mapa_Partidos <- ggplot() +
@@ -231,7 +231,7 @@ Mapa_Partidos <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Partidos.pdf", 
        plot = Mapa_Partidos, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Mapa FAM
 Mapa_FAM <- ggplot() +
@@ -262,7 +262,7 @@ Mapa_FAM <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_FAM.pdf", 
        plot = Mapa_FAM, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Mapa JHH
 Mapa_JHH <- ggplot() +
@@ -293,7 +293,7 @@ Mapa_JHH <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_JHH.pdf", 
        plot = Mapa_JHH, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Mapa Diferencia
 Mapa_Diferencia <- ggplot() +
@@ -324,7 +324,7 @@ Mapa_Diferencia <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Diferencia.pdf", 
        plot = Mapa_Diferencia, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Mapa Cambios
 Mapa_Cambios <- ggplot() +
@@ -355,7 +355,7 @@ Mapa_Cambios <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Cambios.pdf", 
        plot = Mapa_Cambios, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Mapa más perdidas (%)
 Mapa_secccionesperdidas <- ggplot() +
@@ -386,7 +386,7 @@ Mapa_secccionesperdidas <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_secccionesperdidas.pdf", 
        plot = Mapa_secccionesperdidas, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 # MAPA ESEM
 Mapa_ESEM <- ggplot() +
@@ -420,7 +420,7 @@ Mapa_ESEM <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_ESEM.pdf", 
        plot = Mapa_ESEM, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 
 #Gene_Prepo
@@ -458,7 +458,7 @@ Mapa_GenePrepo <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_GenePrepo.pdf", 
        plot = Mapa_GenePrepo, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #GenZ
 Mapa_GenZ <- ggplot() +
@@ -489,7 +489,7 @@ Mapa_GenZ <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_GenZ.pdf", 
        plot = Mapa_GenZ, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Millenials
 Mapa_Millenials <- ggplot() +
@@ -520,7 +520,7 @@ Mapa_Millenials <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Millenials.pdf", 
        plot = Mapa_Millenials, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #GenX
 Mapa_GenX <- ggplot() +
@@ -551,7 +551,7 @@ Mapa_GenX <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_GenX.pdf", 
        plot = Mapa_GenX, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Baby Boomers
 Mapa_Boomers <- ggplot() +
@@ -582,7 +582,7 @@ Mapa_Boomers <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Boomers.pdf", 
        plot = Mapa_Boomers, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 #Silent
 Mapa_Silent <- ggplot() +
@@ -613,7 +613,7 @@ Mapa_Silent <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\DL_12\\Mapa_Silent.pdf", 
        plot = Mapa_Silent, 
-       width = 8.5, height = 11, units = "in", device = "pdf")
+       width = 11, height = 8.5, units = "in", device = "pdf")
 
 
 
