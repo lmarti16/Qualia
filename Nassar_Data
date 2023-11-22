@@ -218,8 +218,8 @@ mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, b
 # CREAR el mapa secciones
 mapaSOAXCapital <- left_join(Secciones_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION"))
 
-# Mapa de Resultados
-mapa_resultados <- ggplot() +
+# Mapa de Resultados22
+mapa_resultados22 <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = mapaMOAXCapital, aes(fill = Ganador_coalición), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -245,10 +245,40 @@ mapa_resultados <- ggplot() +
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
 # Guardar el primer mapa como PDF
-ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Resultados.pdf", 
-       plot = mapa_resultados, 
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\mapa_resultados22.pdf", 
+       plot = mapa_resultados22, 
        width = 8.5, height = 11, units = "in", device = "pdf")
 
+# Mapa de Resultados21
+mapa_resultados21 <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = GANADOR_21), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("JHH" = "brown", "FAM" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana", labels = c("Frente Amplió Por México", "Juntos Haremos Historia")) +
+    labs(title = "¿Qué coalición Ganaría en Oaxaca Capital?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") +
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\mapa_resultados21.pdf", 
+       plot = mapa_resultados21, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa Resultados FAM-sin PAN
 mapa_resultados_sinPAN <- ggplot() +
@@ -443,7 +473,7 @@ Mapa_secccionesperdidas <- ggplot() +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "RdYlBu", name = "Votos perdidos\n en la manzana", labels = c("Muy pocos", "Pocos", "media", "Alta", "Muy alta ")) +
-    labs(title = "Competitivdad Electoral del FAM\nEn Oaxaca de Júarez",
+    labs(title = "Donde perdió más secciones el FAM\nEn Oaxaca de Júarez de 2021 a 2022",
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
@@ -691,17 +721,18 @@ Mapa_Silent <- ggplot() +
     guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Silent.pdf", 
-       plot = Mapa_Boomers, 
+       plot = Mapa_Silent, 
        width = 8.5, height = 11, units = "in", device = "pdf")
 
 # Lista de archivos PDF a combinar
 archivos <- c(
-    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Resultados.pdf",
-    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/mapa_resultados_sinPAN.pdf",
-    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Partidos.pdf",
     "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_FAM.pdf",
     "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_JHH.pdf",
     "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Diferencia.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Partidos.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/mapa_resultados_sinPAN.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/mapa_resultados21.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/mapa_resultados22.pdf",
     "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_secccionesperdidas.pdf",
     "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Cambios.pdf",
     "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_ESEM.pdf",
