@@ -1,0 +1,27 @@
+# Solo Oaxaca Capital
+SeccionesR_OaxacaCapital <- filter(Resultados, MUNICIPIO == 66)
+Secciones_OaxacaCapital <- filter(Secciones_OAX, MUNICIPIO == 66)
+Manzanas_OaxacaCapital <- filter(Manzanas_OAX, MUNICIPIO == 66)
+ESEM_OaxacaCapital <- filter(ESEM_Oax, CVE_MUNC == "20067")
+ESEM_OaxacaCapital <- st_transform(ESEM_OaxacaCapital, st_crs(Secciones_OaxacaCapital))
+ESEM_OaxacaCapital <- st_intersection(ESEM_OaxacaCapital, Secciones_OaxacaCapital)
+
+# Definir la paleta de colores
+colores <- c("Muy Alto" = "blue",
+             "Alto" = "#00CC00",
+             "Medio alto" = "#99FF99",
+             "Medio" = "#FFFF99",
+             "Medio bajo" = "#FFCC99",
+             "Bajo" = "#FF3300",
+             "Muy Bajo" = "brown",
+             "No determinado" = "#808080")
+
+# Seleccionar columnas y cambiar nombres
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+    select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD", -"NOMBRE_ENTIDAD")
+
+# Convertir las columnas, excluyendo las que deben permanecer como texto
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+  mutate(across(-c(Ganador_Partido, Ganador_coalición, Ganador_original,
+                   Gene_prepo, NOMBRE_ESTADO,
+                   GANADOR_21, Cambio_Ganador), as.numeric, errors = "coerce"))
