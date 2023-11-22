@@ -1,7 +1,7 @@
 # Solo Distrito Local 12
-SeccionesR_DL_12 <- filter(Resultados, DISTRITO == 8)
-Secciones_DL_12 <- filter(Secciones_OAX, DISTRITO == 8)
-Manzanas_DL_12 <- filter(Manzanas_OAX, DISTRITO_F == 8)
+SeccionesR_DL_12 <- filter(Resultados, DISTRITO_L == 12)
+Secciones_DL_12 <- filter(Secciones_OAX, DISTRITO_L == 12)
+Manzanas_DL_12 <- filter(Manzanas_OAX, DISTRITO_L == 12)
 ESEM_Oax <- st_transform(ESEM_Oax, st_crs(Secciones_DL_12))
 ESEM_DL_12 <- st_intersection(ESEM_Oax, Secciones_DL_12)
 
