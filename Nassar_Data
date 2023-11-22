@@ -567,8 +567,8 @@ Mapa_GenX <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
     guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
 # Guardar el primer mapa como PDF
-ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\GenX.pdf", 
-       plot = GenX, 
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_GenX.pdf", 
+       plot = Mapa_GenX, 
        width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Baby Boomers
