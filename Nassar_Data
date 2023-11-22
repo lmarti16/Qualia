@@ -454,7 +454,7 @@ Mapa_GenePrepo <- ggplot() +
                                   "SILENT" = "#EFB752", # amarillo
                                   "Sin datos"= "grey" ), 
                       name = "Generación Preponderante\nEn la manzana", limits = c("GEN_Z","MILLENNIALS","GEN_X","BOOMERS","SILENT","Sin datos")) +
-    labs(title = "¿Qué generación es la preponderante en Oaxaca de Júarez?",
+    labs(title = "¿Qué generación es la preponderante\nen Oaxaca de Júarez?",
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
