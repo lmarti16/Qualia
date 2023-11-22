@@ -203,6 +203,12 @@ columnas_seleccionadas <- c("SECCION", "PAN", "PRI", "PRD", "PT", "PVEM", "MC", 
 # Crear el nuevo DataFrame Cambios_OaxacaCapital
 Cambios_OaxacaCapital <- SeccionesR_OaxacaCapital[columnas_seleccionadas]
 
+# Obtener las columnas a modificar
+columnas_a_modificar <- c("PAN", "PRI", "PRD", "PT", "PVEM", "MORENA","MC","C_FAM","C_JHH")
+
+# Renombrar las columnas
+colnames(Cambios_OaxacaCapital)[colnames(Cambios_OaxacaCapital) %in% columnas_a_modificar] <- paste0(colnames(Cambios_OaxacaCapital)[colnames(Cambios_OaxacaCapital) %in% columnas_a_modificar], "_22")
+
 # CREAR el mapa manzanas
 mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION"))
 # CREAR el mapa secciones
