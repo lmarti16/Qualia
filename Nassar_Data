@@ -163,7 +163,7 @@ SeccionesR_OaxacaCapital$quintilSI <- cut(SeccionesR_OaxacaCapital$SILENT_TOTAL_
 
 # Seleccionar columnas y cambiar nombres
 SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
-    select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD", "-NOMBRE_ENTIDAD")
+    select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD", -"NOMBRE_ENTIDAD")
 
 # Convertir las columnas, excluyendo las que deben permanecer como texto
 SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
