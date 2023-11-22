@@ -244,7 +244,6 @@ mapa_resultados <- ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
-
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Resultados.pdf", 
        plot = mapa_resultados, 
@@ -342,6 +341,68 @@ Mapa_FAM <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_FAM.pdf", 
        plot = Mapa_FAM, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa JHH
+Mapa_JHH <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilJ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "Paired", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitivdad Electoral de JHH\nEn Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_JHH.pdf", 
+       plot = Mapa_JHH, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa Diferencia
+Mapa_Diferencia <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilPF), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "RdYlGn", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitivdad Electoral Comparada\nDel FAM-JHH En Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Diferencia.pdf", 
+       plot = Mapa_Diferencia, 
        width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa Cambios
@@ -609,7 +670,7 @@ Mapa_Silent <- ggplot() +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
     scale_fill_brewer(palette = "Blues", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
-    labs(title = "Presencia de  de mayores de 65nEn Oaxaca de Júarez",
+    labs(title = "Presencia de  de mayores de 65\nEn Oaxaca de Júarez",
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
@@ -632,4 +693,32 @@ Mapa_Silent <- ggplot() +
 ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Silent.pdf", 
        plot = Mapa_Boomers, 
        width = 8.5, height = 11, units = "in", device = "pdf")
+
+# Lista de archivos PDF a combinar
+archivos <- c(
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Resultados.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Resultados_FAM_sin_PAN.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Partidos.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_FAM.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_JHH.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Diferencia.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_secccionesperdidas.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Cambios.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_ESEM.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_GenePrepo.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_GenZ.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Millenials.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_GenX.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Boomers.pdf"
+  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Silent.pdf"
+)
+
+# Directorio de salida para el archivo combinado
+archivo_salida <- "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Oaxaca_Capital_Consolidado.pdf"
+
+# Combina los archivos PDF en uno solo
+pdf_combine(archivos, output = archivo_salida)
+
+# Mensaje de éxito
+cat("Archivos combinados exitosamente. Ruta del archivo combinado:", archivo_salida, "\n")
 
