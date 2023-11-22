@@ -3,7 +3,7 @@ SeccionesR_DL_12 <- filter(Resultados, DISTRITO == 8)
 Secciones_DL_12 <- filter(Secciones_OAX, DISTRITO == 8)
 Manzanas_DL_12 <- filter(Manzanas_OAX, DISTRITO_F == 8)
 ESEM_Oax <- st_transform(ESEM_Oax, st_crs(Secciones_DL_12))
-ESEM_DL_12 <- st_intersection(ESEM_DL_12, Secciones_DL_12)
+ESEM_DL_12 <- st_intersection(ESEM_Oax, Secciones_DL_12)
 
 # Definir la paleta de colores
 colores <- c("Muy Alto" = "blue",
