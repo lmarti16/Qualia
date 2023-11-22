@@ -218,8 +218,8 @@ mapaMOAXCapital <- left_join(Manzanas_OaxacaCapital, SeccionesR_OaxacaCapital, b
 # CREAR el mapa secciones
 mapaSOAXCapital <- left_join(Secciones_OaxacaCapital, SeccionesR_OaxacaCapital, by = c("SECCION"))
 
-#Mapa Resultados
-ggplot() +
+# Mapa de Resultados
+mapa_resultados <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = mapaMOAXCapital, aes(fill = Ganador_coalición), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -229,24 +229,30 @@ ggplot() +
          subtitle = "Por manzanas habitadas",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
                           format(Sys.Date(), "%d/%m/%Y"))) +
-    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    theme_economist(base_family="ITC Officina Sans") +
     guides(fill = guide_legend(ncol = 2)) +
     theme(legend.position = "bottom",
           legend.background = element_rect(fill = "#014d64"),
           legend.text = element_text(size = 10, color = "white"),
           legend.title = element_text(size = 12, color = "white", face = "bold"),
-          axis.text = element_blank(),  # Quitar texto de los ejes
-          axis.title = element_blank(),  # Quitar título de los ejes
-          axis.line = element_blank(),   # Quitar línea de los ejes
-          panel.background = element_blank(),  # Quitar fondo del panel
-          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
-          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
-          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
-          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
-          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
+
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Resultados.pdf", 
+       plot = mapa_resultados, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
 
 #Mapa Resultados FAM-sin PAN
-ggplot() +
+mapa_resultados_sinPAN <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = mapaMOAXCapital, aes(fill = Ganador_original), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -271,9 +277,13 @@ ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\mapa_resultados_sinPAN.pdf", 
+       plot = mapa_resultados_sinPAN, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa Partidos
-ggplot() +
+Mapa_Partidos <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = mapaMOAXCapital, aes(fill = Ganador_Partido), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -298,9 +308,13 @@ ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Partidos.pdf", 
+       plot = Mapa_Partidos, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa FAM
-ggplot() +
+Mapa_FAM <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = mapaMOAXCapital, aes(fill = quintilF), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -325,10 +339,13 @@ ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
-
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_FAM.pdf", 
+       plot = Mapa_FAM, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa Cambios
-ggplot() +
+Mapa_Cambios <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = mapaMOAXCapital, aes(fill = Cambio_Ganador), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -353,6 +370,10 @@ ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Cambios.pdf", 
+       plot = Mapa_Cambios, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa más perdidas (%)
 ggplot() +
