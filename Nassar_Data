@@ -123,6 +123,16 @@ colores <- c("Muy Alto" = "blue",
              "Muy Bajo" = "brown",
              "No determinado" = "#808080")
 
+# Seleccionar columnas y cambiar nombres
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+    select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD", -"NOMBRE_ENTIDAD")
+
+# Convertir las columnas, excluyendo las que deben permanecer como texto
+SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
+  mutate(across(-c(Ganador_Partido, Ganador_coalición, Ganador_original,
+                   Gene_prepo, NOMBRE_ESTADO,
+                   GANADOR_21, Cambio_Ganador), as.numeric, errors = "coerce"))
+
 # Crear quintiles
 quintilesF <- quantile(SeccionesR_OaxacaCapital$FAM, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesFP <- quantile(SeccionesR_OaxacaCapital$FAM_PRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -160,16 +170,6 @@ SeccionesR_OaxacaCapital$quintilMI <- cut(SeccionesR_OaxacaCapital$MILLENNIALS_T
 SeccionesR_OaxacaCapital$quintilGX <- cut(SeccionesR_OaxacaCapital$GEN_X_TOTAL_PORCENTAJE, breaks = quintilesgx, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilBB <- cut(SeccionesR_OaxacaCapital$BOOMERS_TOTAL_PORCENTAJE, breaks = quintilesbb, include.lowest = TRUE)
 SeccionesR_OaxacaCapital$quintilSI <- cut(SeccionesR_OaxacaCapital$SILENT_TOTAL_PORCENTAJE, breaks = quintilesSi, include.lowest = TRUE)
-
-# Seleccionar columnas y cambiar nombres
-SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
-    select(-"DISTRITO_L", -"DISTRITO", -"MUNICIPIO", -"ENTIDAD", -"NOMBRE_ENTIDAD")
-
-# Convertir las columnas, excluyendo las que deben permanecer como texto
-SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
-  mutate(across(-c(Ganador_Partido, Ganador_coalición, Ganador_original,
-                   Gene_prepo, NOMBRE_ESTADO,
-                   GANADOR_21, Cambio_Ganador), as.numeric, errors = "coerce"))
 
 # Crear la columna C_FAM
 SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
