@@ -168,7 +168,7 @@ SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
 # Convertir las columnas, excluyendo las que deben permanecer como texto
 SeccionesR_OaxacaCapital <- SeccionesR_OaxacaCapital %>%
   mutate(across(-c(Ganador_Partido, Ganador_coalición, Ganador_original,
-                   NOMBRE_ENTIDAD, Gene_prepo, NOMBRE_ESTADO,
+                   Gene_prepo, NOMBRE_ESTADO,
                    GANADOR_21, Cambio_Ganador), as.numeric, errors = "coerce"))
 
 # Crear la columna C_FAM
