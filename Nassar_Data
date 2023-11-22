@@ -376,7 +376,7 @@ ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Cambios.pdf",
        width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa más perdidas (%)
-ggplot() +
+Mapa_secccionesperdidas <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = mapaMOAXCapital, aes(fill = quintilDifP), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -401,9 +401,13 @@ ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_secccionesperdidas.pdf", 
+       plot = Mapa_secccionesperdidas, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 # MAPA ESEM
-ggplot() +
+Mapa_ESEM <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = ESEM_OaxacaCapital, aes(fill = NIVEL), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -431,9 +435,14 @@ ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_ESEM.pdf", 
+       plot = Mapa_ESEM, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
 
 #Gene_Prepo
-ggplot() +
+Mapa_GenePrepo <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 15) +
     geom_sf(data = mapaMOAXCapital, aes(fill = Gene_prepo), alpha = .7, color = NA) +
     geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
@@ -464,8 +473,163 @@ ggplot() +
           plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
           plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
     guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_GenePrepo.pdf", 
+       plot = Mapa_GenePrepo, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
+#GenZ
+Mapa_GenZ <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilZ ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "Purples", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de Gen Z\nEn Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_GenZ.pdf", 
+       plot = Mapa_GenZ, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
+#Millenials
+Mapa_Millenials <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilMI ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "PuRd", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de Millennials\nEn Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Millenials.pdf", 
+       plot = Mapa_Millenials, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
+#GenX
+Mapa_GenX <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilGX ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "YlOrRd", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de Generación X\nEn Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\GenX.pdf", 
+       plot = GenX, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
+#Baby Boomers
+Mapa_Boomers <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilBB ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "BuGn", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de Baby Boomers\nEn Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Boomers.pdf", 
+       plot = Mapa_Boomers, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Silent
+Mapa_Silent <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMOAXCapital, aes(fill = quintilSI ), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_OaxacaCapital, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_OaxacaCapital, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_brewer(palette = "Blues", name = "Presencia de la generación\nEn la manzana", labels = c("Muy baja", "Baja", "Media", "Alta", "Muy alta")) +
+    labs(title = "Presencia de  de mayores de 65nEn Oaxaca de Júarez",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoria Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Silent.pdf", 
+       plot = Mapa_Boomers, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
