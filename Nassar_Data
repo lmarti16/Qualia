@@ -696,21 +696,21 @@ ggsave("D:\\52556\\Documents\\Nassar-oax\\Oaxaca_Capital\\Mapa_Silent.pdf",
 
 # Lista de archivos PDF a combinar
 archivos <- c(
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Resultados.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Resultados_FAM_sin_PAN.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Partidos.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_FAM.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_JHH.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Diferencia.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_secccionesperdidas.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Cambios.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_ESEM.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_GenePrepo.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_GenZ.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Millenials.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_GenX.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Boomers.pdf"
-  "D:\52556\Documents\Nassar-oax\Oaxaca_Capital\Mapa_Silent.pdf"
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Resultados.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/mapa_resultados_sinPAN.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Partidos.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_FAM.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_JHH.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Diferencia.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_secccionesperdidas.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Cambios.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_ESEM.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_GenePrepo.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_GenZ.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Millenials.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_GenX.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Boomers.pdf",
+    "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Mapa_Silent.pdf"
 )
 
 # Directorio de salida para el archivo combinado
@@ -719,6 +719,5 @@ archivo_salida <- "D:/52556/Documents/Nassar-oax/Oaxaca_Capital/Oaxaca_Capital_C
 # Combina los archivos PDF en uno solo
 pdf_combine(archivos, output = archivo_salida)
 
-# Mensaje de éxito
-cat("Archivos combinados exitosamente. Ruta del archivo combinado:", archivo_salida, "\n")
+
 
