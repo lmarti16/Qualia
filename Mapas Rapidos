@@ -1,0 +1,289 @@
+# Cargar librerías
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(reshape2)	
+library(tidyr)
+library(readxl)
+library(colorspace)
+library(ggspatial)
+library(ggthemes)
+library(wesanderson)
+library(pdftools)
+
+# Leer archivo SHP usando read_sf()
+Manzanas_SONORA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\26 SONORA\\MANZANA.shp")
+Secciones_SONORA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\26 SONORA\\SECCION.shp")
+Resultados <- read_sf("D:\\52556\\Documents\\Proyecto F\\Resultados_24.csv")
+Resultados <- Resultados %>% select( -"field_1")
+
+Resultados$SECCION <- as.numeric(Resultados$SECCION)
+Resultados$ENTIDAD <- as.numeric(Resultados$ENTIDAD)
+
+Resultados_SONORA <- filter(Resultados, ENTIDAD == 26)
+
+dataSONORA <- st_drop_geometry(Secciones_SONORA)
+dataSONORA <- dataSONORA %>% select( -"ID",-"TIPO",-"CONTROL",-"GEOMETRY1_")
+Resultados_SONORA <- left_join(Resultados_SONORA, dataSONORA, by = c("SECCION","ENTIDAD"))
+
+# ELIMINA SI QUIERES EL ESTADO
+Resultados_SONORA <- filter(Resultados_SONORA, DISTRITO == 2)
+Secciones_SONORA <- filter(Secciones_SONORA,  DISTRITO == 2)
+
+
+Resultados_SONORA$SECCION <- as.numeric(Resultados_SONORA$SECCION)
+Resultados_SONORA$ENTIDAD <- as.numeric(Resultados_SONORA$ENTIDAD)
+
+# Convertir datos a número
+Resultados_SONORA $`CANDIDATO/A NO REGISTRADO/A` <- as.numeric(Resultados_SONORA $`CANDIDATO/A NO REGISTRADO/A`)
+Resultados_SONORA $`VOTOS NULOS` <- as.numeric(Resultados_SONORA $`VOTOS NULOS`)
+Resultados_SONORA $LISTA_NOMINAL_CASILLA <- as.numeric(Resultados_SONORA $LISTA_NOMINAL_CASILLA)
+Resultados_SONORA $VaxMex_21 <- as.numeric(Resultados_SONORA $VaxMex_21)
+Resultados_SONORA $Morena_21 <- as.numeric(Resultados_SONORA $Morena_21)
+Resultados_SONORA $MC_21 <- as.numeric(Resultados_SONORA $MC_21)
+Resultados_SONORA $porcentaje_VPM <- as.numeric(Resultados_SONORA $porcentaje_VPM)
+Resultados_SONORA $porcentaje_Morena <- as.numeric(Resultados_SONORA $porcentaje_Morena)
+Resultados_SONORA $porcentaje_MC <- as.numeric(Resultados_SONORA $porcentaje_MC)
+
+Resultados_SONORA <- Resultados_SONORA %>% 
+    mutate( diferencia = porcentaje_VPM - porcentaje_Morena)
+
+# Crear quintiles
+quintilesF <- quantile(Resultados_SONORA$porcentaje_VPM, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesM <- quantile(Resultados_SONORA$porcentaje_Morena, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesD <- quantile(Resultados_SONORA$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+
+# Agrega columna con quintiles
+Resultados_SONORA$quintilF <- cut(Resultados_SONORA$porcentaje_VPM, breaks = quintilesF, include.lowest = TRUE)
+Resultados_SONORA$quintilM <- cut(Resultados_SONORA$porcentaje_Morena, breaks = quintilesM, include.lowest = TRUE)
+Resultados_SONORA$quintilD <- cut(Resultados_SONORA$diferencia, breaks = quintilesD, include.lowest = TRUE)
+
+Resultados_SONORA <- Resultados_SONORA %>% select( -"DISTRITO",-"DISTRITO_L",-"MUNICIPIO")
+
+# Unir los dataframes por SECCION y ENTIDAD
+mapaSONORA <- left_join(Secciones_SONORA, Resultados_SONORA, by = c("SECCION", "ENTIDAD"))
+
+#Mapa Resultados
+Mapa_Resultados <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 10) +
+    geom_sf(data = mapaSONORA, aes(fill = GANADOR), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_SONORA, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_SONORA, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("MORENA" = "brown", "VPM" = "blue", "MC" = "orange", "EMPATE" = "yellow" ), name = "Resultado electoral\n de la sección", labels = c("EMPATE","Juntos Haremos Historia", "Fuerza y Corazón por México")) +
+    labs(title = "¿Dónde ganó cada coalición?",
+         subtitle = "Por sección electoral",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist_white(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 32, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\SONORA\\Mapa_Resultados.pdf", 
+       plot = Mapa_Resultados, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+
+#Mapa FAM
+Mapa_FAM <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 10) +
+    geom_sf(data = mapaSONORA, aes(fill = quintilF), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_SONORA, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_SONORA, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "Spectral", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitivdad Electoral del FAM",
+         subtitle = "Por sección electoral",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist() + # Usar un tema más elegante
+      theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 32, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\SONORA\\Mapa_FAM.pdf", 
+       plot = Mapa_FAM, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa JHH
+Mapa_JHH <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 10) +
+    geom_sf(data = mapaSONORA, aes(fill = quintilM), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_SONORA, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    scale_fill_brewer(palette = "Paired", name = "Competitividad\n de la manzana", labels = c("Muy poca", "Poca", "Media", "Alta", "Muy alta")) +
+    labs(title = "Competitivdad Electoral de JHH",
+         subtitle = "Por sección electoral",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist() + # Usar un tema más elegante
+       theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 32, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\SONORA\\Mapa_JHH.pdf", 
+       plot = Mapa_JHH, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa Diferencia
+Mapa_Diferencia <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 10) +
+    geom_sf(data = mapaSONORA, aes(fill = quintilD), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_SONORA, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    scale_fill_brewer(palette = "RdYlGn", name = "Competitividad\n de la manzana", labels = c("Muy poca", "Poca", "Media", "Alta", "Muy alta")) +
+    labs(title = "Competitivdad Electoral Comparada",
+         subtitle = "FAM contra JHH",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist() + # Usar un tema más elegante
+       theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 32, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\SONORA\\Mapa_Diferencia.pdf", 
+       plot = Mapa_Diferencia, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+#Mapa Resultados
+Mapa_resultados24 <- ggplot() +
+     annotation_map_tile(type = "osm", zoom = 10) +
+    geom_sf(data = SonoraDF, aes(fill = GANADOR), alpha = .7, color = "grey") +
+    geom_sf_label(data = SonoraDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("Morena" = "brown", "VPM" = "blue","MC" = "darkorange" ), name = "Resultado electoral\n de la sección", labels = c("Juntos Haremos Historia", "Fuerza y Corazón por México.")) +
+    labs(title = "¿Dónde ganaría cada coalición en México?",
+         subtitle = "Con la nueva distritación para 2024",
+         caption = paste0("Elaborado por Luis Mártinez (@Luis_MartinezRZ)\nFuente: INEGI e INE")) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 22, color = "#014d64", face = "bold")) # Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\SONORA\\Mapa_resultados24.pdf", 
+       plot = Mapa_resultados24, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+# Mapa Siglado
+Mapa_SigladoGanador <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 10) +
+    geom_sf(data = SonoraDF, aes(fill = ifelse(GANADOR == "VPM", SIGLADO, "Gris")), alpha = .7, color = "grey") +
+    geom_sf_label(data = SonoraDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("PRI" = "red", "PAN" = "blue", "PRD" = "#ffff00", "Sin Coalición" = "grey"), 
+                      name = "Partido que\nsiglará", limits = c("PRI", "PAN", "PRD", "Sin Coalición")) +
+    labs(title = "¿Qué distritos ganaría la coalición FyCM",
+         subtitle = "Y para que partido irían?",
+         caption = paste0("Elaborado por Luis Mártinez (@Luis_MartinezRZ)\nFuente: INEGI e INE")) +
+    theme_economist(base_family = "ITC Officina Sans") +
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 10, color = "#014d64"),
+          legend.title = element_text(size = 12, color = "#014d64", face = "bold"),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5, size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5, size = 22, color = "#014d64", face = "bold"))
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\SONORA\\Mapa_SigladoGanador.pdf", 
+       plot = Mapa_SigladoGanador, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+
+#Mapa Resultados
+Mapa_Siglado <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 10) +
+    geom_sf(data = SonoraDF, aes(fill = SIGLADO), alpha = .7, color = "grey") +
+    geom_sf_label(data = SonoraDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("PRI" = "red", "PAN" = "blue","PRD" = "yellow","Sin Coalición"="white" ), name = "Partido que\nsiglará", limits = c("PRI", "PAN","PRD","Sin Coalición")) +
+    labs(title = "¿Cómo quedó el acuerdo para 2024?",
+         subtitle = "Para la Coalición Fuerza y Corazón por México ",
+         caption = paste0("Elaborado por Luis Mártinez (@Luis_MartinezRZ)\nFuente: INEGI e INE")) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 22, color = "#014d64", face = "bold"))  # Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\SONORA\\Mapa_Siglado.pdf", 
+       plot = Mapa_Siglado, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+
+
+
+
+# Lista de archivos PDF a combinar
+archivos <- c(
+    "D:/52556/Documents/Distritos Federales 24/SONORA/Mapa_resultados24.pdf",
+    "D:/52556/Documents/Distritos Federales 24/SONORA/Mapa_Siglado.pdf",
+    "D:/52556/Documents/Distritos Federales 24/SONORA/Mapa_SigladoGanador.pdf",
+    "D:/52556/Documents/Distritos Federales 24/SONORA/Mapa_Resultados.pdf",
+    "D:/52556/Documents/Distritos Federales 24/SONORA/Mapa_FAM.pdf",
+    "D:/52556/Documents/Distritos Federales 24/SONORA/Mapa_JHH.pdf",
+    "D:/52556/Documents/Distritos Federales 24/SONORA/Mapa_Diferencia.pdf"
+)
+
+# Directorio de salida para el archivo combinado
+archivo_salida <- "D:/52556/Documents/Distritos Federales 24/SONORA/Sonora_Consolidado.pdf"
+
+# Combina los archivos PDF en uno solo
+pdf_combine(archivos, output = archivo_salida)
+
