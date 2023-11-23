@@ -62,8 +62,11 @@ Resultados_SONORA$quintilD <- cut(Resultados_SONORA$diferencia, breaks = quintil
 
 Resultados_SONORA <- Resultados_SONORA %>% select( -"DISTRITO",-"DISTRITO_L",-"MUNICIPIO")
 
-# Unir los dataframes por SECCION y ENTIDAD
+# Unir los dataframes por SECCION y ENTIDAD 
 mapaSONORA <- left_join(Secciones_SONORA, Resultados_SONORA, by = c("SECCION", "ENTIDAD"))
+
+#Crea el mapa del distrito
+SonoraDF <- mapa300_24[mapa300_24$ENTIDAD == "26", ]
 
 #Mapa Resultados
 Mapa_Resultados <- ggplot() +
