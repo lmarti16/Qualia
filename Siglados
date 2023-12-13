@@ -1,0 +1,132 @@
+#Crea el mapa del distrito
+CDMXDF <- mapa300_24[mapa300_24$ENTIDAD == "9", ]
+
+
+#Mapa Resultados
+Mapa_resultados24 <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 7) +
+    geom_sf(data = CDMXDF, aes(fill = GANADOR), alpha = .7, color = "grey") +
+    geom_sf_label(data = CDMXDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("Morena" = "brown", "VPM" = "blue","MC" = "darkorange" ), name = "Resultado electoral\n de la sección", labels = c("Juntos Haremos Historia", "Fuerza y Corazón por México.")) +
+    labs(title = "¿Dónde ganaría cada coalición en CDMX?",
+         subtitle = "Con la nueva distritación para 2024",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada (@Luis_MartinezRZ)\nFuente: INEGI e INE")) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 22, color = "#014d64", face = "bold")) # Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\CDMX\\Mapa_resultados24.pdf", 
+       plot = Mapa_resultados24, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+# Mapa SigladoFAM
+Mapa_SigladoFAM <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 7) +
+    geom_sf(data = CDMXDF, aes(fill = SIGLADO_FAM), alpha = .7, color = "grey") +
+    geom_sf_label(data = CDMXDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("PRI" = "red", "PAN" = "blue", "PRD" = "#ffff00","MORENA"="#6F4E37", "PT" = "brown","PVEM"= "green", "MC"= "orange", "Sin Coalición" = "grey"), 
+                      name = "Partido que\nsiglará") +
+    labs(title = "¿Qué partido sigla cada distrito en CDMX?",
+         subtitle = "Para la coalición Fuerza y Corazón por México",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada (@Luis_MartinezRZ)\nFuente: INEGI e INE")) +
+    theme_economist(base_family = "ITC Officina Sans") +
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 10, color = "#014d64"),
+          legend.title = element_text(size = 12, color = "#014d64", face = "bold"),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5, size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5, size = 22, color = "#014d64", face = "bold"))
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\CDMX\\Mapa_SigladoFAM.pdf", 
+       plot = Mapa_SigladoFAM, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+# Mapa SigladoJHH
+Mapa_SigladoJHH <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 7) +
+    geom_sf(data = CDMXDF, aes(fill = SIGLADO_JHH), alpha = .9, color = "grey") +
+    geom_sf_label(data = CDMXDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("PRI" = "red", "PAN" = "blue", "PRD" = "#ffff00","MORENA"="#6F4E37", "PT" = "brown","PVEM"= "green", "MC"= "orange", "Sin Coalición" = "grey"), 
+                      name = "Partido que\nsiglará") +
+    labs(title = "¿Qué partido sigla cada distrito en CDMX?",
+         subtitle = "Para la coalición Sigamos Haciendo Historia",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada (@Luis_MartinezRZ)\nFuente: INEGI e INE")) +
+    theme_economist(base_family = "ITC Officina Sans") +
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 10, color = "#014d64"),
+          legend.title = element_text(size = 12, color = "#014d64", face = "bold"),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5, size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5, size = 22, color = "#014d64", face = "bold"))
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\CDMX\\Mapa_SigladoJHH.pdf", 
+       plot = Mapa_SigladoJHH, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+
+# Mapa SigladoT
+Mapa_SigladoGanadorT <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 7) +
+    geom_sf(data = CDMXDF, aes(fill = SIGLADO_G), alpha = .9, color = "grey") +
+    geom_sf_label(data = CDMXDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("PRI" = "red", "PAN" = "blue", "PRD" = "#ffff00","MORENA"="#6F4E37", "PT" = "brown","PVEM"= "green", "MC"= "orange", "Sin Coalición" = "grey"), 
+                      name = "Partido que\nsiglará") +
+    labs(title = "¿Qué partido ganaría cada distrito en CDMX?",
+         subtitle = "Según el siglado y distritación 2024",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada (@Luis_MartinezRZ)\nFuente: INEGI e INE")) +
+    theme_economist(base_family = "ITC Officina Sans") +
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 10, color = "#014d64"),
+          legend.title = element_text(size = 12, color = "#014d64", face = "bold"),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5, size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5, size = 22, color = "#014d64", face = "bold"))
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\CDMX\\Mapa_SigladoGanadorT.pdf", 
+       plot = Mapa_SigladoGanadorT, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
+
+
+
+
+# Lista de archivos PDF a combinar
+archivos <- c(
+    "D:/52556/Documents/Distritos Federales 24/CDMX/Mapa_resultados24.pdf",
+    "D:/52556/Documents/Distritos Federales 24/CDMX/Mapa_SigladoFAM.pdf",
+    "D:/52556/Documents/Distritos Federales 24/CDMX/Mapa_SigladoJHH.pdf",
+    "D:/52556/Documents/Distritos Federales 24/CDMX/Mapa_SigladoGanadorT.pdf")
+
+# Directorio de salida para el archivo combinado
+archivo_salida <- "D:/52556/Documents/Distritos Federales 24/CDMX/Siglado_CDMX.pdf"
+
+# Combina los archivos PDF en uno solo
+pdf_combine(archivos, output = archivo_salida)
