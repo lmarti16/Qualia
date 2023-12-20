@@ -1,0 +1,482 @@
+Municipios_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\09 CIUDAD DE MEXICO\\MUNICIPIO.shp")
+
+Resultados_CDMX <- Resultados_CDMX %>% 
+    mutate(participacion = TOTAL_VOTOS_CALCULADOS_21 / LISTA_NOMINAL_CASILLA_21 * 100)
+
+Resultados_CDMX $porcentaje_VPM_21 <- as.numeric(Resultados_CDMX $porcentaje_VPM_21)
+Resultados_CDMX $porcentaje_JHH_21 <- as.numeric(Resultados_CDMX $porcentaje_JHH_21)
+Resultados_CDMX $porcentaje_MC_21 <- as.numeric(Resultados_CDMX $porcentaje_MC_21)
+Resultados_CDMX $SECCION <- as.numeric(Resultados_CDMX $SECCION)
+Resultados_CDMX $ENTIDAD <- as.numeric(Resultados_CDMX $ENTIDAD)
+Resultados_CDMX $VOTOS_NULOS_21 <- as.numeric(Resultados_CDMX $VOTOS_NULOS_21)
+Resultados_CDMX $TOTAL_VOTOS_CALCULADOS_21 <- as.numeric(Resultados_CDMX $TOTAL_VOTOS_CALCULADOS_21)
+Resultados_CDMX $LISTA_NOMINAL_CASILLA_21 <- as.numeric(Resultados_CDMX $LISTA_NOMINAL_CASILLA_21)
+Resultados_CDMX $VaxMex_21 <- as.numeric(Resultados_CDMX $VaxMex_21)
+Resultados_CDMX $JHH_21 <- as.numeric(Resultados_CDMX $JHH_21)
+Resultados_CDMX $MC_21 <- as.numeric(Resultados_CDMX $MC_21)
+Resultados_CDMX $PAN_21 <- as.numeric(Resultados_CDMX $PAN_21)
+Resultados_CDMX $PRI_21 <- as.numeric(Resultados_CDMX $PRI_21)
+Resultados_CDMX $PRD_21 <- as.numeric(Resultados_CDMX $PRD_21)
+Resultados_CDMX $MORENA_21 <- as.numeric(Resultados_CDMX $MORENA_21)
+
+#Solo COYOACAN
+
+SeccionesR_COYOACAN <- filter(Resultados_CDMX, MUNICIPIO == 3)
+Secciones_COYOACAN <- filter(Secciones_CDMX, MUNICIPIO == 3)
+Manzanas_COYOACAN <- filter(Manzanas_CDMX, MUNICIPIO == 3)
+Contorno_COYOACAN <- filter(Municipios_CDMX, MUNICIPIO == 3)
+ESEM_CDMX <- st_transform(ESEM_CDMX, st_crs(Secciones_CDMX))
+ESEM_CDMX_COYOACAN <- st_intersection(ESEM_CDMX, Secciones_COYOACAN)
+
+# Definir la paleta de colores
+colores <- c("Muy Alto" = "blue",
+             "Alto" = "#00CC00",
+             "Medio alto" = "#99FF99",
+             "Medio" = "#FFFF99",
+             "Medio bajo" = "#FFCC99",
+             "Bajo" = "#FF3300",
+             "Muy Bajo" = "brown",
+             "No determinado" = "#808080")
+
+# Crear quintiles
+quintilesPAN <- quantile(SeccionesR_COYOACAN$PAN_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPRI <- quantile(SeccionesR_COYOACAN$PRI_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPRD <- quantile(SeccionesR_COYOACAN$PRD_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMORENA <- quantile(SeccionesR_COYOACAN$MORENA_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMC <- quantile(SeccionesR_COYOACAN$MC_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesFAM <- quantile(SeccionesR_COYOACAN$VaxMex_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesJHH <- quantile(SeccionesR_COYOACAN$JHH_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesparti<- quantile(SeccionesR_COYOACAN$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+# Crear quintiles de generación
+quintilesz <- quantile(SeccionesR_COYOACAN$GEN_Z_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMi <- quantile(SeccionesR_COYOACAN$MILLENNIALS_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesgx <- quantile(SeccionesR_COYOACAN$GEN_X_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesbb <- quantile(SeccionesR_COYOACAN$BOOMERS_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesSi <- quantile(SeccionesR_COYOACAN$SILENT_TOTAL_PORCENTAJE, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+
+# Agrega columna con quintiles
+SeccionesR_COYOACAN$quintilPAN <- cut(SeccionesR_COYOACAN$PAN_21, breaks = quintilesPAN, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilPRI <- cut(SeccionesR_COYOACAN$PRI_21, breaks = quintilesPRI, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilPRD <- cut(SeccionesR_COYOACAN$PRD_21, breaks = quintilesPRD, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilMORENA <- cut(SeccionesR_COYOACAN$MORENA_21, breaks = quintilesMORENA, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilMC <- cut(SeccionesR_COYOACAN$MC_21, breaks = quintilesMC, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilFAM <- cut(SeccionesR_COYOACAN$VaxMex_21, breaks = quintilesFAM, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilJHH <- cut(SeccionesR_COYOACAN$JHH_21, breaks = quintilesJHH, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilparti <- cut(SeccionesR_COYOACAN$participacion, breaks = quintilesparti, include.lowest = TRUE)
+
+# Agrega columna con quintiles de generacion
+SeccionesR_COYOACAN$quintilZ <- cut(SeccionesR_COYOACAN$GEN_Z_TOTAL_PORCENTAJE, breaks = quintilesz, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilMI <- cut(SeccionesR_COYOACAN$MILLENNIALS_TOTAL_PORCENTAJE, breaks = quintilesMi, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilGX <- cut(SeccionesR_COYOACAN$GEN_X_TOTAL_PORCENTAJE, breaks = quintilesgx, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilBB <- cut(SeccionesR_COYOACAN$BOOMERS_TOTAL_PORCENTAJE, breaks = quintilesbb, include.lowest = TRUE)
+SeccionesR_COYOACAN$quintilSI <- cut(SeccionesR_COYOACAN$SILENT_TOTAL_PORCENTAJE, breaks = quintilesSi, include.lowest = TRUE)
+
+# CREAR el mapa manzanas
+mapaMCOYOACAN<- left_join(Manzanas_COYOACAN, SeccionesR_COYOACAN, by = c("SECCION"))
+# CREAR el mapa secciones
+mapaSCOYOACAN <- left_join(Secciones_COYOACAN, SeccionesR_COYOACAN, by = c("SECCION"))
+
+#Mapa Participación
+Mapa_participacion <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = quintilparti), alpha = .9, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "GnBu", name = "Participación de la manzana", labels = c("Muy poca", "Poca ", " media", "Alta ", "Muy alta ")) +
+    labs(title = "Participación Electoral\nEn la Alcadía COYOACAN",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 13, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_participacion.pdf", 
+       plot = Mapa_participacion, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+
+# Mapa de ResultadosCoalicion
+mapa_resultados <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = GANADOR_21), alpha = .9, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("Juntos Hacemos Historia" = "brown", "Frente Amplio por México" = "darkblue","MC" = "orange", "EMPATE" ="grey" ), name = "Resultado electoral\n de la Manzana") +
+    labs(title = "¿Qué coalición Ganaría en la alcaldía COYOACAN",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") +
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\mapa_resultados.pdf", 
+       plot = mapa_resultados, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+#Mapa Partidos21
+Mapa_Partidos21 <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = Ganador_21), alpha = .9, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" ), name = "Resultado electoral\n de la Manzana") +
+    labs(title = "¿Qué Partido Ganó en la alcaldía COYOACAN en 2021?",
+         subtitle = "Por manzanas habitadas y sin coalición",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_Partidos21.pdf", 
+       plot = Mapa_Partidos21, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+#Mapa Partidos18
+Mapa_Partidos18 <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = Ganador_18), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" ), name = "Resultado electoral\n de la Manzana") +
+    labs(title = "¿Qué Partido Ganó en la alcaldía COYOACAN en 2018?",
+         subtitle = "Por manzanas habitadas y sin coalición",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_Partidos18.pdf", 
+       plot = Mapa_Partidos18, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+#MapaMC
+Mapa_MC<- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = quintilMC), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "YlOrRd", name = "Competitividad\n de la manzana", labels = c("Más baja baja Competitividad", "baja Competitividad", "Competitividad media", "Alta Competitividad", "Más alta Competitividad")) +
+    labs(title = "Competitividad Electoral de MC en la alcaldía COYOACAN",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_MC.pdf", 
+       plot = Mapa_MC, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+
+#Mapa FAM
+Mapa_FAM <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = quintilFAM), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "Spectral", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitividad Electoral del FAM\nEn la alcaldía COYOACAN",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_FAM.pdf", 
+       plot = Mapa_FAM, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+#Mapa JHH
+Mapa_JHH <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = quintilJHH), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_brewer(palette = "Paired", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
+    labs(title = "Competitividad Electoral de JHH\nEn la alcaldía COYOACAN",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_JHH.pdf", 
+       plot = Mapa_JHH, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+
+#Mapa Cambios
+Mapa_Cambios <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = ifelse(lealtad18 == "NO", Ganador_21, "Gris")), alpha = .7, color = "grey") +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" ), name = "Resultado electoral\n de la Manzana") +
+    labs(title = "¿Dónde los electores cambiaron su voto\nDel 2018 al 2021?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_Cambios.pdf", 
+       plot = Mapa_Cambios, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+#Mapa Switchers
+Mapa_Switchers<- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 14) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = switcher), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("SI" = "green", "NO" = "purple"), name = "¿La sección\nEs Switcher?") +
+    labs(title = "¿Dónde estan las secciones Switchers de\nla alcaldía COYOACAN?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_Switchers.pdf", 
+       plot = Mapa_Switchers, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+# MAPA ESEM
+Mapa_ESEM <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = ESEM_CDMX_COYOACAN, aes(fill = NIVEL), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = colores,
+                      # Agregar el argumento limits con el orden deseado
+                      limits = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado")) +  
+    labs(title = "La alcaldía COYOACAN y sus estratos sociodemográficos",
+         subtitle = "Por secciones electorales habitadas",
+         fill = "Nivel socioeconómico",
+        caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    guides(fill = guide_legend(labels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado"),
+                               ncol = 4)) +  # Organizar las leyendas en una columna
+ theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 12, color = "#014d64", face = "bold"),
+          legend.title = element_text(size = 12, color = "#014d64", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_ESEM.pdf", 
+       plot = Mapa_ESEM, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+#Gene_Prepo
+Mapa_GenePrepo <- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 15) +
+    geom_sf(data = mapaMCOYOACAN, aes(fill = Gene_prepo), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_COYOACAN, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_COYOACAN, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
+    scale_fill_manual(values = c( "GEN_Z" = "#E41A1C",  # Rojo
+                                  "MILLENNIALS" = "#377EB8",  # Azul
+                                  "GEN_X" = "#4DAF4A",  # Verde
+                                  "BOOMERS" = "#984EA3",  # Naranja
+                                  "SILENT" = "#EFB752", # amarillo
+                                  "Sin datos"= "grey" ), 
+                      name = "Generación Preponderante\nEn la manzana", limits = c("GEN_Z","MILLENNIALS","GEN_X","BOOMERS","SILENT","Sin datos")) +
+    labs(title = "¿Qué generación es la preponderante\nen la Alcaldía COYOACAN?",
+         subtitle = "Por manzanas habitadas",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family = "ITC Officina Sans") + # Usar un tema más elegante
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#6794a7"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_text(size = 12, color = "white", face = "bold"),
+          axis.text = element_blank(),  # Quitar texto de los ejes
+          axis.title = element_blank(),  # Quitar título de los ejes
+          axis.line = element_blank(),   # Quitar línea de los ejes
+          panel.background = element_blank(),  # Quitar fondo del panel
+          panel.grid.major = element_blank(),  # Quitar líneas de la grilla
+          panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
+          plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
+          plot.caption = element_text(hjust = 0.5, size = 14, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
+          plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold")) +  # Centrar el subtítulo
+    guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
+# Guardar el primer mapa como PDF
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_GenePrepo.pdf", 
+       plot = Mapa_GenePrepo, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+
+# Mapa de Contorno del universo
+mapa_Contorno_COYOACAN<- ggplot() +
+    annotation_map_tile(type = "osm", zoom = 12) +
+    geom_sf(data = Contorno_COYOACAN, aes(fill = "Oaxaca de Juárez"), color = "black", size = 0.1, alpha = .5) +
+    labs(title = "Contorno de la alcaldía COYOACAN",
+         caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
+                          format(Sys.Date(), "%d/%m/%Y"))) +
+    theme_economist(base_family="ITC Officina Sans") +
+    guides(fill = guide_legend(ncol = 2)) +
+    theme(legend.position = "bottom",
+          legend.background = element_rect(fill = "#014d64"),
+          legend.text = element_text(size = 10, color = "white"),
+          legend.title = element_blank(),
+          axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.line = element_blank(),
+          panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),
+          plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
+ggsave("D:\\52556\\Documents\\Proyecto F\\COYOACAN\\mapa_Contorno_COYOACAN.pdf", 
+       plot = mapa_Contorno_COYOACAN, 
+       width = 11, height = 8.5, units = "in", device = "pdf")
+
+# Lista de archivos PDF a combinar
+archivos <- c(
+"D:\\Descargas\\Portada COYOACAN.pdf",
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\mapa_Contorno_COYOACAN.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_participacion.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\mapa_resultados.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_Partidos21.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_Partidos18.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_MC.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_FAM.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_JHH.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_Cambios.pdf",
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_Switchers.pdf",
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_ESEM.pdf", 
+"D:\\52556\\Documents\\Proyecto F\\COYOACAN\\Mapa_GenePrepo.pdf"
+)
+
+# Directorio de salida para el archivo combinado
+archivo_salida <- "D:\\52556\\Documents\\Proyecto F\\COYOACAN\\COYOACAN_Consolidado.pdf"
+
+# Combina los archivos PDF en uno solo
+pdf_combine(archivos, output = archivo_salida)
