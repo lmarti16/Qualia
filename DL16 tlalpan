@@ -23,6 +23,20 @@ DistritoL_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\09 CIUDAD DE MEXICO\\D
 ResultadosDF <- read_sf("D:\\52556\\Documents\\Sonora_Isaac\\Resultados_1821.csv")
 Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Nassar-oax\\Lista_Nominal_Selected.csv")
 Municipios_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\09 CIUDAD DE MEXICO\\MUNICIPIO.shp")
+ESEM_CDMX <- filter(ESEM_ValleMX, CVE_ENT == "09")
+ESEM_CDMX <- st_transform(ESEM_CDMX, st_crs(Secciones_CDMX))
+
+
+# Renombrar las clases sociales
+ESEM_CDMX$NIVEL <- recode(ESEM_CDMX$NIVEL,
+                         "A/B" = "Muy Alto",
+                         "C" = "Alto",
+                         "C-" = "Medio alto",
+                         "C+" = "Medio",
+                         "D" = "Medio bajo",
+                         "D+" = "Bajo",
+                         "E" = "Muy Bajo",
+                         "N/D" = "No determinado")
 
 
 Lista_Nominal_Selected  <- Lista_Nominal_Selected  %>%
@@ -113,6 +127,7 @@ Secciones_CDMX_DL16 <- st_transform(Secciones_CDMX_DL16, crs = 4326)
 Manzanas_CDMX_DL16 <- st_transform(Manzanas_CDMX_DL16, crs = 4326)
 DistritoL_CDMX_DL16 <- st_transform(DistritoL_CDMX_DL16, crs = 4326)
 Municipios_CDMX_DL16 <- st_transform(Municipios_CDMX_DL16, crs = 4326)
+ESEM_CDMX_DL16<- st_transform(ESEM_CDMX_DL16, crs = 4326)
 
 # Definir los colores para cada nivel de competitividad
 colores_GANADOR_21 <- colorFactor(
@@ -145,6 +160,15 @@ colores_Switcher <- colorFactor(
 mapaCDMX_DL16$Switcher_coalición <- factor(mapaCDMX_DL16$Switcher_coalición,
                             levels = c("No", "Switcher JHH", "Switcher FAM", "Switcher Otro"))
 
+# Define los colores para cada nivel de ESEM
+colores_ESEM <- colorFactor(
+    palette = c("blue", "#00CC00", "#99FF99", "#FFFF99", "#FFCC99", "#FF3300", "brown", "#808080"),
+    levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado")
+)
+
+# Reordenar los niveles del factor ESEM
+ESEM_CDMX_DL16$NIVEL <- factor(ESEM_CDMX_DL16$NIVEL,
+                             levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado"))
 
 #MAPA CONSOLIDADD
 
@@ -163,6 +187,19 @@ mapa <- mapa %>%
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
         group = "Manzanas"     # Nombre del grupo de la capa
+    )
+
+# Agregar la tercera capa de polígonos con los datos de ESEM_CDMX_16
+mapa <- mapa %>%
+    addPolygons(
+        data = ESEM_CDMX_DL16,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
+        label = ~NIVEL,
+        color = "black",        # Color de los bordes
+        weight = 1,             # Grosor de los bordes
+        opacity = 0.8,          # Opacidad de los bordes
+        group = "AGEB"     # Nombre del grupo de la capa
     )
 
 # Agregar la  capa de polígonos a nivel de Secciones
@@ -311,11 +348,25 @@ mapa <- mapa %>%
         group = "Competitividad"       # Nombre del grupo de la capa
     ) 
 
+mapa <- mapa %>%
+    addPolygons(
+        data = ESEM_CDMX_DL16,
+        fillColor = ~colores_ESEM(NIVEL),
+        fillOpacity = 0.8,
+        label = ~NIVEL,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Estrato:", NIVEL, "<br>",
+                       "Número de Seccion:", SECCION, "<br>",
+                       "Numero de AGEB:", AGEB),
+        group = "ESEM"       # Nombre del grupo de la capa
+    ) 
+
 # Agregar el control de capas al mapa
 mapa <- mapa %>%
     addLayersControl(
-        baseGroups = c("Manzanas", "Secciones", "Municipios","Distritos Locales" ),
-        overlayGroups = c("Coalición Ganadora", "Competitividad", "Switchers"),
+        baseGroups = c("Manzanas", "Secciones", "Municipios","Distritos Locales","AGEB"),
+        overlayGroups = c("Coalición Ganadora", "Competitividad", "Switchers","ESEM"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -347,13 +398,22 @@ mapa <- mapa %>%
         position = "bottomleft",
         layerId = "LeyendaSwitcher",
         group = "Switchers"  # Grupo de la leyenda
-    ) 
+    ) %>%
+addLegend(
+        data = ESEM_CDMX_DL16,
+        pal = colores_ESEM, # Establecer los colores de la leyenda usando colores
+        values = ~NIVEL, # Establecer los valores de la leyenda
+        title = "Niveles Socioeconómicos",
+        position = "bottomleft",
+        layerId = "LeyendaESEM",
+        group = "ESEM"  # Grupo de la leyenda
+    )
 
 # Agregar el control de HTML al mapa
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: center;'>
-                Distrito Federal 2 de CDMX<br>
+                Distrito Local 16 de la CDMX<br>
                 Elaborado por Qualia: Asesoria Especializada<br>
                 Con datos del INE y el INEGI
             </div>",
