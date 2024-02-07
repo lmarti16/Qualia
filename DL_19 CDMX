@@ -58,42 +58,42 @@ Resultados_CDMX <- filter(Resultados, ENTIDAD == 9)
 Resultados_CDMX <- left_join(Resultados_CDMX, Secciones_switchers, by = c("SECCION","ENTIDAD"))
 Resultados_CDMX <- left_join(Resultados_CDMX, Lista_Nominal_Selected, by = c("SECCION","ENTIDAD"))
 
-Resultados_CDMX_DL14 <- filter(Resultados_CDMX, DISTRITO_L == 14)
-Secciones_CDMX_DL14 <- filter(Secciones_CDMX,  DISTRITO_L == 14)
-DISTRITOL_CDMX_DL14 <- filter(DISTRITOL_CDMX,  DISTRITO_L == 14)
-DistritoF_CDMX_DL14 <- st_intersection(DISTRITOF_CDMX, DISTRITOL_CDMX_DL14)
+Resultados_CDMX_DL19 <- filter(Resultados_CDMX, DISTRITO_L == 19)
+Secciones_CDMX_DL19 <- filter(Secciones_CDMX,  DISTRITO_L == 19)
+DISTRITOL_CDMX_DL19 <- filter(DISTRITOL_CDMX,  DISTRITO_L == 19)
+DistritoF_CDMX_DL19 <- st_intersection(DISTRITOF_CDMX, DISTRITOL_CDMX_DL19)
 
 
 
-Resultados_CDMX_DL14$SECCION <- as.numeric(Resultados_CDMX_DL14$SECCION)
-Resultados_CDMX_DL14$ENTIDAD <- as.numeric(Resultados_CDMX_DL14$ENTIDAD)
+Resultados_CDMX_DL19$SECCION <- as.numeric(Resultados_CDMX_DL19$SECCION)
+Resultados_CDMX_DL19$ENTIDAD <- as.numeric(Resultados_CDMX_DL19$ENTIDAD)
 
-Resultados_CDMX_DL14 <- Resultados_CDMX_DL14 %>% 
+Resultados_CDMX_DL19 <- Resultados_CDMX_DL19 %>% 
     mutate( diferencia = porcentaje_VPM_21 - porcentaje_JHH_21)
 
-Resultados_CDMX_DL14 <- Resultados_CDMX_DL14 %>% 
+Resultados_CDMX_DL19 <- Resultados_CDMX_DL19 %>% 
     mutate(participacion = TOTAL_VOTOS_CALCULADOS_21 / LISTA_NOMINAL_CASILLA_21 * 100)
 
 # Crear quintiles
-quintilesF <- quantile(Resultados_CDMX_DL14$porcentaje_VPM_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesM <- quantile(Resultados_CDMX_DL14$porcentaje_JHH_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesD <- quantile(Resultados_CDMX_DL14$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesparti<- quantile(Resultados_CDMX_DL14$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesLN<- quantile(Resultados_CDMX_DL14$LISTA_NOMINAL, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesF <- quantile(Resultados_CDMX_DL19$porcentaje_VPM_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesM <- quantile(Resultados_CDMX_DL19$porcentaje_JHH_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesD <- quantile(Resultados_CDMX_DL19$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesparti<- quantile(Resultados_CDMX_DL19$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesLN<- quantile(Resultados_CDMX_DL19$LISTA_NOMINAL, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
 
 # Agrega columna con quintiles
-Resultados_CDMX_DL14$quintilF <- cut(Resultados_CDMX_DL14$porcentaje_VPM_21, breaks = quintilesF, include.lowest = TRUE)
-Resultados_CDMX_DL14$quintilM <- cut(Resultados_CDMX_DL14$porcentaje_JHH_21, breaks = quintilesM, include.lowest = TRUE)
-Resultados_CDMX_DL14$quintilD <- cut(Resultados_CDMX_DL14$diferencia, breaks = quintilesD, include.lowest = TRUE)
-Resultados_CDMX_DL14$quintilparti <- cut(Resultados_CDMX_DL14$participacion, breaks = quintilesparti, include.lowest = TRUE)
-Resultados_CDMX_DL14$quintilLN <- cut(Resultados_CDMX_DL14$LISTA_NOMINAL, breaks = quintilesLN, include.lowest = TRUE)
+Resultados_CDMX_DL19$quintilF <- cut(Resultados_CDMX_DL19$porcentaje_VPM_21, breaks = quintilesF, include.lowest = TRUE)
+Resultados_CDMX_DL19$quintilM <- cut(Resultados_CDMX_DL19$porcentaje_JHH_21, breaks = quintilesM, include.lowest = TRUE)
+Resultados_CDMX_DL19$quintilD <- cut(Resultados_CDMX_DL19$diferencia, breaks = quintilesD, include.lowest = TRUE)
+Resultados_CDMX_DL19$quintilparti <- cut(Resultados_CDMX_DL19$participacion, breaks = quintilesparti, include.lowest = TRUE)
+Resultados_CDMX_DL19$quintilLN <- cut(Resultados_CDMX_DL19$LISTA_NOMINAL, breaks = quintilesLN, include.lowest = TRUE)
 
 
-Resultados_CDMX_DL14 <- Resultados_CDMX_DL14 %>% select( -"DISTRITO",-"DISTRITO_L",-"MUNICIPIO")
+Resultados_CDMX_DL19 <- Resultados_CDMX_DL19 %>% select( -"DISTRITO",-"DISTRITO_L",-"MUNICIPIO")
 
 # Unir los dataframes por SECCION y ENTIDAD 
-mapaCDMX_DL14 <- left_join(Secciones_CDMX_DL14, Resultados_CDMX_DL14, by = c("SECCION", "ENTIDAD"))
+mapaCDMX_DL19 <- left_join(Secciones_CDMX_DL19, Resultados_CDMX_DL19, by = c("SECCION", "ENTIDAD"))
 
 #Crea el mapa del distrito
 CDMXDF <- left_join(DISTRITOL_CDMX, RDL_CDMX , by = c("DISTRITO_L", "ENTIDAD"))
@@ -101,16 +101,16 @@ CDMXDF <- left_join(DISTRITOL_CDMX, RDL_CDMX , by = c("DISTRITO_L", "ENTIDAD"))
 #Mapa Resultados
 Mapa_Resultados <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = GANADOR_21), alpha = .7, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = GANADOR_21), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "brown", "VPM" = "blue", "MC" = "orange", "EMPATE" = "yellow" ), name = "Resultado electoral\n de la sección", labels = c("Seguimos Haciendo Historia", "Fuerza y Corazón por México")) +
-    labs(title = "¿Dónde ganaría cada coalición en el\nDistrito Local 14 de CDMX?",
+    labs(title = "¿Dónde ganaría cada coalición en el\nDistrito Local 19 de CDMX?",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
-    theme_economist_white(base_family="ITC Officina Sans") + # Usar un tema más elegante
+    theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
     guides(fill = guide_legend(ncol = 2)) +
-    theme(legend.position = "bottom",
+  theme(legend.position = "bottom",
           legend.background = element_rect(fill = "#014d64"),
           legend.text = element_text(size = 10, color = "white"),
           legend.title = element_text(size = 12, color = "white", face = "bold"),
@@ -125,17 +125,17 @@ Mapa_Resultados <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Resultados.pdf", 
        plot = Mapa_Resultados, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 
 #Mapa FAM
 Mapa_FAM <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = quintilF), alpha = .7, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = quintilF), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "Spectral", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
-    labs(title = "Competitividad Electoral del FAM en el\nDistrito Local 14 de CDMX",
+    labs(title = "Competitividad Electoral del FAM en el\nDistrito Local 19 de CDMX",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist() + # Usar un tema más elegante
@@ -154,16 +154,16 @@ Mapa_FAM <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_FAM.pdf", 
        plot = Mapa_FAM, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa JHH
 Mapa_JHH <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = quintilM), alpha = .7, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = quintilM), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "Paired", name = "Competitividad\n de la manzana", labels = c("Muy poca", "Poca", "Media", "Alta", "Muy alta")) +
-    labs(title = "Competitividad Electoral de JHH en el\nDistrito Local 14 de CDMX",
+    labs(title = "Competitividad Electoral de JHH en el\nDistrito Local 19 de CDMX",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist() + # Usar un tema más elegante
@@ -182,16 +182,16 @@ Mapa_JHH <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_JHH.pdf", 
        plot = Mapa_JHH, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa Diferencia
 Mapa_Diferencia <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = quintilD), alpha = .7, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = quintilD), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "RdYlGn", name = "Competitividad\n de la manzana", labels = c("Muy poca", "Poca", "Media", "Alta", "Muy alta")) +
-    labs(title = "Competitividad Electoral Comparada en el\nDistrito Local 14 de CDMX",
+    labs(title = "Competitividad Electoral Comparada en el\nDistrito Local 19 de CDMX",
          subtitle = "FAM contra JHH",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist() + # Usar un tema más elegante
@@ -210,7 +210,7 @@ Mapa_Diferencia <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Diferencia.pdf", 
        plot = Mapa_Diferencia, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa CDMX solo
 Mapa_resultados24C <- ggplot() +
@@ -238,7 +238,7 @@ Mapa_resultados24C <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24C.pdf", 
        plot = Mapa_resultados24C, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Coalicion
 Mapa_resultados24S <- ggplot() +
@@ -266,14 +266,14 @@ Mapa_resultados24S <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24S.pdf", 
        plot = Mapa_resultados24S, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 # Mapa GenePrepo
 Mapa_GenePrepo <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = Gene_prepo), alpha = .7, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = Gene_prepo), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c( "GEN_Z" = "#E41A1C",  # Rojo
                                   "MILLENNIALS" = "#377EB8",  # Azul
                                   "GEN_X" = "#4DAF4A",  # Verde
@@ -281,7 +281,7 @@ Mapa_GenePrepo <- ggplot() +
                                   "SILENT" = "#EFB752", # amarillo
                                   "Sin datos"= "grey" ), 
                       name = "Generación Preponderante\nEn la manzana", limits = c("GEN_Z","MILLENNIALS","GEN_X","BOOMERS","SILENT","Sin datos")) +
-    labs(title = "¿Cúal es la generación preponderante en el\nDistrito Local 14 de CDMX",
+    labs(title = "¿Cúal es la generación preponderante en el\nDistrito Local 19 de CDMX",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist() + # Usar un tema más elegante
@@ -300,16 +300,16 @@ Mapa_GenePrepo <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_GenePrepo.pdf", 
        plot = Mapa_GenePrepo, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa Partidos21
 Mapa_Partidos21 <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = Ganador_21), alpha = .7, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = Ganador_21), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" , "PRD" ="yellow","NUEVA_ALIANZA" = "cyan", "PES" ="purple", PT = "brown", "PVEM" = "green"), name = "Resultado electoral\n de la Manzana") +
-    labs(title = "¿Qué Partido ganó en 2021 en el\nDistrito Local 14 de CDMX?",
+    labs(title = "¿Qué Partido ganó en 2021 en el\nDistrito Local 19 de CDMX?",
          subtitle = "Por manzanas habitadas y sin coalición",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -330,16 +330,16 @@ Mapa_Partidos21 <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Partidos21.pdf", 
        plot = Mapa_Partidos21, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa Partidos18
 Mapa_Partidos18 <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = Ganador_18), alpha = .7, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = Ganador_18), alpha = .7, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" , "PRD" ="yellow","NUEVA_ALIANZA" = "cyan", "PES" ="purple", PT = "brown", "PVEM" = "green"), name = "Resultado electoral\n de la Manzana") +
-    labs(title = "¿Qué Partido ganó en 2018 en el\nDistrito Local 14 de CDMX?",
+    labs(title = "¿Qué Partido ganó en 2018 en el\nDistrito Local 19 de CDMX?",
          subtitle = "Por manzanas habitadas y sin coalición",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -360,16 +360,16 @@ Mapa_Partidos18 <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Partidos18.pdf", 
        plot = Mapa_Partidos18, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 #Mapa Participación
 Mapa_participacion <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = quintilparti), alpha = .9, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = quintilparti), alpha = .9, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "GnBu", name = "Participación de la manzana", labels = c("Muy poca", "Poca ", " media", "Alta ", "Muy alta ")) +
-    labs(title = "Participación Electoral\nen el Distrito Local 14 de CDMX",
+    labs(title = "Participación Electoral\nen el Distrito Local 19 de CDMX",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -390,17 +390,17 @@ Mapa_participacion <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_participacion.pdf", 
        plot = Mapa_participacion, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 
 #Mapa Lista Nacional
 Mapa_listaN <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaCDMX_DL14, aes(fill = quintilLN), alpha = .9, color = NA) +
-    geom_sf(data = Secciones_CDMX_DL14, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
-    geom_sf_label(data = Secciones_CDMX_DL14, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    geom_sf(data = mapaCDMX_DL19, aes(fill = quintilLN), alpha = .9, color = NA) +
+    geom_sf(data = Secciones_CDMX_DL19, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
+    geom_sf_label(data = Secciones_CDMX_DL19, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "YlOrBr", name = "Tamaño de la lista nominal", labels = c("La más baja", "Baja ", " media", "Alta ", "La más alta ")) +
-    labs(title = "Secciones con la mayor Lista Nominal\nen el Distrito Local 14 de CDMX",
+    labs(title = "Secciones con la mayor Lista Nominal\nen el Distrito Local 19 de CDMX",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -421,13 +421,13 @@ Mapa_listaN <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_listaN.pdf", 
        plot = Mapa_listaN, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 # Mapa de Contorno del universo
-mapa_Contorno_CDMX_DL14<- ggplot() +
+mapa_Contorno_CDMX_DL19<- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = DISTRITOL_CDMX_DL14, aes(fill = "Distrito Local 14"), color = "black", size = 0.1, alpha = .5) +
-    labs(title = "Contorno del Distrito Local 14 de CDMX",
+    geom_sf(data = DISTRITOL_CDMX_DL19, aes(fill = "Distrito Local 19"), color = "black", size = 0.1, alpha = .5) +
+    labs(title = "Contorno del Distrito Local 19 de CDMX",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") +
     guides(fill = guide_legend(ncol = 2)) +
@@ -444,18 +444,18 @@ mapa_Contorno_CDMX_DL14<- ggplot() +
           plot.title = element_text(hjust = 0.5,size = 24, color = "#014d64", face = "bold"),
           plot.caption = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
-ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_Contorno_CDMX_DL14.pdf", 
-       plot = mapa_Contorno_CDMX_DL14, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_Contorno_CDMX_DL19.pdf", 
+       plot = mapa_Contorno_CDMX_DL19, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 
 
 # Crear un mapa con colores únicos para cada Distrito Local
-mapa_ContornoDF_DL_14 <- ggplot() +
+mapa_ContornoDF_DL_19 <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 12) +
-    geom_sf(data = DistritoF_CDMX_DL14 , aes(fill = DISTRITO), color = "black", size = 0.1, alpha = 0.5) +
-    geom_sf_label(data = DistritoF_CDMX_DL14 , aes(label = DISTRITO), size = 5, fill = "white", color = "black", alpha = 0 , label.size = NA) +
-    labs(title = "Intersección de los distritos Federales del Distrito Local 14",
+    geom_sf(data = DistritoF_CDMX_DL19 , aes(fill = DISTRITO), color = "black", size = 0.1, alpha = 0.5) +
+    geom_sf_label(data = DistritoF_CDMX_DL19 , aes(label = DISTRITO), size = 5, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    labs(title = "Intersección de los distritos Federales del Distrito Local 19",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family = "ITC Officina Sans") +
     guides(fill = guide_legend(ncol = 4)) +
@@ -471,17 +471,17 @@ mapa_ContornoDF_DL_14 <- ggplot() +
           plot.title = element_text(hjust = 0.5, size = 24, color = "#014d64", face = "bold"),
           plot.caption = element_text(hjust = 0.5, size = 18, color = "#014d64", face = "bold"),
           plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold"))
-ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_ContornoDL_DF_1.pdf", 
-       plot = mapa_ContornoDF_DL_14, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_ContornoDF_DL_19.pdf", 
+       plot = mapa_ContornoDF_DL_19, 
+       width = 8.5, height = 11, units = "in", device = "pdf")
 
 
 
-archivos <- c("D:\\Descargas\\Proto_DL14.pdf",
+archivos <- c("D:\\Descargas\\Proto_DL19.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24C.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24S.pdf",
-              "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_Contorno_CDMX_DL14.pdf",
-              "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_ContornoDL_DF_1.pdf",
+              "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_Contorno_CDMX_DL19.pdf", 
+"D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_ContornoDF_DL_19.pdf", 
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Resultados.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Partidos21.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Partidos18.pdf",
@@ -494,7 +494,7 @@ archivos <- c("D:\\Descargas\\Proto_DL14.pdf",
 )
 
 # Directorio de salida para el archivo combinado
-archivo_salida <- "D:/52556/Documents/Tlalpan(avance).pdf"
+archivo_salida <- "D:/52556/Documents/Tlalpan(avance19).pdf"
 
 # Combina los archivos PDF en uno solo
 pdf_combine(archivos, output = archivo_salida)
