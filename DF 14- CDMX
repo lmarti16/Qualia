@@ -241,7 +241,7 @@ Mapa_resultados24S <- ggplot() +
     geom_sf(data = CDMXDF, aes(fill = Ganador_Partido), alpha = .7, color = "grey") +
     geom_sf_label(data = CDMXDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "#6F4E37", "PAN" = "blue","PRI" = "red"), name = "Resultado electoral") +
-    labs(title = "¿Dónde ganaría cada coalición en CDMX para los DF?",
+    labs(title = "¿Dónde ganaría cada partido en CDMX para los DF?",
          subtitle = "Por coalición con la nueva distritación para 2024",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
