@@ -20,15 +20,11 @@ Secciones_switchers <- read_sf("D:\\52556\\Documents\\Sonora_Isaac\\Secciones_sw
 Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Nassar-oax\\Lista_Nominal_Selected.csv")
 Resultados <- read_sf("D:\\52556\\Documents\\Sonora_Isaac\\Resultados_1821.csv")
 DISTRITOF_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\09 CIUDAD DE MEXICO\\DISTRITO_FEDERAL.shp")
-DISTRITOL_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\09 CIUDAD DE MEXICO\\DISTRITO_Federal.shp")
+DISTRITOL_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\09 CIUDAD DE MEXICO\\DISTRITO_LOCAL.shp")
 
 
 Resultados$SECCION <- as.numeric(Resultados$SECCION)
 Resultados$ENTIDAD <- as.numeric(Resultados$ENTIDAD)
-
-RDL_CDMX$ENTIDAD <- as.numeric(RDL_CDMX$ENTIDAD)
-RDL_CDMX$DISTRITO_L <- as.numeric(RDL_CDMX$DISTRITO_L)
-
 Secciones_switchers$SECCION <- as.numeric(Secciones_switchers$SECCION)
 Secciones_switchers$ENTIDAD <- as.numeric(Secciones_switchers$ENTIDAD)
 Lista_Nominal_Selected$SECCION <- as.numeric(Lista_Nominal_Selected$SECCION)
@@ -61,7 +57,7 @@ Resultados_CDMX <- left_join(Resultados_CDMX, Lista_Nominal_Selected, by = c("SE
 Resultados_CDMX_DF14 <- filter(Resultados_CDMX, DISTRITO == 14)
 Secciones_CDMX_DF14 <- filter(Secciones_CDMX,  DISTRITO == 14)
 DistritoF_CDMX_DF14 <- filter(DISTRITOF_CDMX,  DISTRITO == 14)
-DISTRITOL_CDMX_DF14 <- st_intersection(DISTRITOL_CDMX, DistritoF_CDMX_DF14)
+DISTRITOL_CDMX_DF14 <- st_intersection(DistritoF_CDMX_DF14, DISTRITOL_CDMX)
 
 
 Resultados_CDMX_DF14$SECCION <- as.numeric(Resultados_CDMX_DF14$SECCION)
@@ -95,7 +91,7 @@ Resultados_CDMX_DF14 <- Resultados_CDMX_DF14 %>% select( -"DISTRITO",-"DISTRITO_
 mapaCDMX_DF14 <- left_join(Secciones_CDMX_DF14, Resultados_CDMX_DF14, by = c("SECCION", "ENTIDAD"))
 
 #Crea el mapa del distrito
-CDMXDF <- left_join(DISTRITOL_CDMX, RDL_CDMX , by = c("DISTRITO_L", "ENTIDAD"))
+CDMXDF <- mapa300_24[mapa300_24$ENTIDAD == "9", ]
 
 #Mapa Resultados
 Mapa_Resultados <- ggplot() +
@@ -211,13 +207,13 @@ ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Diferencia.p
        plot = Mapa_Diferencia, 
        width = 11, height = 8.5, units = "in", device = "pdf")
 
-#Mapa CDMX solo
+#Coalicion
 Mapa_resultados24C <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 10) +
-    geom_sf(data = CDMXDF, aes(fill = Ganador_partido21), alpha = .7, color = "grey") +
-    geom_sf_label(data = CDMXDF, aes(label = DISTRITO_L), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
-    scale_fill_manual(values = c("MORENA" = "#6F4E37", "PAN" = "blue","PRI" = "red"), name = "Resultado electoral") +
-    labs(title = "¿Dónde ganaría cada coalición en CDMX para los DL por partido solo",
+    geom_sf(data = CDMXDF, aes(fill = GANADOR), alpha = .7, color = "grey") +
+    geom_sf_label(data = CDMXDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("Morena" = "brown", "VPM" = "blue", "MC" = "orange", "EMPATE" = "yellow" ), name = "Resultado electoral\n de la sección", labels = c("EMPATE","Juntos Haremos Historia", "Fuerza y Corazón por México")) +
+    labs(title = "¿Dónde ganaría cada coalición en CDMX para los DF por coalición?",
          subtitle = "Con la nueva distritación para 2024",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -239,13 +235,13 @@ ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24
        plot = Mapa_resultados24C, 
        width = 11, height = 8.5, units = "in", device = "pdf")
 
-#Coalicion
+#Solos
 Mapa_resultados24S <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 10) +
-    geom_sf(data = CDMXDF, aes(fill = Ganador_coalicion21), alpha = .7, color = "grey") +
-    geom_sf_label(data = CDMXDF, aes(label = DISTRITO_L), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
-    scale_fill_manual(values = c( "Fuerza y corazón" = "darkblue","Sigamos Haciendo Historia" = "brown","Sin Coalición"="white" ), name = "Resultado del distrito") +
-    labs(title = "¿Dónde ganaría cada coalición en CDMX para los DL?",
+    geom_sf(data = CDMXDF, aes(fill = Ganador_Partido), alpha = .7, color = "grey") +
+    geom_sf_label(data = CDMXDF, aes(label = DISTRITO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
+    scale_fill_manual(values = c("MORENA" = "#6F4E37", "PAN" = "blue","PRI" = "red"), name = "Resultado electoral") +
+    labs(title = "¿Dónde ganaría cada coalición en CDMX para los DF?",
          subtitle = "Por coalición con la nueva distritación para 2024",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -425,7 +421,7 @@ ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_listaN.pdf",
 # Mapa de Contorno del universo
 mapa_Contorno_CDMX_DF14<- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = DISTRITOF_CDMX, aes(fill = "Distrito Federal 14"), color = "black", size = 0.1, alpha = .5) +
+    geom_sf(data = DistritoF_CDMX_DF14, aes(fill = "Distrito Federal 14"), color = "black", size = 0.1, alpha = .5) +
     labs(title = "Contorno del Distrito Federal 14 de CDMX",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") +
@@ -452,7 +448,7 @@ ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_Contorno_CDM
 # Crear un mapa con colores únicos para cada Distrito Federal
 mapa_ContornoDF_DL_14 <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 12) +
-    geom_sf(data = DISTRITOL_CDMX_DF14 , aes(fill = DISTRITO), color = "black", size = 0.1, alpha = 0.5) +
+    geom_sf(data = DISTRITOL_CDMX_DF14 , aes(fill = DISTRITO_L), color = "black", size = 0.1, alpha = 0.5) +
     geom_sf_label(data = DISTRITOL_CDMX_DF14 , aes(label = DISTRITO_L), size = 5, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     labs(title = "Intersección de los distritos locales con el Distrito Federal 14",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
@@ -480,7 +476,7 @@ archivos <- c("D:\\Descargas\\Proto_DF14.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24C.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24S.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_Contorno_CDMX_DF14.pdf",
-              "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_ContornoDL_DF_1.pdf",
+              "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_ContornoDF_DL_14.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Resultados.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Partidos21.pdf",
               "D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Partidos18.pdf",
@@ -493,7 +489,7 @@ archivos <- c("D:\\Descargas\\Proto_DF14.pdf",
 )
 
 # Directorio de salida para el archivo combinado
-archivo_salida <- "D:/52556/Documents/Tlalpan(avance).pdf"
+archivo_salida <- "D:/52556/Documents/Tlalpan(DF 14).pdf"
 
 # Combina los archivos PDF en uno solo
 pdf_combine(archivos, output = archivo_salida)
