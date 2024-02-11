@@ -283,8 +283,8 @@ Mapa_resultados24C <- ggplot() +
     geom_sf(data = CDMXDF, aes(fill = Ganador_coalicion21), alpha = .7, color = "grey") +
     geom_sf_label(data = CDMXDF, aes(label = MUNICIPIO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("Sigamos Haciendo Historia" = "brown", "Fuerza & Corazón" = "blue", "MC" = "orange", "EMPATE" = "yellow"), name = "Resultado electoral" )+
- labs(title = "¿Dónde ganaría cada coalición en CDMX para los DF por coalición?",
-         subtitle = "Con la nueva distritación para 2024",
+ labs(title = "Proyección de resultados por Alcaldía (Por Coalición)",
+         subtitle = "Datos de 2021, con la nueva distritación para 2024",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
     guides(fill = guide_legend(ncol = 2)) +
@@ -311,8 +311,8 @@ Mapa_resultados24S <- ggplot() +
     geom_sf(data = CDMXDF, aes(fill = Ganador_partido21), alpha = .7, color = "grey") +
     geom_sf_label(data = CDMXDF, aes(label = MUNICIPIO), size = 4, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "#6F4E37", "PAN" = "blue","PRI" = "red"), name = "Resultado electoral") +
-    labs(title = "¿Dónde ganaría cada partido en CDMX para los DF?",
-         subtitle = "Por coalición con la nueva distritación para 2024",
+ labs(title = "Proyección de resultados por Alcaldía (Por Partido)",
+         subtitle = "Datos de 2021, con la nueva distritación para 2024",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
     guides(fill = guide_legend(ncol = 2)) +
