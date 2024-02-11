@@ -56,6 +56,7 @@ Resultados_CDMX <- left_join(Resultados_CDMX, Lista_Nominal_Selected, by = c("SE
 
 Resultados_CDMX_Tlalpan <- filter(Resultados_CDMX, MUNICIPIO == 12)
 Secciones_CDMX_Tlalpan <- filter(Secciones_CDMX,  MUNICIPIO == 12)
+Manzanas_CDMX_Tlalpan<- filter(Manzanas_CDMX,  MUNICIPIO == 12)
 Alcaldia_Tlalpan <- filter(Municipios_CDMX,  MUNICIPIO == 12)
 DISTRITOL_CDMX_Tlalpan <- st_intersection(Alcaldia_Tlalpan, DISTRITOL_CDMX)
 DISTRITOF_CDMX_Tlalpan <- st_intersection(Alcaldia_Tlalpan, DISTRITOF_CDMX)
@@ -156,7 +157,7 @@ R_MUNICIPIOS$MUNICIPIO <- as.numeric(R_MUNICIPIOS$MUNICIPIO)
 R_MUNICIPIOS$ENTIDAD <- as.numeric(R_MUNICIPIOS$ENTIDAD)
 
 # Unir los dataframes por SECCION y ENTIDAD 
-mapaCDMX_Tlalpan <- left_join(Secciones_CDMX_Tlalpan, Resultados_CDMX_Tlalpan, by = c("SECCION", "ENTIDAD"))
+mapaCDMX_Tlalpan <- left_join(Manzanas_CDMX_Tlalpan, Resultados_CDMX_Tlalpan, by = c("SECCION", "ENTIDAD"))
 
 #Crea el mapa de la CDMX
 CDMXDF <- left_join(Municipios_CDMX, R_MUNICIPIOS , by = c("MUNICIPIO", "ENTIDAD"))
@@ -169,7 +170,7 @@ Mapa_Resultados <- ggplot() +
     geom_sf(data = Secciones_CDMX_Tlalpan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_CDMX_Tlalpan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "brown", "VPM" = "blue", "MC" = "orange", "EMPATE" = "yellow" ), name = "Resultado electoral\n de la sección", labels = c("Seguimos Haciendo Historia", "Fuerza y Corazón por México")) +
-    labs(title = "¿Dónde ganaría cada coalición en el\nTlalpan de CDMX?",
+    labs(title = "¿Dónde ganaría cada coalición en\nTlalpan de CDMX?",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -189,7 +190,7 @@ Mapa_Resultados <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Resultados.pdf", 
        plot = Mapa_Resultados, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 
 #Mapa FAM
@@ -199,7 +200,7 @@ Mapa_FAM <- ggplot() +
     geom_sf(data = Secciones_CDMX_Tlalpan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_CDMX_Tlalpan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "Spectral", name = "Competitividad\n de la manzana", labels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad")) +
-    labs(title = "Competitividad Electoral del FAM en el\nTlalpan de CDMX",
+    labs(title = "Competitividad Electoral del FAM en\nTlalpan de CDMX",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist() + # Usar un tema más elegante
@@ -218,7 +219,7 @@ Mapa_FAM <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_FAM.pdf", 
        plot = Mapa_FAM, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 #Mapa JHH
 Mapa_JHH <- ggplot() +
@@ -227,7 +228,7 @@ Mapa_JHH <- ggplot() +
     geom_sf(data = Secciones_CDMX_Tlalpan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_CDMX_Tlalpan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "Paired", name = "Competitividad\n de la manzana", labels = c("Muy poca", "Poca", "Media", "Alta", "Muy alta")) +
-    labs(title = "Competitividad Electoral de JHH en el\nTlalpan de CDMX",
+    labs(title = "Competitividad Electoral de JHH en\nTlalpan de CDMX",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist() + # Usar un tema más elegante
@@ -246,7 +247,7 @@ Mapa_JHH <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_JHH.pdf", 
        plot = Mapa_JHH, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 #Mapa Diferencia
 Mapa_Diferencia <- ggplot() +
@@ -255,7 +256,7 @@ Mapa_Diferencia <- ggplot() +
     geom_sf(data = Secciones_CDMX_Tlalpan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_CDMX_Tlalpan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_brewer(palette = "RdYlGn", name = "Competitividad\n de la manzana", labels = c("Muy poca", "Poca", "Media", "Alta", "Muy alta")) +
-    labs(title = "Competitividad Electoral Comparada en el\nTlalpan de CDMX",
+    labs(title = "Competitividad Electoral Comparada en\nTlalpan de CDMX",
          subtitle = "FAM contra JHH",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist() + # Usar un tema más elegante
@@ -274,7 +275,7 @@ Mapa_Diferencia <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Diferencia.pdf", 
        plot = Mapa_Diferencia, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 #Coalicion
 Mapa_resultados24C <- ggplot() +
@@ -302,7 +303,7 @@ Mapa_resultados24C <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24C.pdf", 
        plot = Mapa_resultados24C, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 #Solos
 Mapa_resultados24S <- ggplot() +
@@ -330,7 +331,7 @@ Mapa_resultados24S <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_resultados24S.pdf", 
        plot = Mapa_resultados24S, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 # Mapa GenePrepo
 Mapa_GenePrepo <- ggplot() +
@@ -345,7 +346,7 @@ Mapa_GenePrepo <- ggplot() +
                                   "SILENT" = "#EFB752", # amarillo
                                   "Sin datos"= "grey" ), 
                       name = "Generación Preponderante\nEn la manzana", limits = c("GEN_Z","MILLENNIALS","GEN_X","BOOMERS","SILENT","Sin datos")) +
-    labs(title = "¿Cúal es la generación preponderante en el\nTlalpan de CDMX",
+    labs(title = "¿Cúal es la generación preponderante en\nTlalpan de CDMX",
          subtitle = "Por sección electoral",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist() + # Usar un tema más elegante
@@ -364,7 +365,7 @@ Mapa_GenePrepo <- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"))  # Centrar el subtítulo
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_GenePrepo.pdf", 
        plot = Mapa_GenePrepo, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 #Mapa Partidos21
 Mapa_Partidos21 <- ggplot() +
@@ -373,7 +374,7 @@ Mapa_Partidos21 <- ggplot() +
     geom_sf(data = Secciones_CDMX_Tlalpan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_CDMX_Tlalpan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" , "PRD" ="yellow","NUEVA_ALIANZA" = "cyan", "PES" ="purple", PT = "brown", "PVEM" = "green"), name = "Resultado electoral\n de la Manzana") +
-    labs(title = "¿Qué Partido ganó en 2021 en el\nTlalpan de CDMX?",
+    labs(title = "¿Qué Partido ganó en 2021 en\nTlalpan de CDMX?",
          subtitle = "Por manzanas habitadas y sin coalición",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -394,7 +395,7 @@ Mapa_Partidos21 <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Partidos21.pdf", 
        plot = Mapa_Partidos21, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 #Mapa Partidos18
 Mapa_Partidos18 <- ggplot() +
@@ -403,7 +404,7 @@ Mapa_Partidos18 <- ggplot() +
     geom_sf(data = Secciones_CDMX_Tlalpan, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_CDMX_Tlalpan, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" , "PRD" ="yellow","NUEVA_ALIANZA" = "cyan", "PES" ="purple", PT = "brown", "PVEM" = "green"), name = "Resultado electoral\n de la Manzana") +
-    labs(title = "¿Qué Partido ganó en 2018 en el\nTlalpan de CDMX?",
+    labs(title = "¿Qué Partido ganó en 2018 en\nTlalpan de CDMX?",
          subtitle = "Por manzanas habitadas y sin coalición",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") + # Usar un tema más elegante
@@ -424,7 +425,7 @@ Mapa_Partidos18 <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_Partidos18.pdf", 
        plot = Mapa_Partidos18, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 #Mapa Participación
 Mapa_participacion <- ggplot() +
@@ -454,7 +455,7 @@ Mapa_participacion <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_participacion.pdf", 
        plot = Mapa_participacion, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 
 #Mapa Lista Nacional
@@ -485,13 +486,13 @@ Mapa_listaN <- ggplot() +
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\Mapa_listaN.pdf", 
        plot = Mapa_listaN, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 # Mapa de Contorno del universo
 mapa_Contorno_CDMX_Tlalpan<- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
     geom_sf(data = Alcaldia_Tlalpan, aes(fill = "Tlalpan"), color = "black", size = 0.1, alpha = .5) +
-    labs(title = "Contorno dTlalpan de CDMX",
+    labs(title = "Contorno de Tlalpan de CDMX",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada)\n(Fuente: INEGI e INE)")) +
     theme_economist(base_family="ITC Officina Sans") +
     guides(fill = guide_legend(ncol = 2)) +
@@ -510,7 +511,7 @@ mapa_Contorno_CDMX_Tlalpan<- ggplot() +
           plot.subtitle = element_text(hjust = 0.5,size = 20, color = "#014d64", face = "bold"))
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_Contorno_CDMX_Tlalpan.pdf", 
        plot = mapa_Contorno_CDMX_Tlalpan, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 
 
@@ -537,7 +538,7 @@ mapa_ContornoDL_Tlalpan<- ggplot() +
           plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold"))
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_ContornoDL_Tlalpan.pdf", 
        plot = mapa_ContornoDL_Tlalpan, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 
 
@@ -564,7 +565,7 @@ mapa_ContornoDF_Tlalpan<- ggplot() +
           plot.subtitle = element_text(hjust = 0.5, size = 20, color = "#014d64", face = "bold"))
 ggsave("D:\\52556\\Documents\\Distritos Federales 24\\TLALPAN\\mapa_ContornoDF_Tlalpan.pdf", 
        plot = mapa_ContornoDF_Tlalpan, 
-       width = 11, height = 8.5, units = "in", device = "pdf")
+       width = 8.5 , height = 11, units = "in", device = "pdf")
 
 
 archivos <- c("D:\\Descargas\\Proto_Tlalpan.pdf",
