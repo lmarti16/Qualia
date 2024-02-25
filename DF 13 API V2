@@ -245,6 +245,7 @@ DistritoF_CDMX_DF13 <- st_transform(DistritoF_CDMX_DF13, crs = 4326)
 Municipios_CDMX_DF13 <- st_transform(Municipios_CDMX_DF13, crs = 4326)
 DistritoL_CDMX_DF13 <- st_transform(DistritoL_CDMX_DF13, crs = 4326)
 Colonias_CDMX_DF13 <- st_transform(Colonias_CDMX_DF13, crs = 4326)
+ESEM_CDMX_DF13 <- st_transform(ESEM_CDMX_DF13, crs = 4326)
 
 # Renombrar los resultados 
 mapa_DF13$GanadorC_21 <- recode(mapa_DF13$GanadorC_21,
