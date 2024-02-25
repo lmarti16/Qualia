@@ -91,7 +91,7 @@ Secciones_CDMX <- filter(sec_mex, ENTIDAD == 9)
 Secciones_CDMX <- left_join(Secciones_CDMX, Circunscripcion, by = c("SECCION"))
 Secciones_CDMX_TLALPAN<- filter(Secciones_CDMX, MUNICIPIO == 12)
 Manzanas_CDMX_TLALPAN <- filter(Manzanas_CDMX, MUNICIPIO == 12)
-Municipios_CDMX_TLALPAN<- filter(Municipios_CDMX, MUNICIPIO == 13)
+Municipios_CDMX_TLALPAN<- filter(Municipios_CDMX, MUNICIPIO == 12)
 
 # Obtener los valores únicos de MUNICIPIO y DISTRITO_L de Secciones_CDMX_TLALPAN 
 Valores_DF_TLALPAN <- unique(Secciones_CDMX_TLALPAN$DISTRITO_FEDERAL)
