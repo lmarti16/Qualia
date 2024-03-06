@@ -22,7 +22,7 @@ sec_mex <- read_sf("D:\\Descargas\\secciones_2024.gpkg\\secciones_2024.gpkg")
 DistritoF_COAHUILA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\05 COAHUILA\\DISTRITO_FEDERAL.shp")
 DistritoL_COAHUILA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\05 COAHUILA\\DISTRITO_LOCAL.shp")
 Resultados <- read_sf("D:\\52556\\Documents\\diana_C\\Resultados23C(resec).csv")
-Resultados18 <- read_sf("D:\\52556\\Documents\\diana_C\\Resultados23C(resec).csv")
+Resultados18 <- read_sf("D:\\52556\\Documents\\diana_C\\Resultados18C(resec).csv")
 Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\2024_LN.csv")
 Municipios_COAHUILA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\05 COAHUILA\\MUNICIPIO.shp")
 Secciones_switchers <- read_sf("D:\\52556\\Documents\\diana_C\\Secciones_switcher_COA.csv")
@@ -63,7 +63,7 @@ Resultados18 <- Resultados18 %>%
     mutate(across(everything(), as.numeric))%>%
     rename_with(~ paste0(., "_18"), -c( ENTIDAD, SECCION))
 
-Resultados18 <- Resultados[Resultados18$SECCION != 0, ]
+Resultados18 <- Resultados18[Resultados18$SECCION != 0, ]
 Resultados <- Resultados[Resultados$SECCION != 0, ]
 Resultados_COAHUILA <- left_join(Resultados, Resultados18 , by = c("SECCION","ENTIDAD"))
 
@@ -91,27 +91,32 @@ Resultados_ACUÑA <- st_drop_geometry(Resultados_ACUÑA)
 Resultados_ACUÑA <- left_join(Resultados_ACUÑA, Secciones_switchers, by = c("SECCION"))
 Resultados_ACUÑA <- left_join(Resultados_ACUÑA, Lista_Nominal_Selected, by = c("SECCION", "ENTIDAD"))
 
-
 Resultados_ACUÑA <- Resultados_ACUÑA %>% 
-    mutate( porFAM_22 = (FAM_22 /TOTAL_VOTOS_22)*100) %>% 
-    mutate( porPRI_22 = (PRI_22 /TOTAL_VOTOS_22)*100) %>% 
-    mutate( porPRD_22 = (PRD_22 /TOTAL_VOTOS_22)*100) %>% 
-    mutate( porMORENA_22 = (MORENA_22 /TOTAL_VOTOS_22)*100) %>% 
-    mutate( porSHH_22 = (SHH_22 /TOTAL_VOTOS_22)*100) %>% 
-    mutate( participacion = (TOTAL_VOTOS_22 /LISTA_NOMINAL_22)*100) %>% 
-    mutate( diferencia = porFAM_22 - porSHH_22) %>%
-    mutate( diferenciaPRI = FAM_22 - PRI_22) 
-    mutate( diferenciaPRI = FAM_22 - PRI_22) 
-
-
+    mutate(
+        Coalicion23 = PVEM_UDC_23 + PVEM_23 + UDC_23,
+        Coalicion18 = PAN_UDC_MC_18 + PAN_18 + MC_18 + UDC_18,
+        FAM_23 = PAN_PRI_PRD_23 + PAN_PRI_23 + PAN_PRD_23 + PRI_PRD_23+PAN_23+PRD_23+PRI_23,
+        porPAN_23 = (PAN_23 / TOTAL_VOTOS_23) * 100,
+        porPRI_23 = (PRI_23 / TOTAL_VOTOS_23) * 100,
+        porPRD_23 = (PRD_23 / TOTAL_VOTOS_23) * 100,
+        porMORENA_23 = (MORENA_23 / TOTAL_VOTOS_23) * 100,
+        porUDC_23 = (UDC_23 / TOTAL_VOTOS_23) * 100,
+        participacion = (TOTAL_VOTOS_23 / LISTA_NOMINAL_23) * 100,
+        diferenciaTiempo = UDC_23 - UDC_18,
+        diferencia_inter23 = Coalicion23 - UDC_23,
+        diferencia_inter18 = Coalicion18 - UDC_18
+    )
 
 
 # Crear quintiles
 quintilesF <- quantile(Resultados_ACUÑA$diferenciaPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesM <- quantile(Resultados_ACUÑA$porSHH_22, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+
+
+quintilesM <- quantile(Resultados_ACUÑA$porSHH_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesD <- quantile(Resultados_ACUÑA$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesparti <- quantile(Resultados_ACUÑA$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesLN <- quantile(Resultados_ACUÑA$LISTA_NOMINAL_22, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesLN <- quantile(Resultados_ACUÑA$LISTA_NOMINAL_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
 # Definir etiquetas personalizadas
 labels_custom <- function(breaks) {
@@ -125,15 +130,18 @@ labels_custom <- function(breaks) {
 
 # Agrega columna con quintiles y etiquetas personalizadas
 Resultados_ACUÑA$quintilF <- cut(Resultados_ACUÑA$diferenciaPRI, breaks = quintilesF, include.lowest = TRUE, labels = labels_custom(quintilesF))
-Resultados_ACUÑA$quintilM <- cut(Resultados_ACUÑA$porSHH_22, breaks = quintilesM, include.lowest = TRUE, labels = labels_custom(quintilesM))
+Resultados_ACUÑA$quintilM <- cut(Resultados_ACUÑA$porSHH_23, breaks = quintilesM, include.lowest = TRUE, labels = labels_custom(quintilesM))
 Resultados_ACUÑA$quintilD <- cut(Resultados_ACUÑA$diferencia, breaks = quintilesD, include.lowest = TRUE, labels = labels_custom(quintilesD))
 Resultados_ACUÑA$quintilparti <- cut(Resultados_ACUÑA$participacion, breaks = quintilesparti, include.lowest = TRUE, labels = labels_custom(quintilesparti))
-Resultados_ACUÑA$quintilLN <- cut(Resultados_ACUÑA$LISTA_NOMINAL_22, breaks = quintilesLN, include.lowest = TRUE, labels = labels_custom(quintilesLN))
+Resultados_ACUÑA$quintilLN <- cut(Resultados_ACUÑA$LISTA_NOMINAL_23, breaks = quintilesLN, include.lowest = TRUE, labels = labels_custom(quintilesLN))
+
+
+
 
 Resultados_ACUÑA <- Resultados_ACUÑA %>%
     rowwise() %>%
-    mutate(GanadorC_22 = {
-        votos <- c(FAM = FAM_22, SHH = SHH_22, MC = MC_22, RSP = RSP_22,ES = PES_22,FXM = FXM_22)
+    mutate(GanadorC_23 = {
+        votos <- c(FAM = FAM_23, SHH = SHH_23, MC = MC_23, RSP = RSP_23,ES = PES_23,FXM = FXM_23)
         votos[is.na(votos)] <- 0 # Convertir NA a 0
         if (all(votos == 0)) {
             NA_character_ # Retornar NA si todos los votos son 0
@@ -142,17 +150,6 @@ Resultados_ACUÑA <- Resultados_ACUÑA %>%
         }
     })
 
-Resultados_ACUÑA <- Resultados_ACUÑA %>%
-    rowwise() %>%
-    mutate(Ganador_22 = {
-        votos <- c(PAN = PAN_22, PRI = PRI_22, PRD = PRD_22, PVEM = PVEM_22, PT = PT_22, MC = MC_22, RSP = RSP_22,ES = PES_22,MORENA = MORENA_22,FXM = FXM_22)
-        votos[is.na(votos)] <- 0 # Convertir NA a 0
-        if (all(votos == 0)) {
-            NA_character_ # Retornar NA si todos los votos son 0
-        } else {
-            names(which.max(votos))
-        }
-    })
 
 Resultados_ACUÑA <- Resultados_ACUÑA %>%
     mutate(Sugerencia = case_when(
@@ -175,7 +172,7 @@ Resultados_ACUÑA <- Resultados_ACUÑA %>%
 
 Resultados_ACUÑA <- Resultados_ACUÑA %>%
     select(-NOMBRE_ENTIDAD, -MUNICIPIO, -NOMBRE_MUNICIPIO, 
-           -DISTRITO_FEDERAL, -NOMBRE_DISTRITO_FEDERAL, -DISTRITO_LOCAL,-Circunscripción_COAHUILA, - ID_circu)
+           -DISTRITO_FEDERAL, -NOMBRE_DISTRITO_FEDERAL, -DISTRITO_LOCAL)
 
 mapa_ACUÑA <- left_join(Secciones_COAHUILA_ACUÑA , Resultados_ACUÑA, by = c("SECCION", "ENTIDAD"))
 
@@ -228,10 +225,9 @@ DistritoF_COAHUILA_ACUÑA <- st_transform(DistritoF_COAHUILA_ACUÑA, crs = 4326)
 Municipios_COAHUILA_ACUÑA <- st_transform(Municipios_COAHUILA_ACUÑA, crs = 4326)
 DistritoL_COAHUILA_ACUÑA <- st_transform(DistritoL_COAHUILA_ACUÑA, crs = 4326)
 Colonias_COAHUILA_ACUÑA <- st_transform(Colonias_COAHUILA_ACUÑA, crs = 4326)
-ESEM_COAHUILA_ACUÑA<- st_transform(ESEM_COAHUILA_ACUÑA, crs = 4326)
 
 # Renombrar los resultados 
-mapa_ACUÑA$GanadorC_22 <- recode(mapa_ACUÑA$GanadorC_22,
+mapa_ACUÑA$GanadorC_23 <- recode(mapa_ACUÑA$GanadorC_23,
                                   "EMPATE" = "Empate",
                                   "FAM" = "Fuerza & Corazón por México",
                                   "SHH" = "Sigamos Haciendo Historia",
@@ -246,12 +242,12 @@ colores_SUGERENCIA <- colorFactor(
     palette = c("red", "darkblue","yellow", "white"), 
                                      levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
 
-# Reordenar los niveles del factor Ganador en 2022
-mapa_ACUÑA$GanadorC_22 <- factor(mapa_ACUÑA$GanadorC_22,
+# Reordenar los niveles del factor Ganador en 2023
+mapa_ACUÑA$GanadorC_23 <- factor(mapa_ACUÑA$GanadorC_23,
                                      levels = c("Sigamos Haciendo Historia", "Fuerza & Corazón por México", "Movimiento Ciudadano","Empate"))
 
 # Definir los colores para cada Ganador Coalición
-colores_GanadorC_22 <- colorFactor(
+colores_GanadorC_23 <- colorFactor(
     palette = c("purple", "brown", "darkblue"), 
     levels = c("Empate", "Sigamos Haciendo Historia", "Fuerza & Corazón por México"))
 
@@ -430,7 +426,7 @@ mapa <- mapa %>%
         group = "Distrito Local"     # Nombre del grupo de la capa
     )
 
-# Agregar la  capa de polígonos con los datos de mapa_ACUÑA y el color según el GanadorC_22
+# Agregar la  capa de polígonos con los datos de mapa_ACUÑA y el color según el GanadorC_23
 mapa <- mapa %>%
     addPolygons(
         data = mapa_ACUÑA,
@@ -442,16 +438,16 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "¿Es sección Switcher?:", Switcher, "<br>",
                        "La sección:", Switcher_coalición, "<br>",
-                       "Coalición Ganadora en 2022:", GanadorC_22, "<br>",
-                       "Partido preponderante en 2022:", Ganador_22, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
                        "Partido preponderante en 2012:", Ganador_12, "<br>",
                        "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
-                       "Votos por el FAM en la última eleccción:", FAM_22, "<br>",
-                       "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_22, 2), "%"), "<br>",
-                       "Votos por JHH en la última eleccción:", SHH_22, "<br>",
-                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_22, 2), "%"), "<br>",
-                       "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_22, "<br>","<br>",
+                       "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por JHH en la última eleccción:", SHH_23, "<br>",
+                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>","<br>",
                        
                        "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
@@ -463,7 +459,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_ACUÑA,
-        fillColor = ~colores_GanadorC_22(GanadorC_22),
+        fillColor = ~colores_GanadorC_23(GanadorC_23),
         fillOpacity = 0.8,
         label = ~SECCION,
         color = "white",
@@ -471,8 +467,8 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "¿Es sección Switcher?:", Switcher, "<br>",
                        "La sección:", Switcher_coalición, "<br>",
-                       "Coalición Ganadora en 2022:", GanadorC_22, "<br>",
-                       "Partido preponderante en 2022:", Ganador_22, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
                        "Competitividad de la Sección FAM:", CompetitividadD,"<br>","<br>",
                        
@@ -495,16 +491,16 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "¿Es sección Switcher?:", Switcher, "<br>",
                        "La sección:", Switcher_coalición, "<br>",
-                       "Coalición Ganadora en 2022:", GanadorC_22, "<br>",
-                       "Partido preponderante en 2022:", Ganador_22, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
                        "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
                        "Competitividad de la Sección PRI:", CompetitividadP, "<br>",
-                       "Votos por el FAM en la última eleccción:", FAM_22, "<br>",
-                       "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_22, 2), "%"), "<br>",
-                       "Votos por JHH en la última eleccción:", SHH_22, "<br>",
-                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_22, 2), "%"), "<br>",
-                       "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_22, "<br>",
+                       "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por JHH en la última eleccción:", SHH_23, "<br>",
+                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>",
                        "Población Generación Z(18-24 años):", GEN_Z_TOTAL, "<br>",
                        "Porcentaje de Generación Z:", paste(round(GEN_Z_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
                        "Población Millennials(25-39 años):", MILLENNIALS_TOTAL, "<br>",
@@ -536,8 +532,8 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección hay:", CompetitividadD, "<br>",
                        "Intervalo de competividad:", quintilD, "<br>",
-                       "Coalición Ganadora en 2022:", GanadorC_22, "<br>",
-                       "Partido preponderante en 2022:", Ganador_22, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
                        
                        "Circunscripción:", Circunscripción_COAHUILA, "<br>",
@@ -559,16 +555,16 @@ mapa <- mapa %>%
                        "En la sección, para el Frente sin el PRI hay:", CompetitividadP, "<br>",
                        "Voto de la coalición sin el PRI:", diferenciaPRI, "<br>",
                        "Intervalo de votos sin el PRI:", quintilF, "<br>",
-                       "Votos por el FAM:", FAM_22, "<br>",
-                       "Porcentaje de votos por el FAM:", paste(round(porFAM_22, 2), "%"), "<br>",
-                       "Votos por el PRI:", PRI_22, "<br>",
-                       "Porcentaje de votos por el PRI:", paste(round(porPRI_22, 2), "%"), "<br>",
-                       "Votos por MORENA:", MORENA_22, "<br>",
-                       "Porcentaje de votos por Morena:", paste(round(porMORENA_22, 2), "%"), "<br>",
-                       "Votos por JHH:", SHH_22, "<br>",
-                       "Porcentaje de votos por JHH:", paste(round(porSHH_22, 2), "%"), "<br>",
-                       "Coalición Ganadora actual:", GanadorC_22, "<br>",
-                       "Partido preponderante en 2022:", Ganador_22, "<br>",
+                       "Votos por el FAM:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por el PRI:", PRI_23, "<br>",
+                       "Porcentaje de votos por el PRI:", paste(round(porPRI_23, 2), "%"), "<br>",
+                       "Votos por MORENA:", MORENA_23, "<br>",
+                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
+                       "Votos por JHH:", SHH_23, "<br>",
+                       "Porcentaje de votos por JHH:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
                        
                        "Circunscripción:", Circunscripción_COAHUILA, "<br>",
@@ -677,11 +673,11 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addLegend(
         data = mapa_ACUÑA,
-        pal = colores_GanadorC_22, # Establecer los colores de la leyenda usando colores
-        values = ~GanadorC_22, # Establecer los valores de la leyenda
+        pal = colores_GanadorC_23, # Establecer los colores de la leyenda usando colores
+        values = ~GanadorC_23, # Establecer los valores de la leyenda
         title = "Ganador de la última elección", # Establecer el título de la leyenda
         position = "bottomleft",
-        layerId = "LeyendaGanadorC_22",
+        layerId = "LeyendaGanadorC_23",
         group = "Coalición Ganadora"  # Grupo de la leyenda
     ) %>%
     addLegend(
