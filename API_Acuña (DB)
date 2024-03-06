@@ -143,7 +143,7 @@ Resultados_ACUÑA$quintilLN <- cut(Resultados_ACUÑA$LISTA_NOMINAL_23, breaks = 
 Resultados_ACUÑA <- Resultados_ACUÑA %>%
     rowwise() %>%
     mutate(GanadorC_23 = {
-        votos <- c(FAM = FAM_23, SHH = SHH_23, MC = MC_23, RSP = RSP_23,ES = PES_23,FXM = FXM_23)
+        votos <- c(FAM = FAM_23, MORENA = MORENA_23, PVEM_UDC = Coalicion23,PT = PT_23)
         votos[is.na(votos)] <- 0 # Convertir NA a 0
         if (all(votos == 0)) {
             NA_character_ # Retornar NA si todos los votos son 0
@@ -151,41 +151,32 @@ Resultados_ACUÑA <- Resultados_ACUÑA %>%
             names(which.max(votos))
         }
     })
-
-
+	
 Resultados_ACUÑA <- Resultados_ACUÑA %>%
     mutate(Sugerencia = case_when(
-        # Prioritaria: La más alta participación y lista nominal, y en el quintil 3 de diferencia
-        quintilLN == labels_custom(quintilesLN)[5] & quintilD == labels_custom(quintilesD)[5] & quintilparti == labels_custom(quintilesparti)[3] ~ "Sugerencia prioritaria",
+        quintilparti == labels_custom(quintilesparti)[5] & 
+        quintilLN == labels_custom(quintilesLN)[5] & 
+        quintilDT == labels_custom(quintilesDT)[5] ~ "Sugerencia prioritaria",
+   #Prioritaria: Los valores que están en el quintil más alto (5º) para participación, lista nominal, y diferencia de tiempo.
+     
+        (quintilparti %in% c(labels_custom(quintilesparti)[4], labels_custom(quintilesparti)[5]) &
+         quintilLN %in% c(labels_custom(quintilesLN)[4], labels_custom(quintilesLN)[5]) &
+         quintilDT == labels_custom(quintilesDT)[5]) ~ "Sugerencia secundaria",
+#Secundaria: Los valores que están en los quintiles 4º o 5º para participación y lista nominal, y específicamente en el quintil más alto (5º) para la diferencia de tiempo.
         
-        # Secundaria: Primera o segunda más alta participación, también primera o segunda más alta lista nominal, y en el quintil 3 de diferencia
-        (quintilLN %in% c(labels_custom(quintilesLN)[4], labels_custom(quintilesLN)[5]) &
-             quintilparti %in% c(labels_custom(quintilesparti)[4], labels_custom(quintilesparti)[5]) &
-             quintilD == labels_custom(quintilesD)[3]) ~ "Sugerencia secundaria",
-        
-        # Terciaria: En el quintil 3 de diferencia, o todas las secciones en los quintiles 4-5 de LN o de participación
-        quintilD == labels_custom(quintilesD)[3] |
-            quintilLN %in% c(labels_custom(quintilesLN)[5]) |
-            quintilparti %in% c(labels_custom(quintilesparti)[5]) ~ "Sugerencia terciaria",
-        
-        # Caso predeterminado
+        quintilDT %in% c(labels_custom(quintilesDT)[4], labels_custom(quintilesDT)[5]) |
+        quintilLN %in% c(labels_custom(quintilesLN)[4], labels_custom(quintilesLN)[5]) |
+        quintilparti %in% c(labels_custom(quintilesparti)[4], labels_custom(quintilesparti)[5]) ~ "Sugerencia terciaria",
+    #Terciaria: Los valores que están en los quintiles 4º o 5º para cualquiera de las variables de diferencia de tiempo, lista nominal, o participación.    
         TRUE ~ "Sección no sugerida"
     ))
+
 
 Resultados_ACUÑA <- Resultados_ACUÑA %>%
     select(-NOMBRE_ENTIDAD, -MUNICIPIO, -NOMBRE_MUNICIPIO, 
            -DISTRITO_FEDERAL, -NOMBRE_DISTRITO_FEDERAL, -DISTRITO_LOCAL)
 
 mapa_ACUÑA <- left_join(Secciones_COAHUILA_ACUÑA , Resultados_ACUÑA, by = c("SECCION", "ENTIDAD"))
-
-# Corrección en la definición de rangosQuintiles para mantener la consistencia
-rangosQuintiles <- list(
-  F = quintilesF,
-  M = quintilesM,
-  D = quintilesD,
-  P = quintilesparti, # Cambiado a quintilesparti para mantener la consistencia
-  LN = quintilesLN
-)
 
 # Corrección en la creación de las columnas CompetitividadD y CompetitividadP
 mapa_ACUÑA <- mapa_ACUÑA %>%
@@ -196,7 +187,7 @@ mapa_ACUÑA <- mapa_ACUÑA %>%
     quintilD == labels_custom(quintilesD)[4] ~ "Alta Competitividad",
     quintilD == labels_custom(quintilesD)[5] ~ "Muy alta Competitividad"
   )) %>%
-  mutate(CompetitividadP = case_when(
+  mutate(CompetitividadU = case_when(
     quintilF == labels_custom(quintilesF)[1] ~ "Muy poca Competitividad",
     quintilF == labels_custom(quintilesF)[2] ~ "Poca Competitividad",
     quintilF == labels_custom(quintilesF)[3] ~ "Competitividad media",
@@ -218,7 +209,6 @@ mapa_ACUÑA <- mapa_ACUÑA %>%
     quintilparti == labels_custom(quintilesparti)[5] ~ "Muy alta participación"
   ))
 
-
 # Transformar sistema de coordenadas
 mapa_ACUÑA <- st_transform(mapa_ACUÑA, crs = 4326)
 Secciones_COAHUILA_ACUÑA<- st_transform(Secciones_COAHUILA_ACUÑA , crs = 4326)
@@ -230,10 +220,20 @@ Colonias_COAHUILA_ACUÑA <- st_transform(Colonias_COAHUILA_ACUÑA, crs = 4326)
 
 # Renombrar los resultados 
 mapa_ACUÑA$GanadorC_23 <- recode(mapa_ACUÑA$GanadorC_23,
-                                  "EMPATE" = "Empate",
-                                  "FAM" = "Fuerza & Corazón por México",
-                                  "SHH" = "Sigamos Haciendo Historia",
-                                  "MC" = "Movimiento Ciudadano")
+                                  "FAM" = "Alianza Ciudadana por la Seguridad",
+                                  "MORENA" = "Movimiento Regeneración Nacional",
+                                  "PVEM_UDC" = "Rescatemos Coahuila",
+                                  "PT" = "Partido del Trabajo")
+
+# Reordenar los niveles del factor Ganador en 2023
+mapa_ACUÑA$GanadorC_23 <- factor(mapa_ACUÑA$GanadorC_23,
+                                     levels = c("Alianza Ciudadana por la Seguridad","Movimiento Regeneración Nacional","Rescatemos Coahuila","Partido del Trabajo"))
+
+# Definir los colores para cada Ganador Coalición
+colores_GanadorC_23 <- colorFactor(
+    palette = c("darkblue", "brown", "orange", "red"), 
+ levels = c("Alianza Ciudadana por la Seguridad","Movimiento Regeneración Nacional","Rescatemos Coahuila","Partido del Trabajo"))
+
 
 # Reordenar los niveles del factor Sugerencia en el dataframe mapa_ACUÑA
 mapa_ACUÑA$Sugerencia <- factor(mapa_ACUÑA$Sugerencia,
@@ -244,14 +244,8 @@ colores_SUGERENCIA <- colorFactor(
     palette = c("red", "darkblue","yellow", "white"), 
                                      levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
 
-# Reordenar los niveles del factor Ganador en 2023
-mapa_ACUÑA$GanadorC_23 <- factor(mapa_ACUÑA$GanadorC_23,
-                                     levels = c("Sigamos Haciendo Historia", "Fuerza & Corazón por México", "Movimiento Ciudadano","Empate"))
 
-# Definir los colores para cada Ganador Coalición
-colores_GanadorC_23 <- colorFactor(
-    palette = c("purple", "brown", "darkblue"), 
-    levels = c("Empate", "Sigamos Haciendo Historia", "Fuerza & Corazón por México"))
+
 
 # Reordenar los niveles del factor CompetitividadD
 mapa_ACUÑA$CompetitividadD <- factor(mapa_ACUÑA$CompetitividadD,
@@ -306,25 +300,10 @@ colores_Gene <- colorFactor(
 mapa_ACUÑA$Gene_prepo <- factor(mapa_ACUÑA$Gene_prepo,
                                      levels = c("GEN_Z","MILLENNIALS", "GEN_X", "BOOMERS","SILENT","Sin datos"))
 
-# Define los colores para cada nivel de ESEM
-colores_ESEM <- colorFactor(
-    palette = c("blue", "#00CC00", "#99FF99", "#FFFF99", "#FFCC99", "#FF3300", "brown", "#808080"),
-    levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado")
-)
-
-# Reordenar los niveles del factor ESEM
-ESEM_COAHUILA_ACUÑA$NIVEL <- factor(ESEM_COAHUILA_ACUÑA$NIVEL,
-                             levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado"))
-
-
-ESEM_COAHUILA_ACUÑA <- ESEM_COAHUILA_ACUÑA %>%
-  filter(st_geometry_type(geom) %in% c("POLYGON", "MULTIPOLYGON")) %>%
-  st_cast("POLYGON")
 
 # Crear un mapa base con el fondo de OpenStreetMap
 mapa <- leaflet() %>%
     addProviderTiles(provider = "OpenStreetMap")
-
 
 # Crear un mapa base con el fondo de OpenStreetMap
 mapa <- leaflet() %>%
