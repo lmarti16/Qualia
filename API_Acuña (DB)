@@ -107,7 +107,6 @@ Resultados_ACUÑA <- Resultados_ACUÑA %>%
         diferencia_inter18 = Coalicion18 - UDC_18
     )
 
-
 # Crear quintiles
 quintilesU <- quantile(Resultados_ACUÑA$UDC_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesP <- quantile(Resultados_ACUÑA$porPRI_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -262,16 +261,24 @@ colores_Recuperacion <- colorFactor(
                   levels = c("Muy poca perdida de simpatizantes o aumento en el tiempo", "Poca perdida de simpatizantes en el tiempo", "Perdida media de simpatizantes en el tiempo", "Alta Perdida de simpatizantes en el tiempo","Muy alta Perdida de simpatizantes en el tiempo"))
 
 
+# Reordenar los niveles del factor Recuperacion
+mapa_ACUÑA$CompetitividadU <- factor(mapa_ACUÑA$CompetitividadU,
+                  levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad","Muy alta Competitividad"))
 
-
+# Definir los colores para cada nivel de Recuperacion
+colores_U <- colorFactor(
+    palette = c("#66BD63", "#e5be01", "#006837", "#A50026", "#F46D43"), 
+                  levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad","Muy alta Competitividad"))
 
 # Reordenar los niveles del factor CompetitividadP
-mapa_ACUÑA$CompetitividadP <- factor(mapa_ACUÑA$CompetitividadP,
-                                          levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+mapa_ACUÑA$Peso_coalicion <- factor(mapa_ACUÑA$Peso_coalicion,
+        levels = c("Mayor peso en la coalición en 2023", "Segundo mayor peso en la coalición en 2023", "Peso intermedio en la coalición en 2023", "Segundo peso más bajo en la coalición en 2023", "Peso más bajo en la coalición en 2023"))
+
 # Definir los colores para cada nivel de competitividadP
-colores_CompetitividadP <- colorFactor(
+Peso_coalicion <- colorFactor(
     palette = c("#66C2A5", "#E6F598", "#3288BD", "#9E0142", "#FDAE61"), 
-    domain = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+        levels = c("Mayor peso en la coalición en 2023", "Segundo mayor peso en la coalición en 2023", "Peso intermedio en la coalición en 2023", "Segundo peso más bajo en la coalición en 2023", "Peso más bajo en la coalición en 2023"))
+
 
 # Reordenar los niveles del factor Switcher
 mapa_ACUÑA$Switcher <- factor(mapa_ACUÑA$Switcher,
@@ -357,28 +364,6 @@ mapa <- mapa %>%
         group = "Secciones"     # Nombre del grupo de la capa
     )
 
-mapa <- mapa %>%
-    addPolygons(
-        data = ESEM_COAHUILA_ACUÑA,
-        fillColor = "white",    # Color de fondo blanco
-        fillOpacity = 0.5,      # Transparencia del fondo
-        label = ~NIVEL,
-        color = "black",        # Color de los bordes
-        weight = 1,             # Grosor de los bordes
-        opacity = 0.8,          # Opacidad de los bordes
-        group = "AGEB"     # Nombre del grupo de la capa
-    )
-mapa <- mapa %>%
-    addPolygons(
-        data = Circunscripcion_COAHUILA_ACUÑA,
-        fillColor = "white",    # Color de fondo blanco
-        fillOpacity = 0.5,      # Transparencia del fondo
-        label = ~ID_circu,
-        color = "black",        # Color de los bordes
-        weight = 1,             # Grosor de los bordes
-        opacity = 0.8,          # Opacidad de los bordes
-        group = "Circunscripciones"     # Nombre del grupo de la capa
-    )
 # Agregar la  capa de polígonos a nivel municipios
 mapa <- mapa %>%
     addPolygons(
@@ -430,16 +415,13 @@ mapa <- mapa %>%
                        "La sección:", Switcher_coalición, "<br>",
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2012:", Ganador_12, "<br>",
-                       "Competitividad de la Sección FAM:", Recuperacion, "<br>",
-                       "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
-                       "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
-                       "Votos por JHH en la última eleccción:", SHH_23, "<br>",
-                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Intervalo de votos que se pueden recuperar:", Recuperacion, "<br>",
+                       "Votos por UDC en la última eleccción:", UDC_23, "<br>",
+                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porUDC_23, 2), "%"), "<br>",
                        "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>","<br>",
                        
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
@@ -459,10 +441,10 @@ mapa <- mapa %>%
                        "La sección:", Switcher_coalición, "<br>",
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Competitividad de la Sección FAM:", Recuperacion,"<br>","<br>",
+                       "Intervalo de votos que se pueden recuperar:", Recuperacion, "<br>",
                        
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
@@ -479,17 +461,6 @@ mapa <- mapa %>%
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "¿Es sección Switcher?:", Switcher, "<br>",
-                       "La sección:", Switcher_coalición, "<br>",
-                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
-                       "Partido preponderante en 2023:", Ganador_23, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Competitividad de la Sección FAM:", Recuperacion, "<br>",
-                       "Competitividad de la Sección PRI:", CompetitividadP, "<br>",
-                       "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
-                       "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
-                       "Votos por JHH en la última eleccción:", SHH_23, "<br>",
-                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_23, 2), "%"), "<br>",
                        "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>",
                        "Población Generación Z(18-24 años):", GEN_Z_TOTAL, "<br>",
                        "Porcentaje de Generación Z:", paste(round(GEN_Z_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
@@ -504,7 +475,6 @@ mapa <- mapa %>%
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>",
                        "Participación:", paste(round(participacion*1, 2), "%"),"<br>","<br>",
                        
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
@@ -521,12 +491,10 @@ mapa <- mapa %>%
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección hay:", Recuperacion, "<br>",
-                       "Intervalo de competividad:", quintilD, "<br>",
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
                        
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -536,29 +504,13 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_ACUÑA,
-        fillColor = ~colores_CompetitividadP(CompetitividadP),
+        fillColor = ~colores_U(CompetitividadU),
         fillOpacity = 0.8,
         label = ~SECCION,
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "En la sección, para el Frente sin el PRI hay:", CompetitividadP, "<br>",
-                       "Voto de la coalición sin el PRI:", diferenciaPRI, "<br>",
-                       "Intervalo de votos sin el PRI:", quintilF, "<br>",
-                       "Votos por el FAM:", FAM_23, "<br>",
-                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
-                       "Votos por el PRI:", PRI_23, "<br>",
-                       "Porcentaje de votos por el PRI:", paste(round(porPRI_23, 2), "%"), "<br>",
-                       "Votos por MORENA:", MORENA_23, "<br>",
-                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
-                       "Votos por JHH:", SHH_23, "<br>",
-                       "Porcentaje de votos por JHH:", paste(round(porSHH_23, 2), "%"), "<br>",
-                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
-                       "Partido preponderante en 2023:", Ganador_23, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
-                       
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
         group = "Competitividad PRI"       # Nombre del grupo de la capa
@@ -576,31 +528,12 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección hay:", Porcen_parti, "<br>",
                        "Participación:", paste(round(participacion*1, 2), "%"), "<br>","<br>",
-                       
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
         group = "Participacion"
     )
 
-mapa <- mapa %>%
-    addPolygons(
-        data = ESEM_COAHUILA_ACUÑA,
-        fillColor = ~colores_ESEM(NIVEL),
-        fillOpacity = 0.8,
-        label = ~NIVEL,
-        color = "white",
-        weight = 1,
-        popup = ~paste("Estrato:", NIVEL, "<br>",
-                       "Número de Seccion:", SECCION, "<br>","<br>",
-                       
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
-                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
-        group = "ESEM"       # Nombre del grupo de la capa
-    ) 
 
 # Agregar capa de polígonos para Lista Nominal
 mapa <- mapa %>%
@@ -615,7 +548,6 @@ mapa <- mapa %>%
                        "En la sección la lista nominal es:", Tamaños_lista, "<br>",
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>","<br>",
                        
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
@@ -645,7 +577,6 @@ mapa <- mapa %>%
                        "Electores Hombres:", LISTA_HOMBRES, "<br>",
                        "Electores  Mujeres:", LISTA_MUJERES, "<br>",
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>","<br>",
-                       "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -654,8 +585,8 @@ mapa <- mapa %>%
 # Agregar el control de capas al mapa
 mapa <- mapa %>%
     addLayersControl(
-        baseGroups = c("Manzanas","Colonias", "Secciones","AGEB","Circunscripciones", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora","ESEM", "Competitividad","Competitividad PRI", "Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
+        baseGroups = c("Manzanas","Colonias", "Secciones", "Municipios","Distrito Local","Distrito Federal"),
+        overlayGroups = c("Coalición Ganadora", "Competitividad","Competitividad PRI", "Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -682,8 +613,8 @@ mapa <- mapa %>%
     ) %>%
     addLegend(
         data = mapa_ACUÑA,
-        pal = colores_CompetitividadP, # Establecer los colores de la leyenda usando colores
-        values = ~CompetitividadP, # Establecer los valores de la leyenda
+        pal = colores_U, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadU, # Establecer los valores de la leyenda
         title = "Competitividad Electoral del Frente sin el PRI",
         position = "bottomleft",
         layerId = "LeyendaPRI",
@@ -733,17 +664,7 @@ mapa <- mapa %>%
         position = "bottomleft",
         layerId = "Leyendagene",
         group = "Generacion"  # Grupo de la leyenda
-    )  %>%
-    addLegend(
-        data = ESEM_COAHUILA_ACUÑA,
-        pal = colores_ESEM, # Establecer los colores de la leyenda usando colores
-        values = ~NIVEL, # Establecer los valores de la leyenda
-        title = "Estratos socioeconómicos",
-        position = "bottomleft",
-        layerId = "LeyendaESEM",
-        group = "ESEM"  # Grupo de la leyenda
-    ) 
-
+    )  
 
 # Agregar el control de HTML al mapa
 mapa <- mapa %>%
