@@ -240,7 +240,6 @@ colores_GanadorC_23 <- colorFactor(
     palette = c("darkblue", "brown", "orange", "red"), 
  levels = c("Alianza Ciudadana por la Seguridad","Movimiento Regeneración Nacional","Rescatemos Coahuila","Partido del Trabajo"))
 
-
 # Reordenar los niveles del factor Sugerencia en el dataframe mapa_ACUÑA
 mapa_ACUÑA$Sugerencia <- factor(mapa_ACUÑA$Sugerencia,
                                      levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
@@ -250,16 +249,14 @@ colores_SUGERENCIA <- colorFactor(
     palette = c("red", "darkblue","yellow", "white"), 
                                      levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
 
-
 # Reordenar los niveles del factor Recuperacion
 mapa_ACUÑA$Recuperacion <- factor(mapa_ACUÑA$Recuperacion,
                   levels = c("Muy poca perdida de simpatizantes o aumento en el tiempo", "Poca perdida de simpatizantes en el tiempo", "Perdida media de simpatizantes en el tiempo", "Alta Perdida de simpatizantes en el tiempo","Muy alta Perdida de simpatizantes en el tiempo"))
 
 # Definir los colores para cada nivel de Recuperacion
 colores_Recuperacion <- colorFactor(
-    palette = c("#66BD63", "#e5be01", "#006837", "#A50026", "#F46D43"), 
+		palette = brewer.pal(5, "PuOr"), 
                   levels = c("Muy poca perdida de simpatizantes o aumento en el tiempo", "Poca perdida de simpatizantes en el tiempo", "Perdida media de simpatizantes en el tiempo", "Alta Perdida de simpatizantes en el tiempo","Muy alta Perdida de simpatizantes en el tiempo"))
-
 
 # Reordenar los niveles del factor Recuperacion
 mapa_ACUÑA$CompetitividadU <- factor(mapa_ACUÑA$CompetitividadU,
@@ -267,7 +264,7 @@ mapa_ACUÑA$CompetitividadU <- factor(mapa_ACUÑA$CompetitividadU,
 
 # Definir los colores para cada nivel de Recuperacion
 colores_U <- colorFactor(
-    palette = c("#66BD63", "#e5be01", "#006837", "#A50026", "#F46D43"), 
+palette = c("#006837","#66BD63", "#e5be01", "#F46D43" ,"#A50026"),
                   levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad","Muy alta Competitividad"))
 
 # Reordenar los niveles del factor CompetitividadP
@@ -275,10 +272,9 @@ mapa_ACUÑA$Peso_coalicion <- factor(mapa_ACUÑA$Peso_coalicion,
         levels = c("Mayor peso en la coalición en 2023", "Segundo mayor peso en la coalición en 2023", "Peso intermedio en la coalición en 2023", "Segundo peso más bajo en la coalición en 2023", "Peso más bajo en la coalición en 2023"))
 
 # Definir los colores para cada nivel de competitividadP
-Peso_coalicion <- colorFactor(
-    palette = c("#66C2A5", "#E6F598", "#3288BD", "#9E0142", "#FDAE61"), 
+Color_peso <- colorFactor(
+palette = c("#3288BD","#66C2A5", "#E6F598", "#FDAE61", "#9E0142"), 
         levels = c("Mayor peso en la coalición en 2023", "Segundo mayor peso en la coalición en 2023", "Peso intermedio en la coalición en 2023", "Segundo peso más bajo en la coalición en 2023", "Peso más bajo en la coalición en 2023"))
-
 
 # Reordenar los niveles del factor Switcher
 mapa_ACUÑA$Switcher <- factor(mapa_ACUÑA$Switcher,
@@ -316,6 +312,7 @@ colores_Gene <- colorFactor(
 mapa_ACUÑA$Gene_prepo <- factor(mapa_ACUÑA$Gene_prepo,
                                      levels = c("GEN_Z","MILLENNIALS", "GEN_X", "BOOMERS","SILENT","Sin datos"))
 
+mapa_ACUÑA$MUNICIPIO <- rep("Acuña", nrow(mapa_ACUÑA))
 
 # Crear un mapa base con el fondo de OpenStreetMap
 mapa <- leaflet() %>%
@@ -417,10 +414,16 @@ mapa <- mapa %>%
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Intervalo de votos que se pueden recuperar:", Recuperacion, "<br>",
                        "Votos por UDC en la última eleccción:", UDC_23, "<br>",
-                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porUDC_23, 2), "%"), "<br>",
-                       "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>","<br>",
+                       "Votos por UDC en 2018:", UDC_18, "<br>",
+                       "Porcentaje de votos por UDC en la última eleccción:", paste(round(porUDC_23, 2), "%"), "<br>",
+                       "Votos por UDC en la última eleccción:", PRI_23, "<br>",
+                       "Votos por el PRI en 2018:", PRI_18, "<br>",
+                       "Porcentaje de votos por PRI en la última eleccción:", paste(round(porPRI_23, 2), "%"), "<br>",
+                       "Votos por Morena en la última eleccción:", MORENA_23, "<br>",
+                       "Votos por Morena en 2018:", MORENA_18, "<br>",
+                       "Porcentaje de votos por Morena en la última eleccción:", paste(round(porMORENA_23, 2), "%"), "<br>",
+                       "Votos Totales en la última eleccción:", TOTAL_VOTOS_23, "<br>","<br>",
                        
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
@@ -442,8 +445,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Intervalo de votos que se pueden recuperar:", Recuperacion, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
                        
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
@@ -461,6 +463,16 @@ mapa <- mapa %>%
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección hay:", Recuperacion, "<br>",
+                       "En la sección para UDC hay:", CompetitividadU, "<br>",
+                       "En la sección hay:", Peso_coalicion, "<br>",
+                       "De 2018 a 2023 los electores de UDC cambiaron:", paste(round(diferenciaTiempo*1, 1), "Votos"), "<br>",
+                       "Votos de la Coalición de UDC en 2023", Coalicion23, "<br>",
+                       "Votos de la Coalición de UDC en 2023 (sin UDC)", diferencia_inter23, "<br>",
+                       "Votos de UDC en 2023", UDC_23, "<br>",
+                       "Votos de la Coalición de UDC en 2018", Coalicion18, "<br>",
+                       "Votos de la Coalición de UDC en 2018 (sin UDC)", diferencia_inter18, "<br>",
+                       "Votos de UDC en 2018", UDC_18, "<br>",
                        "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>",
                        "Población Generación Z(18-24 años):", GEN_Z_TOTAL, "<br>",
                        "Porcentaje de Generación Z:", paste(round(GEN_Z_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
@@ -474,7 +486,6 @@ mapa <- mapa %>%
                        "Porcentaje Silent Generation:", paste(round(SILENT_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>",
                        "Participación:", paste(round(participacion*1, 2), "%"),"<br>","<br>",
-                       
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
@@ -491,14 +502,16 @@ mapa <- mapa %>%
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección hay:", Recuperacion, "<br>",
+                       "De 2018 a 2023 los electores de UDC cambiaron:", paste(round(diferenciaTiempo*1, 1), "Votos"), "<br>",
+                       "El intervalo del quintil de votos a recuperar es de:", quintilDT, "<br>",
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
-                       
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
-        group = "Competitividad"       # Nombre del grupo de la capa
+        group = "Secciones a recuperar"       # Nombre del grupo de la capa
     ) 
 
 mapa <- mapa %>%
@@ -510,10 +523,42 @@ mapa <- mapa %>%
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "En la sección para UDC hay:", CompetitividadU, "<br>",
+                       "Votos por UDC en 2023:", UDC_23, "<br>",
+                       "Votos por UDC en 2018:", UDC_18, "<br>",
+                       "El intervalo del quintil de competitividad es de:", quintilU, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
-        group = "Competitividad PRI"       # Nombre del grupo de la capa
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad UDC"       # Nombre del grupo de la capa
+    )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_ACUÑA,
+        fillColor = ~Color_peso(Peso_coalicion),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección hay:", Peso_coalicion, "<br>",
+                       "Votos de la Coalición de UDC en 2023", Coalicion23, "<br>",
+                       "Votos de la Coalición de UDC en 2023 (sin UDC)", diferencia_inter23, "<br>",
+                       "Votos de UDC en 2023", UDC_23, "<br>",
+                       "Votos de la Coalición de UDC en 2018", Coalicion18, "<br>",
+                       "Votos de la Coalición de UDC en 2018 (sin UDC)", diferencia_inter18, "<br>",
+                       "Votos de UDC en 2018", UDC_18, "<br>",
+                       "El intervalo del quintil del peso de la coalción en 2023 es de:", quintilDI23, "<br>",
+                       "El intervalo del quintil del peso de la coalción en 2018 es de:", quintilDI18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Peso Coalicion"       # Nombre del grupo de la capa
     )
 
 # Agregar capa de polígonos para Participación
@@ -586,7 +631,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addLayersControl(
         baseGroups = c("Manzanas","Colonias", "Secciones", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora", "Competitividad","Competitividad PRI", "Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
+        overlayGroups = c("Coalición Ganadora", "Peso Coalicion","Competitividad UDC", "Secciones a recuperar","Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -606,19 +651,28 @@ mapa <- mapa %>%
         pal = colores_Recuperacion, # Establecer los colores de la leyenda usando colores
         values = ~Recuperacion, # Establecer los valores de la leyenda
         labels = textoLeyendaD, # Texto de la leyenda preparado que incluye intervalos
-        title = "Competitividad Electoral Comparada",
+        title = "Secciones que se pueden recuperar",
         position = "bottomleft",
-        layerId = "LeyendaCompetitividad",
-        group = "Competitividad"  # Grupo de la leyenda
+        layerId = "LeyendaRecupera",
+        group = "Secciones a recuperar"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_ACUÑA,
+        pal = Color_peso, # Establecer los colores de la leyenda usando colores
+        values = ~Peso_coalicion, # Establecer los valores de la leyenda
+        title = "Competitividad Electoral del la coalición sin UDC",
+        position = "bottomleft",
+        layerId = "LeyendaPeso",
+        group = "Peso Coalicion"  # Grupo de la leyenda
     ) %>%
     addLegend(
         data = mapa_ACUÑA,
         pal = colores_U, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadU, # Establecer los valores de la leyenda
-        title = "Competitividad Electoral del Frente sin el PRI",
+        title = "Competitividad Electoral del UDC",
         position = "bottomleft",
-        layerId = "LeyendaPRI",
-        group = "Competitividad PRI"  # Grupo de la leyenda
+        layerId = "LeyendaUDC",
+        group = "Competitividad UDC"  # Grupo de la leyenda
     ) %>%
     addLegend(
         data = mapa_ACUÑA,
@@ -669,17 +723,28 @@ mapa <- mapa %>%
 # Agregar el control de HTML al mapa
 mapa <- mapa %>%
     addControl(
-        html = "<div style='margin-bottom: 10px; text-align: center;'>
+        html = "<div style='margin-bottom: 10px; text-align: right;'>
                 Municipio de Acuña, Coahuila<br>
+                Propiedad de Diana Laura Bautista López<br>
                 Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
-
                 Todos los Derechos Reservados<br><br>
                 NOTA:El uso y distribución de la API es responsabilidad del cliente<br>
-                Contacto: qualiaasesores@gmail.com<br>
+                Contacto y soporte tecnico por WA: 55-6706-2281<br>
 
             </div>",
         position = "bottomright"
     )
 
+mapa <- mapa %>%
+    addControl(
+        html = "<div style='margin-bottom: 10px; text-align: justify;'>
+                Votos Totales por UDC con coalición en 2023: 13,112<br>
+                Votos Totales por UDC en 2023: 15,811<br>
+                Votos Totales por UDC con coalición en 2018: 25,371<br>
+                Votos Totales por UDC en 2018: 17,6471<br>
+            </div>",
+        position = "topleft"
+    )
 # Mostrar el mapa
 mapa
+
