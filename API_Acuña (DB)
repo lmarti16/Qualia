@@ -109,12 +109,13 @@ Resultados_ACUÑA <- Resultados_ACUÑA %>%
 
 
 # Crear quintiles
-quintilesF <- quantile(Resultados_ACUÑA$diferenciaPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-
-
-
-quintilesM <- quantile(Resultados_ACUÑA$porSHH_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesD <- quantile(Resultados_ACUÑA$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesU <- quantile(Resultados_ACUÑA$UDC_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesP <- quantile(Resultados_ACUÑA$porPRI_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesC18 <- quantile(Resultados_ACUÑA$Coalicion18, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesC23 <- quantile(Resultados_ACUÑA$Coalicion23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesDT <- quantile(Resultados_ACUÑA$diferenciaTiempo, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesDI18 <- quantile(Resultados_ACUÑA$diferencia_inter18, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesDI23 <- quantile(Resultados_ACUÑA$diferencia_inter23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesparti <- quantile(Resultados_ACUÑA$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesLN <- quantile(Resultados_ACUÑA$LISTA_NOMINAL_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
@@ -129,14 +130,15 @@ labels_custom <- function(breaks) {
 }
 
 # Agrega columna con quintiles y etiquetas personalizadas
-Resultados_ACUÑA$quintilF <- cut(Resultados_ACUÑA$diferenciaPRI, breaks = quintilesF, include.lowest = TRUE, labels = labels_custom(quintilesF))
-Resultados_ACUÑA$quintilM <- cut(Resultados_ACUÑA$porSHH_23, breaks = quintilesM, include.lowest = TRUE, labels = labels_custom(quintilesM))
-Resultados_ACUÑA$quintilD <- cut(Resultados_ACUÑA$diferencia, breaks = quintilesD, include.lowest = TRUE, labels = labels_custom(quintilesD))
+Resultados_ACUÑA$quintilU <- cut(Resultados_ACUÑA$UDC_23, breaks = quintilesU, include.lowest = TRUE, labels = labels_custom(quintilesU))
+Resultados_ACUÑA$quintilP <- cut(Resultados_ACUÑA$porPRI_23, breaks = quintilesP, include.lowest = TRUE, labels = labels_custom(quintilesP))
+Resultados_ACUÑA$quintilC18 <- cut(Resultados_ACUÑA$Coalicion18, breaks = quintilesU, include.lowest = TRUE, labels = labels_custom(quintilesC18))
+Resultados_ACUÑA$quintilC23 <- cut(Resultados_ACUÑA$Coalicion23, breaks = quintilesC23, include.lowest = TRUE, labels = labels_custom(quintilesC23))
+Resultados_ACUÑA$quintilDT <- cut(Resultados_ACUÑA$diferenciaTiempo, breaks = quintilesDT, include.lowest = TRUE, labels = labels_custom(quintilesDT))
+Resultados_ACUÑA$quintilDI18 <- cut(Resultados_ACUÑA$diferencia_inter18, breaks = quintilesDI18, include.lowest = TRUE, labels = labels_custom(quintilesDI18))
+Resultados_ACUÑA$quintilDI23 <- cut(Resultados_ACUÑA$diferencia_inter23, breaks = quintilesDI23, include.lowest = TRUE, labels = labels_custom(quintilesDI23))
 Resultados_ACUÑA$quintilparti <- cut(Resultados_ACUÑA$participacion, breaks = quintilesparti, include.lowest = TRUE, labels = labels_custom(quintilesparti))
 Resultados_ACUÑA$quintilLN <- cut(Resultados_ACUÑA$LISTA_NOMINAL_23, breaks = quintilesLN, include.lowest = TRUE, labels = labels_custom(quintilesLN))
-
-
-
 
 Resultados_ACUÑA <- Resultados_ACUÑA %>%
     rowwise() %>%
