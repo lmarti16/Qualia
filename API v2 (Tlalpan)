@@ -352,7 +352,7 @@ mapa <- mapa %>%
         color = "black",        # Color de los bordes
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
-        group = "Colonias"     # Nombre del grupo de la capa
+        group = "Colonias (Negro)"     # Nombre del grupo de la capa
     )
 
 # Agregar la primera capa de polígonos de manzanas
@@ -362,10 +362,10 @@ mapa <- mapa %>%
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
-        color = "black",        # Color de los bordes
+        color = "grey",        # Color de los bordes
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
-        group = "Manzanas"     # Nombre del grupo de la capa
+        group = "Manzanas (Gris)"     # Nombre del grupo de la capa
     )
 
 # Agregar la  capa de polígonos a nivel de Secciones
@@ -375,10 +375,10 @@ mapa <- mapa %>%
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
-        color = "black",        # Color de los bordes
+        color = "red",        # Color de los bordes
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
-        group = "Secciones"     # Nombre del grupo de la capa
+        group = "Secciones (Rojo)"     # Nombre del grupo de la capa
     )
 
 mapa <- mapa %>%
@@ -387,10 +387,10 @@ mapa <- mapa %>%
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~NIVEL,
-        color = "black",        # Color de los bordes
+        color = "blue",        # Color de los bordes
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
-        group = "AGEB"     # Nombre del grupo de la capa
+        group = "AGEB (Azul)"     # Nombre del grupo de la capa
     )
 mapa <- mapa %>%
     addPolygons(
@@ -398,10 +398,10 @@ mapa <- mapa %>%
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~Circunscripción_CDMX,
-        color = "black",        # Color de los bordes
+        color = "orange",        # Color de los bordes
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
-        group = "Circunscripciones"     # Nombre del grupo de la capa
+        group = "Circunscripciones (Naranja)"     # Nombre del grupo de la capa
     )
 # Agregar la  capa de polígonos a nivel municipios
 mapa <- mapa %>%
@@ -410,10 +410,10 @@ mapa <- mapa %>%
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~NOMBRE,
-        color = "black",        # Color de los bordes
+        color = "pink",        # Color de los bordes
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
-        group = "Municipios"     # Nombre del grupo de la capa
+        group = "Municipios (Rosa)"     # Nombre del grupo de la capa
     )
 # Agregar la segunda capa de Distritos Locales
 mapa <- mapa %>%
@@ -422,10 +422,10 @@ mapa <- mapa %>%
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~DISTRITO,
-        color = "black",        # Color de los bordes
+        color = "purple",        # Color de los bordes
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
-        group = "Distrito Federal"     # Nombre del grupo de la capa
+        group = "Distrito Federal (Purpura)"     # Nombre del grupo de la capa
     )
 
 mapa <- mapa %>%
@@ -434,10 +434,10 @@ mapa <- mapa %>%
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~DISTRITO_L,
-        color = "black",        # Color de los bordes
+        color = "yellow",        # Color de los bordes
         weight = 1,             # Grosor de los bordes
         opacity = 0.8,          # Opacidad de los bordes
-        group = "Distrito Local"     # Nombre del grupo de la capa
+        group = "Distrito Local (Amarillo)"     # Nombre del grupo de la capa
     )
 
 # Agregar la  capa de polígonos con los datos de mapa_TLALPAN y el color según el GanadorC_21
@@ -462,7 +462,7 @@ mapa <- mapa %>%
                        "Votos por JHH en la última eleccción:", SHH_21, "<br>",
                        "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_21, 2), "%"), "<br>",
                        "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_21, "<br>","<br>",
-
+                       
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
@@ -540,7 +540,7 @@ mapa <- mapa %>%
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección hay:", CompetitividadD, "<br>",
-                      "Intervalo de competividad:", quintilD, "<br>",
+                       "Intervalo de competividad:", quintilD, "<br>",
                        "Coalición Ganadora en 2021:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
@@ -560,8 +560,8 @@ mapa <- mapa %>%
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección, para el Frente sin el PRD hay:", CompetitividadP, "<br>",
-                      "Voto de la coalición sin el PRD:", diferenciaPRD, "<br>",
-                      "Intervalo de votos sin el PRD:", quintilF, "<br>",
+                       "Voto de la coalición sin el PRD:", diferenciaPRD, "<br>",
+                       "Intervalo de votos sin el PRD:", quintilF, "<br>",
                        "Votos por el FAM:", FAM_21, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
                        "Votos por el PRD:", PRD_21, "<br>",
@@ -589,13 +589,13 @@ mapa <- mapa %>%
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                      "En la sección hay:", Porcen_parti, "<br>",
-                      "Participación:", paste(round(participacion*1, 2), "%"), "<br>", "<br>",
+                       "En la sección hay:", Porcen_parti, "<br>",
+                       "Participación:", paste(round(participacion*1, 2), "%"), "<br>", "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
-    group = "Participacion"
-  )
+        group = "Participacion"
+    )
 
 mapa <- mapa %>%
     addPolygons(
@@ -621,7 +621,7 @@ mapa <- mapa %>%
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                      "En la sección la lista nominal es:", Tamaños_lista, "<br>",
+                       "En la sección la lista nominal es:", Tamaños_lista, "<br>",
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>", "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
@@ -654,11 +654,10 @@ mapa <- mapa %>%
                        "Lista Nominal para 2024:", LISTA_NOMINAL),
         group = "Generacion"
     )
-# Agregar el control de capas al mapa
 mapa <- mapa %>%
     addLayersControl(
-        baseGroups = c("Manzanas","Colonias", "Secciones","AGEB","Circunscripciones", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora","ESEM", "Competitividad","Competitividad PRD", "Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
+        # Retiramos baseGroups ya que queremos que todas sean superposiciones
+        overlayGroups = c("Manzanas (Gris)", "Colonias (Negro)", "Secciones (Rojo)", "AGEB (Azul)", "Circunscripciones (Naranja)", "Municipios (Rosa)", "Distrito Local (Amarillo)", "Distrito Federal (Purpura)", "Coalición Ganadora", "ESEM", "Competitividad", "Competitividad PRD", "Switcher", "Participacion", "Lista Nominal", "Generacion", "Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -677,7 +676,7 @@ mapa <- mapa %>%
         data = mapa_TLALPAN,
         pal = colores_CompetitividadD, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadD, # Establecer los valores de la leyenda
-          labels = textoLeyendaD, # Texto de la leyenda preparado que incluye intervalos
+        labels = textoLeyendaD, # Texto de la leyenda preparado que incluye intervalos
         title = "Competitividad Electoral Comparada",
         position = "bottomleft",
         layerId = "LeyendaCompetitividad",
@@ -710,7 +709,7 @@ mapa <- mapa %>%
         layerId = "LeyendaSugerencia",
         group = "Sugerencia"  # Grupo de la leyenda
     )  %>%
-   addLegend(
+    addLegend(
         data = mapa_TLALPAN,
         pal = colores_participacion, # Establecer los colores de la leyenda usando colores
         values = ~Porcen_parti, # Establecer los valores de la leyenda
@@ -719,7 +718,7 @@ mapa <- mapa %>%
         layerId = "Leyendaparticipa",
         group = "Participacion"  # Grupo de la leyenda
     )  %>%
-   addLegend(
+    addLegend(
         data = mapa_TLALPAN,
         pal = colores_LN, # Establecer los colores de la leyenda usando colores
         values = ~Tamaños_lista, # Establecer los valores de la leyenda
@@ -728,7 +727,7 @@ mapa <- mapa %>%
         layerId = "Leyendalista",
         group = "Lista Nominal"  # Grupo de la leyenda
     )  %>%
-   addLegend(
+    addLegend(
         data = mapa_TLALPAN,
         pal = colores_Gene, # Establecer los colores de la leyenda usando colores
         values = ~Gene_prepo, # Establecer los valores de la leyenda
