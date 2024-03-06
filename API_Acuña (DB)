@@ -178,21 +178,28 @@ Resultados_ACUÑA <- Resultados_ACUÑA %>%
 
 mapa_ACUÑA <- left_join(Secciones_COAHUILA_ACUÑA , Resultados_ACUÑA, by = c("SECCION", "ENTIDAD"))
 
-# Corrección en la creación de las columnas CompetitividadD y CompetitividadP
+# Corrección en la creación de las columnas Recuperacion y CompetitividadP
 mapa_ACUÑA <- mapa_ACUÑA %>%
-  mutate(CompetitividadD = case_when(
-    quintilD == labels_custom(quintilesD)[1] ~ "Muy poca Competitividad",
-    quintilD == labels_custom(quintilesD)[2] ~ "Poca Competitividad",
-    quintilD == labels_custom(quintilesD)[3] ~ "Competitividad media",
-    quintilD == labels_custom(quintilesD)[4] ~ "Alta Competitividad",
-    quintilD == labels_custom(quintilesD)[5] ~ "Muy alta Competitividad"
-  )) %>%
   mutate(CompetitividadU = case_when(
-    quintilF == labels_custom(quintilesF)[1] ~ "Muy poca Competitividad",
-    quintilF == labels_custom(quintilesF)[2] ~ "Poca Competitividad",
-    quintilF == labels_custom(quintilesF)[3] ~ "Competitividad media",
-    quintilF == labels_custom(quintilesF)[4] ~ "Alta Competitividad",
-    quintilF == labels_custom(quintilesF)[5] ~ "Muy alta Competitividad"
+    quintilU == labels_custom(quintilesU)[1] ~ "Muy poca Competitividad",
+    quintilU == labels_custom(quintilesU)[2] ~ "Poca Competitividad",
+    quintilU == labels_custom(quintilesU)[3] ~ "Competitividad media",
+    quintilU == labels_custom(quintilesU)[4] ~ "Alta Competitividad",
+    quintilU == labels_custom(quintilesU)[5] ~ "Muy alta Competitividad"
+  )) %>%
+  mutate(Recuperacion = case_when(
+    quintilDT == labels_custom(quintilesDT)[1] ~ "Muy poca perdida de simpatizantes o aumento en el tiempo",
+    quintilDT == labels_custom(quintilesDT)[2] ~ "Poca perdida de simpatizantes en el tiempo",
+    quintilDT == labels_custom(quintilesDT)[3] ~ "Perdida media de simpatizantes en el tiempo",
+    quintilDT == labels_custom(quintilesDT)[4] ~ "Alta Perdida de simpatizantes en el tiempo",
+    quintilDT == labels_custom(quintilesDT)[5] ~ "Muy alta Perdida de simpatizantes en el tiempo"
+  )) %>%
+  mutate(Peso_coalicion = case_when(
+    quintilDI23 == labels_custom(quintilesDI23)[1] ~ "Mayor peso en la coalición en 2023",
+    quintilDI23 == labels_custom(quintilesDI23)[2] ~ "Segundo mayor peso en la coalición en 2023",
+    quintilDI23 == labels_custom(quintilesDI23)[3] ~ "Peso intermedio en la coalición en 2023",
+    quintilDI23 == labels_custom(quintilesDI23)[4] ~ "Segundo peso más bajo en la coalición en 2023",
+    quintilDI23 == labels_custom(quintilesDI23)[5] ~ "Peso más bajo en la coalición en 2023"
   )) %>%
   mutate(Tamaños_lista = case_when(
     quintilLN == labels_custom(quintilesLN)[1] ~ "La más baja",
@@ -245,16 +252,18 @@ colores_SUGERENCIA <- colorFactor(
                                      levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
 
 
+# Reordenar los niveles del factor Recuperacion
+mapa_ACUÑA$Recuperacion <- factor(mapa_ACUÑA$Recuperacion,
+                  levels = c("Muy poca perdida de simpatizantes o aumento en el tiempo", "Poca perdida de simpatizantes en el tiempo", "Perdida media de simpatizantes en el tiempo", "Alta Perdida de simpatizantes en el tiempo","Muy alta Perdida de simpatizantes en el tiempo"))
 
-
-# Reordenar los niveles del factor CompetitividadD
-mapa_ACUÑA$CompetitividadD <- factor(mapa_ACUÑA$CompetitividadD,
-                                          levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
-
-# Definir los colores para cada nivel de competitividadD
-colores_CompetitividadD <- colorFactor(
+# Definir los colores para cada nivel de Recuperacion
+colores_Recuperacion <- colorFactor(
     palette = c("#66BD63", "#e5be01", "#006837", "#A50026", "#F46D43"), 
-    domain = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+                  levels = c("Muy poca perdida de simpatizantes o aumento en el tiempo", "Poca perdida de simpatizantes en el tiempo", "Perdida media de simpatizantes en el tiempo", "Alta Perdida de simpatizantes en el tiempo","Muy alta Perdida de simpatizantes en el tiempo"))
+
+
+
+
 
 # Reordenar los niveles del factor CompetitividadP
 mapa_ACUÑA$CompetitividadP <- factor(mapa_ACUÑA$CompetitividadP,
@@ -423,7 +432,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
                        "Partido preponderante en 2012:", Ganador_12, "<br>",
-                       "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
+                       "Competitividad de la Sección FAM:", Recuperacion, "<br>",
                        "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
                        "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
                        "Votos por JHH en la última eleccción:", SHH_23, "<br>",
@@ -451,7 +460,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Competitividad de la Sección FAM:", CompetitividadD,"<br>","<br>",
+                       "Competitividad de la Sección FAM:", Recuperacion,"<br>","<br>",
                        
                        "Circunscripción:", Circunscripción_COAHUILA, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
@@ -475,7 +484,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
+                       "Competitividad de la Sección FAM:", Recuperacion, "<br>",
                        "Competitividad de la Sección PRI:", CompetitividadP, "<br>",
                        "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
                        "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
@@ -505,13 +514,13 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_ACUÑA,
-        fillColor = ~colores_CompetitividadD(CompetitividadD),
+        fillColor = ~colores_Recuperacion(Recuperacion),
         fillOpacity = 0.8,
         label = ~SECCION,
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "En la sección hay:", CompetitividadD, "<br>",
+                       "En la sección hay:", Recuperacion, "<br>",
                        "Intervalo de competividad:", quintilD, "<br>",
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
@@ -663,8 +672,8 @@ mapa <- mapa %>%
     ) %>%
     addLegend(
         data = mapa_ACUÑA,
-        pal = colores_CompetitividadD, # Establecer los colores de la leyenda usando colores
-        values = ~CompetitividadD, # Establecer los valores de la leyenda
+        pal = colores_Recuperacion, # Establecer los colores de la leyenda usando colores
+        values = ~Recuperacion, # Establecer los valores de la leyenda
         labels = textoLeyendaD, # Texto de la leyenda preparado que incluye intervalos
         title = "Competitividad Electoral Comparada",
         position = "bottomleft",
