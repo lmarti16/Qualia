@@ -187,18 +187,18 @@ mapa_ACUÑA <- mapa_ACUÑA %>%
     quintilU == labels_custom(quintilesU)[5] ~ "Muy alta Competitividad"
   )) %>%
   mutate(Recuperacion = case_when(
-    quintilDT == labels_custom(quintilesDT)[1] ~ "Muy poca perdida de simpatizantes o aumento en el tiempo",
-    quintilDT == labels_custom(quintilesDT)[2] ~ "Poca perdida de simpatizantes en el tiempo",
+    quintilDT == labels_custom(quintilesDT)[5] ~ "Muy poca perdida de simpatizantes o aumento en el tiempo",
+    quintilDT == labels_custom(quintilesDT)[4] ~ "Poca perdida de simpatizantes en el tiempo",
     quintilDT == labels_custom(quintilesDT)[3] ~ "Perdida media de simpatizantes en el tiempo",
-    quintilDT == labels_custom(quintilesDT)[4] ~ "Alta Perdida de simpatizantes en el tiempo",
-    quintilDT == labels_custom(quintilesDT)[5] ~ "Muy alta Perdida de simpatizantes en el tiempo"
+    quintilDT == labels_custom(quintilesDT)[2] ~ "Alta Perdida de simpatizantes en el tiempo",
+    quintilDT == labels_custom(quintilesDT)[1] ~ "Muy alta Perdida de simpatizantes en el tiempo"
   )) %>%
   mutate(Peso_coalicion = case_when(
-    quintilDI23 == labels_custom(quintilesDI23)[1] ~ "Mayor peso en la coalición en 2023",
+    quintilDI23 == labels_custom(quintilesDI23)[1] ~ "Mayor peso en la coalición en 2023 (UDC aportó más votos a su coalición)",
     quintilDI23 == labels_custom(quintilesDI23)[2] ~ "Segundo mayor peso en la coalición en 2023",
     quintilDI23 == labels_custom(quintilesDI23)[3] ~ "Peso intermedio en la coalición en 2023",
     quintilDI23 == labels_custom(quintilesDI23)[4] ~ "Segundo peso más bajo en la coalición en 2023",
-    quintilDI23 == labels_custom(quintilesDI23)[5] ~ "Peso más bajo en la coalición en 2023"
+    quintilDI23 == labels_custom(quintilesDI23)[5] ~ "Peso más bajo en la coalición en 2023 (UDC aportó menos votos a su coalición)"
   )) %>%
   mutate(Tamaños_lista = case_when(
     quintilLN == labels_custom(quintilesLN)[1] ~ "La más baja",
@@ -269,12 +269,12 @@ palette = c("#006837","#66BD63", "#e5be01", "#F46D43" ,"#A50026"),
 
 # Reordenar los niveles del factor CompetitividadP
 mapa_ACUÑA$Peso_coalicion <- factor(mapa_ACUÑA$Peso_coalicion,
-        levels = c("Mayor peso en la coalición en 2023", "Segundo mayor peso en la coalición en 2023", "Peso intermedio en la coalición en 2023", "Segundo peso más bajo en la coalición en 2023", "Peso más bajo en la coalición en 2023"))
+        levels = c("Mayor peso en la coalición en 2023 (UDC aportó más votos a su coalición)", "Segundo mayor peso en la coalición en 2023", "Peso intermedio en la coalición en 2023", "Segundo peso más bajo en la coalición en 2023", "Peso más bajo en la coalición en 2023 (UDC aportó menos votos a su coalición)"))
 
 # Definir los colores para cada nivel de competitividadP
 Color_peso <- colorFactor(
 palette = c("#3288BD","#66C2A5", "#E6F598", "#FDAE61", "#9E0142"), 
-        levels = c("Mayor peso en la coalición en 2023", "Segundo mayor peso en la coalición en 2023", "Peso intermedio en la coalición en 2023", "Segundo peso más bajo en la coalición en 2023", "Peso más bajo en la coalición en 2023"))
+        levels = c("Mayor peso en la coalición en 2023 (UDC aportó más votos a su coalición)", "Segundo mayor peso en la coalición en 2023", "Peso intermedio en la coalición en 2023", "Segundo peso más bajo en la coalición en 2023", "Peso más bajo en la coalición en 2023 (UDC aportó menos votos a su coalición)"))
 
 # Reordenar los niveles del factor Switcher
 mapa_ACUÑA$Switcher <- factor(mapa_ACUÑA$Switcher,
@@ -295,7 +295,7 @@ colores_LN <- colorFactor(
 
 # Reordenar los niveles del factor Participacion en el dataframe LN
 mapa_ACUÑA$Porcen_parti <- factor(mapa_ACUÑA$Porcen_parti,
-                                     levels = c("Muy poca participación", "Poca participación", "Participación media","Alta participación","Muy alta participación"))
+                     levels = c("Muy poca participación", "Poca participación", "Participación media","Alta participación","Muy alta participación"))
 
 # Definir los colores para cada nivel de Participacion
 colores_participacion <- colorFactor(
@@ -425,7 +425,7 @@ mapa <- mapa %>%
                        "Porcentaje de votos por Morena en la última eleccción:", paste(round(porMORENA_23, 2), "%"), "<br>",
                        "Votos Totales en la última eleccción:", TOTAL_VOTOS_23, "<br>","<br>",
                        
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
         group = "Switcher"       # Nombre del grupo de la capa
@@ -447,7 +447,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
                        
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
         group = "Coalición Ganadora"       # Nombre del grupo de la capa
@@ -486,7 +486,7 @@ mapa <- mapa %>%
                        "Porcentaje Silent Generation:", paste(round(SILENT_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>",
                        "Participación:", paste(round(participacion*1, 2), "%"),"<br>","<br>",
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
         group = "Sugerencia"       # Nombre del grupo de la capa
@@ -508,7 +508,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
         group = "Secciones a recuperar"       # Nombre del grupo de la capa
@@ -531,7 +531,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
         group = "Competitividad UDC"       # Nombre del grupo de la capa
@@ -555,7 +555,7 @@ mapa <- mapa %>%
                        "Votos de UDC en 2018", UDC_18, "<br>",
                        "El intervalo del quintil del peso de la coalción en 2023 es de:", quintilDI23, "<br>",
                        "El intervalo del quintil del peso de la coalción en 2018 es de:", quintilDI18, "<br>","<br>",
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
         group = "Peso Coalicion"       # Nombre del grupo de la capa
@@ -573,7 +573,7 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección hay:", Porcen_parti, "<br>",
                        "Participación:", paste(round(participacion*1, 2), "%"), "<br>","<br>",
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
         group = "Participacion"
@@ -593,7 +593,7 @@ mapa <- mapa %>%
                        "En la sección la lista nominal es:", Tamaños_lista, "<br>",
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>","<br>",
                        
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
         group = "Lista Nominal"
@@ -622,7 +622,7 @@ mapa <- mapa %>%
                        "Electores Hombres:", LISTA_HOMBRES, "<br>",
                        "Electores  Mujeres:", LISTA_MUJERES, "<br>",
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>","<br>",
-                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Municipio: Acuña", "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
         group = "Generacion"
@@ -738,8 +738,8 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
-                Votos Totales por UDC con coalición en 2023: 13,112<br>
-                Votos Totales por UDC en 2023: 15,811<br>
+                Votos Totales por UDC con coalición en 2023: 15,811 <br>
+                Votos Totales por UDC en 2023:13,112<br>
                 Votos Totales por UDC con coalición en 2018: 25,371<br>
                 Votos Totales por UDC en 2018: 17,6471<br>
             </div>",
