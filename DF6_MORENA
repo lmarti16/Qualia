@@ -121,7 +121,7 @@ Resultados_DF6 <- Resultados_DF6 %>%
     mutate( porSHH_21 = (SHH_21 /TOTAL_VOTOS_21)*100) %>% 
     mutate( participacion = (TOTAL_VOTOS_21 /LISTA_NOMINAL_21)*100) %>% 
     mutate( diferencia = porSHH_21 - porFAM_21) %>%
-    mutate( diferenciaMORENA = porSHH_21 - MORENA_21) 
+    mutate( diferenciaMORENA = SHH_21 - MORENA_21) 
 
 # Crear quintiles
 quintilesF <- quantile(Resultados_DF6$diferenciaMORENA, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -448,8 +448,8 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_DF6,
-        fillColor = ~colores_Switcher(Switcher),
-        fillOpacity = 0.8,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
         color = "white",
         weight = 1,
