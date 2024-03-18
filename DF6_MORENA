@@ -341,7 +341,6 @@ paleta_colores <- brewer.pal(n = 9, name = "Paired")
 # Crear la función de mapeo de colores usando colorFactor()
 colores_Circunscripcion <- colorFactor(palette = paleta_colores, domain = Secciones_CDMX_DF6$Circunscripción_CDMX)
 
-
 # Crear un mapa base con el fondo de OpenStreetMap
 mapa <- leaflet() %>%
     addProviderTiles(provider = "OpenStreetMap")
@@ -399,7 +398,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = Secciones_CDMX_DF6,
-        fillColor = ~colores_Circunscripcion(Circunscripción_CDMX), # Usar la función de colores según la Circunscripción_CDMX
+        fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~Circunscripción_CDMX,
         color = NA,        # Color de los bordes
@@ -448,7 +447,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_DF6,
-        fillColor = "white",    # Color de fondo blanco
+        fillColor = ~colores_Switcher(Switcher),
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
         color = "white",
