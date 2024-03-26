@@ -125,9 +125,13 @@ Resultados_XOCHIMILCO <- Resultados_XOCHIMILCO %>%
     mutate( porSHH_21 = (SHH_21 /TOTAL_VOTOS_21)*100) %>% 
     mutate( participacion = (TOTAL_VOTOS_21 /LISTA_NOMINAL_21)*100) %>% 
     mutate( diferencia =  porFAM_21 - porSHH_21) %>%
-    mutate( diferenciaPRD = FAM_21 - PRD_21) %>%
-    mutate( diferenciaPRI = FAM_21 - PRI_21) %>%
-    mutate( diferenciaPAN = FAM_21 - PAN_21) 
+    mutate( diferenciaPRD = porFAM_21 - porPRD_21) %>%
+    mutate( diferenciaPRI = porFAM_21 - porPRI_21) %>%
+    mutate( diferenciaPAN = porFAM_21 - porPAN_21)  %>%
+    mutate( VsinPAN = FAM_21 - PAN_21) %>%
+    mutate( VsinPRI = FAM_21 - PRI_21) %>%
+    mutate( VsinPRD = FAM_21 - PRD_21) %>%
+    mutate( Vdif = FAM_21 - SHH_21) 
 
 # Crear quintiles
 quintilesPRD <- quantile(Resultados_XOCHIMILCO$diferenciaPRD, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -229,7 +233,7 @@ mapa_XOCHIMILCO <- mapa_XOCHIMILCO %>%
     quintilPRD == labels_custom(quintilesPRD)[4] ~ "Poco Impacto",
     quintilPRD == labels_custom(quintilesPRD)[3] ~ "Impacto Medio",
     quintilPRD == labels_custom(quintilesPRD)[2] ~ "Alto Impacto",
-    quintilPRD == labels_custom(quintilesPRD)[1] ~ "Muy Alto Impacto""
+    quintilPRD == labels_custom(quintilesPRD)[1] ~ "Muy Alto Impacto"
   )) %>%
   mutate(Tamaños_lista = case_when(
     quintilLN == labels_custom(quintilesLN)[1] ~ "La más baja",
@@ -246,17 +250,18 @@ mapa_XOCHIMILCO <- mapa_XOCHIMILCO %>%
     quintilparti == labels_custom(quintilesparti)[5] ~ "Muy alta participación"
   )) %>%
   mutate(CompetitividadPRI = case_when(
-    quintilPRI == labels_custom(quintilesPRI)[1] ~ "Muy Poco Impacto",
-    quintilPRD == labels_custom(quintilesPRI)[4] ~ "Poco Impacto",
-    quintilPRD == labels_custom(quintilesPRI)[3] ~ "Impacto Medio",
-    quintilPRD == labels_custom(quintilesPRI)[2] ~ "Alto Impacto",
-    quintilPRD == labels_custom(quintilesPRI)[1] ~ "Muy Alto Impacto""
+    quintilPRI == labels_custom(quintilesPRI)[5] ~ "Muy Poco Impacto",
+    quintilPRI == labels_custom(quintilesPRI)[4] ~ "Poco Impacto",
+    quintilPRI == labels_custom(quintilesPRI)[3] ~ "Impacto Medio",
+    quintilPRI == labels_custom(quintilesPRI)[2] ~ "Alto Impacto",
+    quintilPRI == labels_custom(quintilesPRI)[1] ~ "Muy Alto Impacto"
+  )) %>%
   mutate(CompetitividadPAN = case_when(
-    quintilPAN == labels_custom(quintilesPAN)[1] ~ "Muy Poco Impacto",
-    quintilPRD == labels_custom(quintilesPAN)[4] ~ "Poco Impacto",
-    quintilPRD == labels_custom(quintilesPAN)[3] ~ "Impacto Medio",
-    quintilPRD == labels_custom(quintilesPAN)[2] ~ "Alto Impacto",
-    quintilPRD == labels_custom(quintilesPAN)[1] ~ "Muy Alto Impacto""
+    quintilPAN == labels_custom(quintilesPAN)[5] ~ "Muy Poco Impacto",
+    quintilPAN == labels_custom(quintilesPAN)[4] ~ "Poco Impacto",
+    quintilPAN == labels_custom(quintilesPAN)[3] ~ "Impacto Medio",
+    quintilPAN == labels_custom(quintilesPAN)[2] ~ "Alto Impacto",
+    quintilPAN == labels_custom(quintilesPAN)[1] ~ "Muy Alto Impacto"
   ))
 
 # Transformar sistema de coordenadas
@@ -305,29 +310,29 @@ colores_CompetitividadD <- colorFactor(
 
 # Reordenar los niveles del factor CompetitividadPRD
 mapa_XOCHIMILCO$CompetitividadPRD <- factor(mapa_XOCHIMILCO$CompetitividadPRD,
-                                          levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Definir los colores para cada nivel de CompetitividadPRD
 colores_CompetitividadPRD <- colorFactor(
-    palette = c("#FFFFE0", "#FFFF99", "#FFFF66", "#FFCC33", "#FFCC00"), 
+palette = c("#FFCC00", "yellow", "orange", "white", "#FFFFE0"), 
     domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Reordenar los niveles del factor CompetitividadPAN
 mapa_XOCHIMILCO$CompetitividadPAN <- factor(mapa_XOCHIMILCO$CompetitividadPAN,
-                                          levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Definir los colores para cada nivel de CompetitividadPAN
 colores_CompetitividadPAN <- colorFactor(
-    palette = c("#E0FFFF", "#99CCFF", "#6699FF", "#3366FF", "#0000FF"), 
+palette = c("blue", "#6699FF", "darkblue", "white", "#E0FFFF"), 
     domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Reordenar los niveles del factor CompetitividadPRI
 mapa_XOCHIMILCO$CompetitividadPRI<- factor(mapa_XOCHIMILCO$CompetitividadPRI,
-                                          levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Definir los colores para cada nivel de CompetitividadPRI
 colores_CompetitividadPRI <- colorFactor(
-    palette = c("#FFFFE0", "#FFFF99", "#FFFF66", "#FFCC33", "#FFCC00"), 
+palette = c("red", "#FF6666", "darkred", "white", "#FFE0E0"), 
     domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Reordenar los niveles del factor Switcher
@@ -584,9 +589,11 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección hay:", CompetitividadD, "<br>",
                        "Intervalo de competividad:", quintilD, "<br>",
+                       "Diferencia de porcentaje:", paste(round(diferencia, 2), "%"), "<br>",
+                       "Diferencia de votos (FAM-SHH):", Vdif, "<br>",
                        "Coalición Ganadora en 2021:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -603,8 +610,9 @@ mapa <- mapa %>%
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección, para el Frente sin el PRD hay:", CompetitividadPRD, "<br>",
-                       "Voto de la coalición sin el PRD:", diferenciaPRD, "<br>",
-                       "Intervalo de votos sin el PRD:", quintilPRD, "<br>",
+                       "Voto de la coalición sin el PRD:", VsinPRD, "<br>",
+                       "Porcentaje de votos sin el PRD:", paste(round(diferenciaPRD, 2), "%"), "<br>",
+                       "Intervalo de porcentaje sin el PRD:", quintilPRD, "<br>",
                        "Votos por el FAM:", FAM_21, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
                        "Votos por el PRD:", PRD_21, "<br>",
@@ -625,15 +633,16 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_XOCHIMILCO,
-        fillColor = ~colores_CompetitividadPRD(CompetitividadPAN),
+        fillColor = ~colores_CompetitividadPAN(CompetitividadPAN),
         fillOpacity = 0.8,
         label = ~SECCION,
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "En la sección, para el Frente sin el PRD hay:", CompetitividadPAN, "<br>",
-                       "Voto de la coalición sin el PAN:", diferenciaPAN, "<br>",
-                       "Intervalo de votos sin el PRD:", quintilPRD, "<br>",
+                       "En la sección, para el Frente sin el PAN hay:", CompetitividadPAN, "<br>",
+                       "Voto de la coalición sin el PAN:", VsinPAN, "<br>",
+                       "Porcentaje de votos sin el PAN:",paste(round(diferenciaPAN, 2), "%"), "<br>",
+                       "Intervalo de porcentaje sin el PAN:", quintilPAN, "<br>",
                        "Votos por el FAM:", FAM_21, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
                        "Votos por el PAN:", PAN_21, "<br>",
@@ -654,15 +663,16 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_XOCHIMILCO,
-        fillColor = ~colores_CompetitividadPRD(CompetitividadPRI),
+        fillColor = ~colores_CompetitividadPRI(CompetitividadPRI),
         fillOpacity = 0.8,
         label = ~SECCION,
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección, para el Frente sin el PRI hay:", CompetitividadPRI, "<br>",
-                       "Voto de la coalición sin el PRI:", diferenciaPRI, "<br>",
-                       "Intervalo de votos sin el PRD:", quintilPRD, "<br>",
+                       "Voto de la coalición sin el PRI:", VsinPRI, "<br>",
+                       "Porcentaje de votos sin el PRI:",paste(round(diferenciaPRI, 2), "%"), "<br>",
+                       "Intervalo de porcentaje sin el PRI:", quintilPRI, "<br>",
                        "Votos por el FAM:", FAM_21, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
                        "Votos por el PRI:", PRI_21, "<br>",
@@ -788,25 +798,25 @@ mapa <- mapa %>%
         data = mapa_XOCHIMILCO,
         pal = colores_CompetitividadPRD, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadPRD, # Establecer los valores de la leyenda
-        title = "Competitividad Electoral del Frente sin el PRD",
+        title = "Peso del PRD en su coalición",
         position = "bottomleft",
         layerId = "LeyendaPRD",
         group = "Competitividad PRD"  # Grupo de la leyenda
   ) %>%
     addLegend(
         data = mapa_XOCHIMILCO,
-        pal = colores_CompetitividadPRD, # Establecer los colores de la leyenda usando colores
+        pal = colores_CompetitividadPRI, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadPRI, # Establecer los valores de la leyenda
-        title = "Competitividad Electoral del Frente sin el PRI",
+        title = "Peso del PRI en su coalición",
         position = "bottomleft",
         layerId = "LeyendaPRI",
         group = "Competitividad PRI"  # Grupo de la leyenda
       ) %>%
     addLegend(
         data = mapa_XOCHIMILCO,
-        pal = colores_CompetitividadPRD, # Establecer los colores de la leyenda usando colores
+        pal = colores_CompetitividadPAN, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadPAN, # Establecer los valores de la leyenda
-        title = "Competitividad Electoral del Frente sin el PRD",
+        title = "Peso del PAN en su coalición",
         position = "bottomleft",
         layerId = "LeyendaPRD",
         group = "Competitividad PAN"  # Grupo de la leyenda
