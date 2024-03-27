@@ -22,7 +22,7 @@ sec_mex <- read_sf("D:\\Descargas\\secciones_2024.gpkg\\secciones_2024.gpkg")
 Resultados <- read_csv("D:\\52556\\Documents\\Secretaria_GralPRI\\Resultados_resec.csv")
 Lista_NOMINAL <- read_csv("D:\\52556\\Documents\\Secretaria_GralPRI\\2024_LN.csv")
 ESEM_ValleMX <- read_sf("D:\\Descargas\\Socio-economica Edomex-cdmx\\VALLE_DE_MEXICO.shp")
-Secciones_switchers <- read_sf("D:\\52556\\Documents\\Sonora_Isaac\\Secciones_switchers.csv")
+Secciones_Switcher <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\secciones_switcher.csv")
 
 # Filtrar el dataframe Resultados por la columna ENTIDAD igual a 9
 ESEM_CDMX <- filter(ESEM_ValleMX, CVE_ENT == "09")
@@ -163,6 +163,7 @@ Resultados_XOCHIMILCO <- Resultados_XOCHIMILCO %>%
 # CREAR el mapa secines
 mapaMXOCHIMILCO  <- left_join(Manzanas_XOCHIMILCO , Resultados_XOCHIMILCO, by = c("SECCION", "ENTIDAD"))
 mapaMXOCHIMILCO  <- left_join(mapaMXOCHIMILCO , Secciones_switchers, by = c("SECCION", "ENTIDAD"))
+mapaMXOCHIMILCO  <- left_join(mapaMXOCHIMILCO , Lista_NOMINAL, by = c("SECCION", "ENTIDAD"))
 
 
 #Mapa Participación
@@ -479,7 +480,7 @@ Mapa_GenePrepo <- ggplot() +
           panel.grid.minor = element_blank(),   # Quitar líneas de la grilla menor
           plot.title = element_text(hjust = 0.5,size = 18, color = "#014d64", face = "bold"),  # Centrar y ajustar el tamaño del título
           plot.caption = element_text(hjust = 0.5,size = 10, color = "#014d64", face = "bold"),  # Centrar la caption y cambiar el color a blanco
-          plot.subtitle = element_text(hjust = 0.5,size = 14, color = "#014d64", face = "bold"))  # Centrar el subtítulo
+          plot.subtitle = element_text(hjust = 0.5,size = 14, color = "#014d64", face = "bold"))+  # Centrar el subtítulo
     guides(fill = guide_legend(nrow = 3))  # Dos filas en la caja de leyendas
 # Guardar el primer mapa como PDF
 ggsave("D:\\52556\\Documents\\Proyecto F\\XOCHIMILCO\\Mapa_GenePrepo.pdf", 
