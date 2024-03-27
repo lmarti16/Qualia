@@ -231,7 +231,7 @@ ggsave("D:\\52556\\Documents\\Proyecto F\\XOCHIMILCO\\mapa_resultados.pdf",
 #Mapa Partidos21
 Mapa_Partidos21 <- ggplot() +
     annotation_map_tile(type = "osm", zoom = 14) +
-    geom_sf(data = mapaMXOCHIMILCO, aes(fill = Ganador_21), alpha = .9, color = NA) +
+    geom_sf(data = mapaMXOCHIMILCO, aes(fill = GANADOR_21), alpha = .9, color = NA) +
     geom_sf(data = Secciones_XOCHIMILCO, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_XOCHIMILCO, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
     scale_fill_manual(values = c("MORENA" = "#8B4513", "PRI" = "red","PAN" ="blue", "MC" = "orange", "Empate" ="purple" ), name = "Resultado electoral\n de la Manzana") +
@@ -417,7 +417,7 @@ ggsave("D:\\52556\\Documents\\Proyecto F\\XOCHIMILCO\\Mapa_Switchers.pdf",
 
 # MAPA ESEM
 Mapa_ESEM <- ggplot() +
-    annotation_map_tile(type = "osm", zoom = 15) +
+    annotation_map_tile(type = "osm", zoom = 14) +
     geom_sf(data = ESEM_CDMX_XOCHIMILCO, aes(fill = NIVEL), alpha = .7, color = NA) +
     geom_sf(data = Secciones_XOCHIMILCO, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_XOCHIMILCO, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0 , label.size = NA) +
@@ -451,7 +451,7 @@ ggsave("D:\\52556\\Documents\\Proyecto F\\XOCHIMILCO\\Mapa_ESEM.pdf",
 
 #Gene_Prepo
 Mapa_GenePrepo <- ggplot() +
-    annotation_map_tile(type = "osm", zoom = 15) +
+    annotation_map_tile(type = "osm", zoom = 14) +
     geom_sf(data = mapaMXOCHIMILCO, aes(fill = Gene_prepo), alpha = .7, color = NA) +
     geom_sf(data = Secciones_XOCHIMILCO, aes(fill = NULL), color = "black", size = 0.1, alpha = 0) +
     geom_sf_label(data = Secciones_XOCHIMILCO, aes(label = SECCION), size = 1, fill = "white", color = "black", alpha = 0, label.size = NA) +
@@ -489,7 +489,7 @@ ggsave("D:\\52556\\Documents\\Proyecto F\\XOCHIMILCO\\Mapa_GenePrepo.pdf",
 
 # Mapa de Contorno del universo
 mapa_Contorno_XOCHIMILCO<- ggplot() +
-    annotation_map_tile(type = "osm", zoom = 12) +
+    annotation_map_tile(type = "osm", zoom = 14) +
     geom_sf(data = Contorno_XOCHIMILCO, aes(fill = "Oaxaca de Juárez"), color = "black", size = 0.1, alpha = .5) +
     labs(title = "Contorno de la alcaldía XOCHIMILCO",
          caption = paste0("Elaborado por Qualia: Asesoría Especializada\n(Fuente: INEGI e INE/)\n",
