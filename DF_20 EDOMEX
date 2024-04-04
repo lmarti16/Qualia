@@ -866,11 +866,11 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
-                META sugeridad de votos: 72,000<br>
-                Lista Nominal para 2024: 365,066 <br><br>
-                Votos Totales en el 2021: 161,162<br>
-                Votos Totales del FAM en 2021 63,575<br>
-                Votos Totales de MORENA-PT en 2021: 65,438<br>
+                META sugeridad de votos: 57,000<br>
+                Lista Nominal para 2024: 238,311 <br><br>
+                Votos Totales en el 2021: 113,892<br>
+                Votos Totales del FAM en 2021 45,987<br>
+                Votos Totales de MORENA-PT en 2021: 53,732<br>
             </div>",
         position = "topleft"
     )
