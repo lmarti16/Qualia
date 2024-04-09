@@ -85,8 +85,8 @@ Valores_DF_VillaG <- unique(Secciones_EDOMEX_VillaG$DISTRITO_FEDERAL)
 Valores_DL_VillaG <- unique(Secciones_EDOMEX_VillaG$DISTRITO_LOCAL)
 Municipios_EDOMEX_VillaG  <- filter(Municipios_EDOMEX, MUNICIPIO == 114)
 Colonias_EDOMEX <- filter(Colonias_MX, CVE_ENT == "15")
-Colonias_EDOMEX <- st_transform(Colonias_EDOMEX, st_crs(Municipios_VillaG ))
-Colonias_EDOMEX_VillaG <- st_intersection(Municipios_VillaG , Colonias_EDOMEX)
+Colonias_EDOMEX <- st_transform(Colonias_EDOMEX, st_crs(Municipios_EDOMEX_VillaG ))
+Colonias_EDOMEX_VillaG <- st_intersection(Municipios_EDOMEX_VillaG , Colonias_EDOMEX)
 
 # Filtrar DistritoF_EDOMEX
 DistritoF_EDOMEX_VillaG <- DistritoF_EDOMEX[DistritoF_EDOMEX$DISTRITO %in% Valores_DF_VillaG, ]
