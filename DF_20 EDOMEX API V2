@@ -130,7 +130,9 @@ Resultados_DF20 <- Resultados_DF20 %>%
     mutate( VsinPAN = FAM_23 - PAN_23) %>%
     mutate( VsinPRI = FAM_23 - PRI_23) %>%
     mutate( VsinPRD = FAM_23 - PRD_23) %>%
-    mutate( Vdif = FAM_23 - SHH_23) 
+    mutate( Vdif = FAM_23 - SHH_23) %>%
+    mutate( Tdif = FAM_23 - FAM_21) %>%
+    mutate( TPRI = PRI_23 - PRI_21) 
 
 # Crear quintiles
 quintilesPRD <- quantile(Resultados_DF20$diferenciaPRD, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -140,6 +142,8 @@ quintilesparti <- quantile(Resultados_DF20$participacion, probs = c(0, 0.2, 0.4,
 quintilesLN <- quantile(Resultados_DF20$LISTA_NOMINAL_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesPAN <- quantile(Resultados_DF20$diferenciaPAN, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesPRI <- quantile(Resultados_DF20$diferenciaPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTdif <- quantile(Resultados_DF20$Tdif, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTPRI <- quantile(Resultados_DF20$TPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
 # Definir etiquetas personalizadas
 labels_custom <- function(breaks) {
@@ -159,6 +163,8 @@ Resultados_DF20$quintilparti <- cut(Resultados_DF20$participacion, breaks = quin
 Resultados_DF20$quintilLN <- cut(Resultados_DF20$LISTA_NOMINAL_23, breaks = quintilesLN, include.lowest = TRUE, labels = labels_custom(quintilesLN))
 Resultados_DF20$quintilPRI <- cut(Resultados_DF20$diferenciaPRI, breaks = quintilesPRI, include.lowest = TRUE, labels = labels_custom(quintilesPRI))
 Resultados_DF20$quintilPAN <- cut(Resultados_DF20$diferenciaPAN, breaks = quintilesPAN, include.lowest = TRUE, labels = labels_custom(quintilesPAN))
+Resultados_DF20$quintilTdif  <- cut(Resultados_DF20$Tdif , breaks = quintilesTdif , include.lowest = TRUE, labels = labels_custom(quintilesTdif))
+Resultados_DF20$quintilTPRI  <- cut(Resultados_DF20$TPRI , breaks = quintilesTPRI , include.lowest = TRUE, labels = labels_custom(quintilesTPRI))
 
 Resultados_DF20 <- Resultados_DF20 %>%
     rowwise() %>%
@@ -188,6 +194,18 @@ Resultados_DF20 <- Resultados_DF20 %>%
     rowwise() %>%
     mutate(Ganador_21 = {
         votos <- c(PAN = PAN_21, PRI = PRI_21, PRD = PRD_21, PVEM = PVEM_21, PT = PT_21, MC = MC_21, RSP = RSP_21,ES = PES_21,MORENA = MORENA_21,FXM = FXM_21)
+        votos[is.na(votos)] <- 0 # Convertir NA a 0
+        if (all(votos == 0)) {
+            NA_character_ # Retornar NA si todos los votos son 0
+        } else {
+            names(which.max(votos))
+        }
+    })
+
+Resultados_DF20 <- Resultados_DF20 %>%
+    rowwise() %>%
+    mutate(Ganador_FAM= {
+        votos <- c(PAN = PAN_23, PRI = PRI_23, PRD = PRD_23, NAEM = NAEM_23)
         votos[is.na(votos)] <- 0 # Convertir NA a 0
         if (all(votos == 0)) {
             NA_character_ # Retornar NA si todos los votos son 0
@@ -285,7 +303,22 @@ mapa_DF20 <- mapa_DF20 %>%
     quintilPAN == labels_custom(quintilesPAN)[3] ~ "Impacto Medio",
     quintilPAN == labels_custom(quintilesPAN)[2] ~ "Alto Impacto",
     quintilPAN == labels_custom(quintilesPAN)[1] ~ "Muy Alto Impacto"
-  ))
+  )) %>%
+  mutate(PerdidaFAM = case_when(
+    quintilTdif == labels_custom(quintilesTdif)[5] ~ "Ganó o Perdió pocos Votos",
+    quintilTdif == labels_custom(quintilesTdif)[4] ~ "Cuarta Mayor perdida de votos",
+    quintilTdif == labels_custom(quintilesTdif)[3] ~ "Tercera Mayor perdida de votos",
+    quintilTdif == labels_custom(quintilesTdif)[2] ~ "Segunda Mayor perdida de votos",
+    quintilTdif == labels_custom(quintilesTdif)[1] ~ "Mayor perdida de votos"
+  )) %>%
+  mutate(PerdidaPRI = case_when(
+    quintilTPRI == labels_custom(quintilesTPRI)[5] ~ "Ganó o Perdió pocos Votos",
+    quintilTPRI == labels_custom(quintilesTPRI)[4] ~ "Cuarta Mayor perdida de votos",
+    quintilTPRI == labels_custom(quintilesTPRI)[3] ~ "Tercera Mayor perdida de votos",
+    quintilTPRI == labels_custom(quintilesTPRI)[2] ~ "Segunda Mayor perdida de votos",
+    quintilTPRI == labels_custom(quintilesTPRI)[1] ~ "Mayor perdida de votos"
+    )) 
+
 
 # Transformar sistema de coordenadas
 mapa_DF20 <- st_transform(mapa_DF20, crs = 4326)
@@ -321,6 +354,33 @@ mapa_DF20$GanadorC_23 <- factor(mapa_DF20$GanadorC_23,
 colores_GanadorC_23 <- colorFactor(
     palette = c("purple", "brown", "darkblue"), 
     levels = c("Empate", "Sigamos Haciendo Historia", "Fuerza & Corazón por México"))
+
+# Reordenar los niveles del factor Ganador en 2023
+mapa_DF20$Ganador_FAM <- factor(mapa_DF20$Ganador_FAM,
+                                     levels = c("PAN", "PRD", "PRI"))
+
+# Definir los colores para cada Ganador Coalición
+colores_Ganador_FAM <- colorFactor(
+    palette = c("blue", "yellow", "red"), 
+    levels = c("PAN", "PRD", "PRI"))
+
+# Reordenar los niveles del factor CompetitividadPRI
+mapa_DF20$PerdidaPRI<- factor(mapa_DF20$PerdidaPRI,
+levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera Mayor perdida de votos", "Cuarta Mayor perdida de votos", "Ganó o Perdió pocos Votos"))
+
+# Definir los colores para cada nivel de CompetitividadPRI
+colores_PerdidaPRI <- colorFactor(
+palette = c("darkred", "red", "#FF6666", "#FFE0E0", "white"), 
+levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera Mayor perdida de votos", "Cuarta Mayor perdida de votos", "Ganó o Perdió pocos Votos"))
+
+# Reordenar los niveles del factor CompetitividadPRI
+mapa_DF20$PerdidaFAM<- factor(mapa_DF20$PerdidaFAM,
+levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera Mayor perdida de votos", "Cuarta Mayor perdida de votos", "Ganó o Perdió pocos Votos"))
+
+# Definir los colores para cada nivel de CompetitividadPRI
+colores_PerdidaFAM <- colorFactor(
+palette = c("darkblue", "blue", "cyan", "#DEEDF6", "white"), 
+levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera Mayor perdida de votos", "Cuarta Mayor perdida de votos", "Ganó o Perdió pocos Votos"))
 
 # Reordenar los niveles del factor CompetitividadD
 mapa_DF20$CompetitividadD <- factor(mapa_DF20$CompetitividadD,
@@ -709,6 +769,62 @@ mapa <- mapa %>%
         group = "Competitividad PRI"       # Nombre del grupo de la capa
     )
 
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_DF20,
+        fillColor = ~colores_PerdidaFAM(PerdidaFAM),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el Frente sin el PRI hay:", PerdidaFAM, "<br>",
+                       "Votos que ha ganado o perdido el FAM de 23 a 21:", Tdif, "<br>",
+                       "Intervalo de votos que ha perdido el FAM:", quintilTdif, "<br>",
+                       "Votos por el PRI en 2023:", FAM_23, "<br>",
+                       "Votos por el PRI en 2021:", FAM_21, "<br>",
+                       "Porcentaje de votos por el FAM en 2023:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por SHH en 2023:", SHH_23, "<br>",
+                       "Votos por SHH en 2021:", SHH_21, "<br>",
+                       "Porcentaje de votos por el SHH en 2023:", paste(round(porMORENA_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Perdida FAM"       # Nombre del grupo de la capa
+    )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_DF20,
+        fillColor = ~colores_PerdidaPRI(PerdidaPRI),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el Frente sin el PRI hay:", PerdidaPRI, "<br>",
+                       "Votos que ha ganado o perdido el PRI de 23 a 21:", TPRI, "<br>",
+                       "Intervalo de votos que ha perdido el PRI:", quintilTPRI, "<br>",
+                       "Votos por el PRI en 2023:", PRI_23, "<br>",
+                       "Votos por el PRI en 2021:", PRI_21, "<br>",
+                       "Porcentaje de votos por el PRI:", paste(round(porPRI_23, 2), "%"), "<br>",
+                       "Votos por MORENA en 2023:", SHH_23, "<br>",
+                       "Votos por MORENA en 2021:", SHH_21, "<br>",
+                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Perdida PRI"       # Nombre del grupo de la capa
+    )
+
 # Agregar capa de polígonos para Participación
 mapa <- mapa %>%
     addPolygons(
@@ -788,7 +904,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addLayersControl(
         baseGroups = c("Manzanas","Colonias", "Secciones","AGEB", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora","ESEM", "Competitividad","Competitividad PRD","Competitividad PRI","Competitividad PAN", "Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
+        overlayGroups = c("Coalición Ganadora","ESEM", "Competitividad","Perdida FAM","Competitividad PRD","Competitividad PRI","Perdida PRI","Competitividad PAN", "Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -884,9 +1000,25 @@ mapa <- mapa %>%
         position = "bottomleft",
         layerId = "Leyendagene",
         group = "Generacion"  # Grupo de la leyenda
+    )  %>%
+    addLegend(
+        data = mapa_DF20,
+        pal = colores_PerdidaPRI, # Establecer los colores de la leyenda usando colores
+        values = ~PerdidaPRI, # Establecer los valores de la leyenda
+        title = "Perdidas PRI 23-21",
+        position = "bottomleft",
+        layerId = "Leyendaperdida pri",
+        group = "Perdida PRI"  # Grupo de la leyenda
+    )  %>%
+    addLegend(
+        data = mapa_DF20,
+        pal = colores_PerdidaFAM, # Establecer los colores de la leyenda usando colores
+        values = ~PerdidaFAM, # Establecer los valores de la leyenda
+        title = "Perdidas del FAM 23-21",
+        position = "bottomleft",
+        layerId = "Leyendaperdida fam",
+        group = "Perdida FAM"  # Grupo de la leyenda
     ) 
-
-
 # Agregar el control de HTML al mapa
 mapa <- mapa %>%
     addControl(
