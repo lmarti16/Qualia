@@ -113,7 +113,7 @@ Resultados_VillaG <- Resultados_VillaG %>%
     mutate( porSHH_21 = (SHH_21 /TOTAL_VOTOS_21)*100) %>% 
     mutate( participacion = (TOTAL_VOTOS_23 /LISTA_NOMINAL_23)*100) %>% 
     mutate( diferencia =  porPRI_23 - porSHH_23) %>%
-    mutate( diferenciaMC = porMC_21) %>%
+    mutate( diferenciaMC = MC_21) %>%
     mutate( diferenciaPRI = porPRI_23) %>%
     mutate( diferenciaPAN = porPAN_23)  %>%
     mutate( VsinPAN = FAM_23 - PAN_23) %>%
@@ -275,10 +275,10 @@ mapa_VillaG <- mapa_VillaG %>%
   )) %>%
   mutate(CompetitividadMC = case_when(
     quintilMC == labels_custom(quintilesMC)[1] ~ "Muy Poco Impacto",
-    quintilMC == labels_custom(quintilesMC)[2] ~ "Poco Impacto",
-    quintilMC == labels_custom(quintilesMC)[3] ~ "Impacto Medio",
-    quintilMC == labels_custom(quintilesMC)[4] ~ "Alto Impacto",
-    quintilMC == labels_custom(quintilesMC)[5] ~ "Muy Alto Impacto"
+     quintilMC == labels_custom(quintilesMC)[2] ~ "Poco Impacto",
+     quintilMC == labels_custom(quintilesMC)[3] ~ "Impacto Medio",
+     quintilMC == labels_custom(quintilesMC)[4] ~ "Alto Impacto",
+     quintilMC == labels_custom(quintilesMC)[5] ~ "Muy Alto Impacto"
   )) %>%
   mutate(Tamaños_lista = case_when(
     quintilLN == labels_custom(quintilesLN)[1] ~ "La más baja",
@@ -684,7 +684,7 @@ mapa <- mapa %>%
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección, para el Frente sin el MC hay:", CompetitividadMC, "<br>",
-                       "Intervalo de votos por MC:", quintilMC, "<br>",
+                       "Intervalo de votos por MC:",quintilMC , "<br>",
                        "Votos por MC en 2021:", MC_21, "<br>",
                        "Porcentaje de votos por el MC en 2021:", paste(round(porMC_21, 2), "%"), "<br>",
                        "Votos por el PRI en 2021:", PRI_21, "<br>",
@@ -864,8 +864,6 @@ mapa <- mapa %>%
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
         group = "Participacion"
     )
-
-
 
 # Agregar capa de polígonos para Lista Nominal
 mapa <- mapa %>%
