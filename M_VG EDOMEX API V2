@@ -361,8 +361,8 @@ mapa_VillaG$GanadorC_23 <- factor(mapa_VillaG$GanadorC_23,
 
 # Definir los colores para cada Ganador Coalición
 colores_GanadorC_23 <- colorFactor(
-    palette = c("orange", "darkred ", "#5b3a29"), 
-levels = c("Sigamos Haciendo Historia", "Partido Revolucionario Institucional", "Movimiento Ciudadano","Empate"))
+    palette = c("#5b3a29", "darkred", "orange"), 
+    levels = c("Sigamos Haciendo Historia", "Partido Revolucionario Institucional", "Movimiento Ciudadano","Empate"))
 
 # Reordenar los niveles del factor Ganador en 2023
 mapa_VillaG$Ganador_FAM <- factor(mapa_VillaG$Ganador_FAM,
