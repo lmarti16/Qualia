@@ -105,6 +105,9 @@ Resultados_VillaG <- Resultados_VillaG %>%
     mutate( porFAM_23 = (FAM_23 /TOTAL_VOTOS_23)*100) %>% 
     mutate( porPRI_23 = (PRI_23 /TOTAL_VOTOS_23)*100) %>% 
     mutate( porPRI_21 = (PRI_21 /TOTAL_VOTOS_21)*100) %>% 
+    mutate( porPRD_23 = (PRD_23 /TOTAL_VOTOS_23)*100) %>% 
+    mutate( porPRD_21 = (PRD_21 /TOTAL_VOTOS_21)*100) %>% 
+    mutate( porPVEM_21 = (PVEM_21 /TOTAL_VOTOS_21)*100) %>% 
     mutate( porMC_21 = (MC_21 /TOTAL_VOTOS_21)*100) %>% 
     mutate( porPAN_23 = (PAN_23 /TOTAL_VOTOS_23)*100) %>% 
     mutate( porMORENA_23 = (SHH_23 /TOTAL_VOTOS_23)*100) %>% 
@@ -114,8 +117,6 @@ Resultados_VillaG <- Resultados_VillaG %>%
     mutate( participacion = (TOTAL_VOTOS_23 /LISTA_NOMINAL_23)*100) %>% 
     mutate( diferencia =  porPRI_23 - porSHH_23) %>%
     mutate( diferenciaMC = MC_21) %>%
-    mutate( diferenciaPRI = porPRI_23) %>%
-    mutate( diferenciaPAN = porPAN_23)  %>%
     mutate( VsinPAN = FAM_23 - PAN_23) %>%
     mutate( VsinPRI = FAM_23 - PRI_23) %>%
     mutate( Vdif = FAM_23 - SHH_23) %>%
@@ -124,13 +125,15 @@ Resultados_VillaG <- Resultados_VillaG %>%
     mutate( Otro_P = PES_21 + RSP_21+ FXM_21+ MC_21) 
 
 # Crear quintiles
-quintilesMC <- quantile(Resultados_VillaG$diferenciaMC, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesM <- quantile(Resultados_VillaG$porSHH_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
 quintilesD <- quantile(Resultados_VillaG$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesparti <- quantile(Resultados_VillaG$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesLN <- quantile(Resultados_VillaG$LISTA_NOMINAL_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesPAN <- quantile(Resultados_VillaG$diferenciaPAN, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesPRI <- quantile(Resultados_VillaG$diferenciaPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMC <- quantile(Resultados_VillaG$MC_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesM <- quantile(Resultados_VillaG$MORENA_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPRD <- quantile(Resultados_VillaG$PRD_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPRI <- quantile(Resultados_VillaG$PRI_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPVEM <- quantile(Resultados_VillaG$PVEM_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesTdif <- quantile(Resultados_VillaG$Tdif, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesTPRI <- quantile(Resultados_VillaG$TPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesOtro <- quantile(Resultados_VillaG$Otro_P, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -146,13 +149,16 @@ labels_custom <- function(breaks) {
 }
 
 # Agrega columna con quintiles y etiquetas personalizadas
-Resultados_VillaG$quintilMC <- cut(Resultados_VillaG$diferenciaMC, breaks = quintilesMC, include.lowest = TRUE, labels = labels_custom(quintilesMC))
-Resultados_VillaG$quintilM <- cut(Resultados_VillaG$porSHH_23, breaks = quintilesM, include.lowest = TRUE, labels = labels_custom(quintilesM))
+
 Resultados_VillaG$quintilD <- cut(Resultados_VillaG$diferencia, breaks = quintilesD, include.lowest = TRUE, labels = labels_custom(quintilesD))
 Resultados_VillaG$quintilparti <- cut(Resultados_VillaG$participacion, breaks = quintilesparti, include.lowest = TRUE, labels = labels_custom(quintilesparti))
 Resultados_VillaG$quintilLN <- cut(Resultados_VillaG$LISTA_NOMINAL_23, breaks = quintilesLN, include.lowest = TRUE, labels = labels_custom(quintilesLN))
-Resultados_VillaG$quintilPRI <- cut(Resultados_VillaG$diferenciaPRI, breaks = quintilesPRI, include.lowest = TRUE, labels = labels_custom(quintilesPRI))
-Resultados_VillaG$quintilPAN <- cut(Resultados_VillaG$diferenciaPAN, breaks = quintilesPAN, include.lowest = TRUE, labels = labels_custom(quintilesPAN))
+Resultados_VillaG$quintilMC <- cut(Resultados_VillaG$MC_21, breaks = quintilesMC, include.lowest = TRUE, labels = labels_custom(quintilesMC))
+Resultados_VillaG$quintilM <- cut(Resultados_VillaG$MORENA_21, breaks = quintilesM, include.lowest = TRUE, labels = labels_custom(quintilesM))
+Resultados_VillaG$quintilPRD <- cut(Resultados_VillaG$PRD_23, breaks = quintilesPRD, include.lowest = TRUE, labels = labels_custom(quintilesPRD))
+Resultados_VillaG$quintilPRI <- cut(Resultados_VillaG$PRI_23, breaks = quintilesPRI, include.lowest = TRUE, labels = labels_custom(quintilesPRI))
+Resultados_VillaG$quintilPRI <- cut(Resultados_VillaG$PRI_23, breaks = quintilesPRI, include.lowest = TRUE, labels = labels_custom(quintilesPRI))
+Resultados_VillaG$quintilPVEM <- cut(Resultados_VillaG$PVEM_21, breaks = quintilesPVEM, include.lowest = TRUE, labels = labels_custom(quintilesPVEM))
 Resultados_VillaG$quintilTdif  <- cut(Resultados_VillaG$Tdif , breaks = quintilesTdif , include.lowest = TRUE, labels = labels_custom(quintilesTdif))
 Resultados_VillaG$quintilTPRI  <- cut(Resultados_VillaG$TPRI , breaks = quintilesTPRI , include.lowest = TRUE, labels = labels_custom(quintilesTPRI))
 Resultados_VillaG$quintilOtro  <- cut(Resultados_VillaG$Otro_P , breaks = quintilesOtro , include.lowest = TRUE, labels = labels_custom(quintilesOtro))
@@ -161,6 +167,18 @@ Resultados_VillaG <- Resultados_VillaG %>%
     rowwise() %>%
     mutate(GanadorC_23 = {
         votos <- c(PRI = PRI_23, SHH = SHH_23)
+        votos[is.na(votos)] <- 0 # Convertir NA a 0
+        if (all(votos == 0)) {
+            NA_character_ # Retornar NA si todos los votos son 0
+        } else {
+            names(which.max(votos))
+        }
+    })
+
+Resultados_VillaG <- Resultados_VillaG %>%
+    rowwise() %>%
+    mutate(GanadorC_21 = {
+        votos <- c(PRI = FAM_21, SHH = SHH_21)
         votos[is.na(votos)] <- 0 # Convertir NA a 0
         if (all(votos == 0)) {
             NA_character_ # Retornar NA si todos los votos son 0
@@ -192,7 +210,6 @@ Resultados_VillaG <- Resultados_VillaG %>%
             names(which.max(votos))
         }
     })
-
 
 Resultados_VillaG <- Resultados_VillaG %>%
     rowwise() %>%
@@ -274,11 +291,11 @@ mapa_VillaG <- mapa_VillaG %>%
     quintilD == labels_custom(quintilesD)[5] ~ "Muy alta Competitividad"
   )) %>%
   mutate(CompetitividadMC = case_when(
-    quintilMC == labels_custom(quintilesMC)[1] ~ "Muy Poco Impacto",
-     quintilMC == labels_custom(quintilesMC)[2] ~ "Poco Impacto",
-     quintilMC == labels_custom(quintilesMC)[3] ~ "Impacto Medio",
-     quintilMC == labels_custom(quintilesMC)[4] ~ "Alto Impacto",
-     quintilMC == labels_custom(quintilesMC)[5] ~ "Muy Alto Impacto"
+    quintilMC == labels_custom(quintilesMC)[1] ~ "Muy poca Competitividad",
+     quintilMC == labels_custom(quintilesMC)[2] ~ "Poca Competitividad",
+     quintilMC == labels_custom(quintilesMC)[3] ~ "Competitividad media",
+     quintilMC == labels_custom(quintilesMC)[4] ~ "Alta Competitividad",
+     quintilMC == labels_custom(quintilesMC)[5] ~  "Muy alta Competitividad"
   )) %>%
   mutate(Tamaños_lista = case_when(
     quintilLN == labels_custom(quintilesLN)[1] ~ "La más baja",
@@ -295,18 +312,18 @@ mapa_VillaG <- mapa_VillaG %>%
     quintilparti == labels_custom(quintilesparti)[5] ~ "Muy alta participación"
   )) %>%
   mutate(CompetitividadPRI = case_when(
-    quintilPRI == labels_custom(quintilesPRI)[1] ~ "Muy Poco Impacto",
-    quintilPRI == labels_custom(quintilesPRI)[2] ~ "Poco Impacto",
-    quintilPRI == labels_custom(quintilesPRI)[3] ~ "Impacto Medio",
-    quintilPRI == labels_custom(quintilesPRI)[4] ~ "Alto Impacto",
-    quintilPRI == labels_custom(quintilesPRI)[5] ~ "Muy Alto Impacto"
+    quintilPRI == labels_custom(quintilesPRI)[1] ~ "Muy poca Competitividad",
+    quintilPRI == labels_custom(quintilesPRI)[2] ~ "Poca Competitividad",
+    quintilPRI == labels_custom(quintilesPRI)[3] ~ "Competitividad media",
+    quintilPRI == labels_custom(quintilesPRI)[4] ~ "Alta Competitividad",
+    quintilPRI == labels_custom(quintilesPRI)[5] ~ "Muy alta Competitividad"
   )) %>%
-  mutate(CompetitividadPAN = case_when(
-    quintilPAN == labels_custom(quintilesPAN)[1] ~ "Muy Poco Impacto",
-    quintilPAN == labels_custom(quintilesPAN)[2] ~ "Poco Impacto",
-    quintilPAN == labels_custom(quintilesPAN)[3] ~ "Impacto Medio",
-    quintilPAN == labels_custom(quintilesPAN)[4] ~ "Alto Impacto",
-    quintilPAN == labels_custom(quintilesPAN)[5] ~ "Muy Alto Impacto"
+  mutate(CompetitividadPRD = case_when(
+    quintilPRD == labels_custom(quintilesPRD)[1] ~ "Muy poca Competitividad",
+    quintilPRD == labels_custom(quintilesPRD)[2] ~ "Poca Competitividad",
+    quintilPRD == labels_custom(quintilesPRD)[3] ~ "Competitividad media",
+    quintilPRD == labels_custom(quintilesPRD)[4] ~ "Alta Competitividad",
+    quintilPRD == labels_custom(quintilesPRD)[5] ~ "Muy alta Competitividad"
   )) %>%
   mutate(PerdidaFAM = case_when(
     quintilTdif == labels_custom(quintilesTdif)[5] ~ "Ganó o Perdió pocos Votos",
@@ -322,12 +339,19 @@ mapa_VillaG <- mapa_VillaG %>%
     quintilTPRI == labels_custom(quintilesTPRI)[2] ~ "Segunda Mayor perdida de votos",
     quintilTPRI == labels_custom(quintilesTPRI)[1] ~ "Mayor perdida de votos"
   )) %>%
-  mutate(CompetitividadOtro = case_when(
-    quintilOtro == labels_custom(quintilesOtro)[1] ~ "La más baja",
-    quintilOtro == labels_custom(quintilesOtro)[2] ~ "Baja",
-    quintilOtro == labels_custom(quintilesOtro)[3] ~ "Media",
-    quintilOtro == labels_custom(quintilesOtro)[4] ~ "Alta",
-    quintilOtro == labels_custom(quintilesOtro)[5] ~ "La más alta"
+  mutate(CompetitividadMorena = case_when(
+    quintilM == labels_custom(quintilesM)[1] ~ "Muy poca Competitividad",
+    quintilM == labels_custom(quintilesM)[2] ~  "Poca Competitividad",
+    quintilM == labels_custom(quintilesM)[3] ~ "Competitividad media",
+    quintilM == labels_custom(quintilesM)[4] ~ "Alta Competitividad",
+    quintilM == labels_custom(quintilesM)[5] ~ "Muy alta Competitividad"
+  )) %>%
+  mutate(CompetitividadPVEM = case_when(
+    quintilPVEM == labels_custom(quintilesPVEM)[1] ~ "Muy poca Competitividad",
+    quintilPVEM == labels_custom(quintilesPVEM)[2] ~  "Poca Competitividad",
+    quintilPVEM == labels_custom(quintilesPVEM)[3] ~ "Competitividad media",
+    quintilPVEM == labels_custom(quintilesPVEM)[4] ~ "Alta Competitividad",
+    quintilPVEM == labels_custom(quintilesPVEM)[5] ~ "Muy alta Competitividad"
   )) 
 
 # Transformar sistema de coordenadas
@@ -353,11 +377,11 @@ mapa_VillaG$Sugerencia <- factor(mapa_VillaG$Sugerencia,
 # Definir los colores para cada nivel de sugerencia
 colores_SUGERENCIA <- colorFactor(
     palette = c("red", "darkblue","yellow", "white"), 
-                                     levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
+               levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
 
 # Reordenar los niveles del factor Ganador en 2023
 mapa_VillaG$GanadorC_23 <- factor(mapa_VillaG$GanadorC_23,
-                                     levels = c("Sigamos Haciendo Historia", "Partido Revolucionario Institucional", "Movimiento Ciudadano","Empate"))
+         levels = c("Sigamos Haciendo Historia", "Partido Revolucionario Institucional", "Movimiento Ciudadano","Empate"))
 
 # Definir los colores para cada Ganador Coalición
 colores_GanadorC_23 <- colorFactor(
@@ -366,7 +390,7 @@ colores_GanadorC_23 <- colorFactor(
 
 # Reordenar los niveles del factor Ganador en 2023
 mapa_VillaG$Ganador_FAM <- factor(mapa_VillaG$Ganador_FAM,
-                                     levels = c("PAN", "MC", "PRI"))
+         levels = c("PAN", "MC", "PRI"))
 
 # Definir los colores para cada Ganador Coalición
 colores_Ganador_FAM <- colorFactor(
@@ -393,7 +417,7 @@ levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera 
 
 # Reordenar los niveles del factor CompetitividadD
 mapa_VillaG$CompetitividadD <- factor(mapa_VillaG$CompetitividadD,
-                                          levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+                levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
 # Definir los colores para cada nivel de competitividadD
 colores_CompetitividadD <- colorFactor(
@@ -402,30 +426,48 @@ colores_CompetitividadD <- colorFactor(
 
 # Reordenar los niveles del factor CompetitividadMC
 mapa_VillaG$CompetitividadMC <- factor(mapa_VillaG$CompetitividadMC,
-levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+                levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
 # Definir los colores para cada nivel de CompetitividadMC
 colores_CompetitividadMC <- colorFactor(
-palette = c("#FFCC00", "yellow", "orange", "white", "#FFFFE0"), 
-    domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+    palette = c("#FF733F", "#FFA27F", "#FF4500", "#FFFFFF", "#FFD0BF"),
+                domain = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
-# Reordenar los niveles del factor CompetitividadPAN
-mapa_VillaG$CompetitividadPAN <- factor(mapa_VillaG$CompetitividadPAN,
-levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+# Reordenar los niveles del factor CompetitividadPRD
+mapa_VillaG$CompetitividadPRD <- factor(mapa_VillaG$CompetitividadPRD,
+                levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
-# Definir los colores para cada nivel de CompetitividadPAN
-colores_CompetitividadPAN <- colorFactor(
-palette = c("blue", "#6699FF", "darkblue", "white", "#E0FFFF"), 
-    domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+# Definir los colores para cada nivel de CompetitividadPRD
+colores_CompetitividadPRD <- colorFactor(
+palette = c("#FFFF3F", "#FFFF7F", "#FFFF00", "#FFFFFF", "#FFFFBF"), 
+   domain = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
 # Reordenar los niveles del factor CompetitividadPRI
 mapa_VillaG$CompetitividadPRI<- factor(mapa_VillaG$CompetitividadPRI,
-levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+   levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
 # Definir los colores para cada nivel de CompetitividadPRI
 colores_CompetitividadPRI <- colorFactor(
-palette = c("red", "#FF6666", "darkred", "white", "#FFE0E0"), 
-    domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+palette = c("red", "#FF7F7F", "darkred", "#FFFFFF", "#FFBFBF"), 
+   domain = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+
+# Reordenar los niveles del factor CompetitividadMorena
+mapa_VillaG$CompetitividadMorena <- factor(mapa_VillaG$CompetitividadMorena,
+    levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+
+# Definir los colores para cada nivel de CompetitividadMorena
+colores_Morena <- colorFactor(
+palette = c("#A8734E", "#C5A289", "#8B4513", "#FFFFFF", "#E2D0C4"), 
+    domain =c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+
+# Reordenar los niveles del factor CompetitividadPVEM
+mapa_VillaG$CompetitividadPVEM <- factor(mapa_VillaG$CompetitividadPVEM,
+    levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+
+# Definir los colores para cada nivel de CompetitividadPVEM
+colores_PVEM <- colorFactor(
+palette = c("#66BD63", "#7FFF7F", "darkgreen", "#FFFFFF", "#BFFFBF"), 
+    domain =c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
 # Reordenar los niveles del factor Switcher
 mapa_VillaG$Switcher <- factor(mapa_VillaG$Switcher,
@@ -442,15 +484,6 @@ mapa_VillaG$Tamaños_lista <- factor(mapa_VillaG$Tamaños_lista,
 # Definir los colores para cada nivel de Lista Nominal
 colores_LN <- colorFactor(
     palette = c("#d95f0e", "#fec44f", "#993404", "#ffffd4", "#fe9929"), 
-    domain = c("La más baja", "Baja", "Media","Alta","La más alta"))
-
-# Reordenar los niveles del factor LN en el dataframe mapa_VillaG
-mapa_VillaG$CompetitividadOtro <- factor(mapa_VillaG$CompetitividadOtro,
-                                     levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
-
-# Definir los colores para cada nivel de Lista Nominal
-colores_Otro <- colorFactor(
-palette = c("#a040a0", "#dfbfdf", "#800080", "#ffffff", "#c080c0"), 
     domain = c("La más baja", "Baja", "Media","Alta","La más alta"))
 
 # Reordenar los niveles del factor Participacion en el dataframe LN
@@ -593,9 +626,9 @@ mapa <- mapa %>%
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "¿Es sección Switcher?:", Switcher, "<br>",
-                       "La sección:", Switcher_coalición, "<br>",
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
-                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Coalición Ganadora en 2021:", GanadorC_21, "<br>",
+                       "Partido preponderante del FAM:", Ganador_FAM, "<br>",
                         "Votos por el FAM:", FAM_23, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
                        "Votos por JHH:", SHH_23, "<br>",
@@ -623,26 +656,18 @@ mapa <- mapa %>%
                        "¿Es sección Switcher?:", Switcher, "<br>",
                        "La sección:", Switcher_coalición, "<br>",
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Coalición Ganadora en 2021:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
-                       "Competitividad de la Sección MC:", CompetitividadMC, "<br>",
+                       "Competitividad de la Sección para el FAM:", CompetitividadD, "<br>",
+                       "Competitividad de la Sección para MC:", CompetitividadMC, "<br>",
+                       "Competitividad de la Sección para Morena:", CompetitividadMorena, "<br>",
                        "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
                        "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
                        "Votos por JHH en la última eleccción:", SHH_23, "<br>",
                        "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_23, 2), "%"), "<br>",
                        "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>",
-                       "Población Generación Z(18-24 años):", GEN_Z_TOTAL, "<br>",
-                       "Porcentaje de Generación Z:", paste(round(GEN_Z_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
-                       "Población Millennials(25-39 años):", MILLENNIALS_TOTAL, "<br>",
-                       "Porcentaje de Millennials:", paste(round(MILLENNIALS_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
-                       "Población Generación X(40-54 años):", GEN_X_TOTAL, "<br>",
-                       "Porcentaje de Generación X:", paste(round(GEN_X_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
-                       "Población Baby Boomers(55-65 años):", BOOMERS_TOTAL, "<br>",
-                       "Porcentaje de Baby Boomers:", paste(round(BOOMERS_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
-                       "Población Silent Generation:(65 y más)", SILENT_TOTAL, "<br>",
-                       "Porcentaje Silent Generation:", paste(round(SILENT_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>",
                        "Participación:", paste(round(participacion*1, 2), "%"), "<br>", "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
@@ -687,12 +712,6 @@ mapa <- mapa %>%
                        "Intervalo de votos por MC:",quintilMC , "<br>",
                        "Votos por MC en 2021:", MC_21, "<br>",
                        "Porcentaje de votos por el MC en 2021:", paste(round(porMC_21, 2), "%"), "<br>",
-                       "Votos por el PRI en 2021:", PRI_21, "<br>",
-                       "Porcentaje de votos por el PRI en 2021:", paste(round(porPRI_21, 2), "%"), "<br>",
-                       "Votos por MORENA:", MORENA_21, "<br>",
-                       "Porcentaje de votos por Morena:", paste(round(porMORENA_21, 2), "%"), "<br>",
-                       "Votos por SHH:", SHH_21, "<br>",
-                       "Porcentaje de votos por SHH:", paste(round(porSHH_21, 2), "%"), "<br>",
                        "Coalición Ganadora actual:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
@@ -705,20 +724,17 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_VillaG,
-        fillColor = ~colores_Otro(CompetitividadOtro),
+        fillColor = ~colores_Morena(CompetitividadMorena),
         fillOpacity = 0.8,
         label = ~SECCION,
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "En la sección, para los otro partidos hay:", CompetitividadOtro, "<br>",
-                       "Votos por otros partidos:", Otro_P, "<br>",
-                       "Intervalo de votos por otros partidos:", quintilOtro, "<br>",
-                       "Votos por el PES en 21:", PES_21, "<br>",
-                       "Votos por RSP en 21:", RSP_21, "<br>",
-                       "Votos por FXM en 21:", FXM_21, "<br>",
-                       "Votos por MC en 21:", MC_21, "<br>",
-                       "De los otros partidos, cual es preponderante:", Ganador_otro, "<br>",
+                       "En la sección, para los otro partidos hay:", CompetitividadMorena, "<br>",
+                       "Votos por Morena en 2021:", MORENA_21, "<br>",
+                       "Votos por SHH en 2023:", SHH_23, "<br>",
+                       "Intervalo de votos por Morena", quintilM, "<br>",
+                       "Aumento o perdida de votos del 23 al 21 de Morena:", SHH_23 - MORENA_21, "<br>",
                        "Coalición Ganadora actual:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
@@ -726,29 +742,22 @@ mapa <- mapa %>%
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
-        group = "Competitividad Otro"       # Nombre del grupo de la capa
+        group = "Competitividad Morena"       # Nombre del grupo de la capa
    )
 mapa <- mapa %>%
     addPolygons(
         data = mapa_VillaG,
-        fillColor = ~colores_CompetitividadPAN(CompetitividadPAN),
+        fillColor = ~colores_PVEM(CompetitividadPVEM),
         fillOpacity = 0.8,
         label = ~SECCION,
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "En la sección, para el Frente sin el PAN hay:", CompetitividadPAN, "<br>",
-                       "Voto de la coalición sin el PAN:", VsinPAN, "<br>",
-                       "Porcentaje de votos sin el PAN:",paste(round(diferenciaPAN, 2), "%"), "<br>",
-                       "Intervalo de porcentaje sin el PAN:", quintilPAN, "<br>",
-                       "Votos por el FAM:", FAM_23, "<br>",
-                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
-                       "Votos por el PAN:", PAN_23, "<br>",
-                       "Porcentaje de votos por el PAN:", paste(round(porPAN_23, 2), "%"), "<br>",
-                       "Votos por MORENA:", SHH_23, "<br>",
-                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
-                       "Votos por JHH:", SHH_23, "<br>",
-                       "Porcentaje de votos por JHH:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "En la sección, para los otro partidos hay:", CompetitividadPVEM, "<br>",
+                       "Votos por PVEM en 2021:", PVEM_21, "<br>",
+                       "Votos por SHH en 2023:", SHH_23, "<br>",
+                       "Intervalo de votos por PVEM en 2021", quintilPVEM, "<br>",
+                       "Aumento o perdida de votos del 23 al 21 del PVEM:", SHH_23 - PVEM_21, "<br>",
                        "Coalición Ganadora actual:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
@@ -756,7 +765,33 @@ mapa <- mapa %>%
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
-        group = "Competitividad PAN"       # Nombre del grupo de la capa
+        group = "Competitividad PVEM"       # Nombre del grupo de la capa
+   )
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_VillaG,
+        fillColor = ~colores_CompetitividadPRD(CompetitividadPRD),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, el PRD tiene:", CompetitividadPRD, "<br>",
+                       "Intervalo de porcentaje de votos del PRD:", quintilPRD, "<br>",
+                       "Voto del PRD en 2023:", PRD_23, "<br>",
+                       "Porcentaje de votos del PRD:",paste(round(porPRD_23, 2), "%"), "<br>",
+                       "Voto del PRD en 2023:", PRD_21, "<br>",
+                       "Aumento o perdida de votos del 23 al 21 del PRD:", PRD_23 - PRD_21, "<br>",
+                       "Votos por el FAM:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad PRD"       # Nombre del grupo de la capa
     )
 
 mapa <- mapa %>%
@@ -768,18 +803,14 @@ mapa <- mapa %>%
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "En la sección, para el Frente sin el PRI hay:", CompetitividadPRI, "<br>",
-                       "Voto de la coalición sin el PRI:", VsinPRI, "<br>",
-                       "Porcentaje de votos sin el PRI:",paste(round(diferenciaPRI, 2), "%"), "<br>",
-                       "Intervalo de porcentaje sin el PRI:", quintilPRI, "<br>",
+                       "En la sección, el PRI tiene:", CompetitividadPRI, "<br>",
+                       "Intervalo de porcentaje de votos del PRI:", quintilPRI, "<br>",
+                       "Voto del PRI en 2023:", PRI_23, "<br>",
+                       "Porcentaje de votos del PRI:",paste(round(porPRI_23, 2), "%"), "<br>",
+                       "Voto del PRI en 2023:", PRI_21, "<br>",
+                       "Aumento o perdida de votos del 23 al 21 del PRI:", PRI_23 - PRI_21, "<br>",
                        "Votos por el FAM:", FAM_23, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
-                       "Votos por el PRI:", PRI_23, "<br>",
-                       "Porcentaje de votos por el PRI:", paste(round(porPRI_23, 2), "%"), "<br>",
-                       "Votos por MORENA:", SHH_23, "<br>",
-                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
-                       "Votos por JHH:", SHH_23, "<br>",
-                       "Porcentaje de votos por JHH:", paste(round(porSHH_23, 2), "%"), "<br>",
                        "Coalición Ganadora actual:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
@@ -912,7 +943,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addLayersControl(
         baseGroups = c("Manzanas","Colonias", "Secciones","AGEB", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad MC","Competitividad PRI","Perdida PRI","Competitividad PAN", "Competitividad Otro","Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
+        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRI","Perdida PRI","Competitividad PRD", "Competitividad Morena","Competitividad PVEM","Competitividad MC","Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -941,7 +972,7 @@ mapa <- mapa %>%
         data = mapa_VillaG,
         pal = colores_CompetitividadMC, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadMC, # Establecer los valores de la leyenda
-        title = "Fuerza del PRI",
+        title = "Competitividad de MC",
         position = "bottomleft",
         layerId = "LeyendaMC",
         group = "Competitividad MC"  # Grupo de la leyenda
@@ -950,19 +981,19 @@ mapa <- mapa %>%
         data = mapa_VillaG,
         pal = colores_CompetitividadPRI, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadPRI, # Establecer los valores de la leyenda
-        title = "Fuerza del PRI",
+        title = "Competitividad del PRI",
         position = "bottomleft",
         layerId = "LeyendaPRI",
         group = "Competitividad PRI"  # Grupo de la leyenda
       ) %>%
     addLegend(
         data = mapa_VillaG,
-        pal = colores_CompetitividadPAN, # Establecer los colores de la leyenda usando colores
-        values = ~CompetitividadPAN, # Establecer los valores de la leyenda
-        title = "Fuerza del PAN",
+        pal = colores_CompetitividadPRD, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadPRD, # Establecer los valores de la leyenda
+        title = "Competitividad del PRD",
         position = "bottomleft",
         layerId = "LeyendaMC",
-        group = "Competitividad PAN"  # Grupo de la leyenda
+        group = "Competitividad PRD"  # Grupo de la leyenda
     ) %>%
     addLegend(
         data = mapa_VillaG,
@@ -1029,12 +1060,21 @@ mapa <- mapa %>%
     ) %>%
     addLegend(
         data = mapa_VillaG,
-        pal = colores_Otro, # Establecer los colores de la leyenda usando colores
-        values = ~CompetitividadOtro, # Establecer los valores de la leyenda
-        title = "Competitividad de otros partidos",
+        pal = colores_Morena, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadMorena, # Establecer los valores de la leyenda
+        title = "Competitividad de Morena",
         position = "bottomleft",
-        layerId = "LeyendaOtro",
-        group = "Competitividad Otro"  # Grupo de la leyenda
+        layerId = "LeyendaMorena",
+        group = "Competitividad Morena"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_VillaG,
+        pal = colores_PVEM, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadPVEM, # Establecer los valores de la leyenda
+        title = "Competitividad de PVEM",
+        position = "bottomleft",
+        layerId = "LeyendaPVEM",
+        group = "Competitividad PVEM"  # Grupo de la leyenda
   )
 
 # Agregar el control de HTML al mapa
