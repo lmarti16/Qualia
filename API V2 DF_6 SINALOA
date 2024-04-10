@@ -17,18 +17,18 @@ library(stringr)
 library(RColorBrewer)
 
 # Leer archivo SHP usando read_sf()
-Manzanas_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\MANZANA.shp")
+Manzanas_SINALOA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\25 SINALOA\\MANZANA.shp")
 sec_mex <- read_sf("D:\\Descargas\\secciones_2024.gpkg\\secciones_2024.gpkg")
-DistritoF_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\DISTRITO_FEDERAL.shp")
-DistritoL_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\DISTRITO_LOCAL.shp")
+DistritoF_SINALOA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\25 SINALOA\\DISTRITO_FEDERAL.shp")
+DistritoL_SINALOA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\25 SINALOA\\DISTRITO_LOCAL.shp")
 Resultados <- read_csv("D:\\52556\\Documents\\Secretaria_GralPRI\\Resultados_resec.csv")
 Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\2024_LN.csv")
-Municipios_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\MUNICIPIO.shp")
+Municipios_SINALOA <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\25 SINALOA\\MUNICIPIO.shp")
 Secciones_Switcher <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\secciones_switcher.csv")
 Colonias_MX <- read_sf("D:\\Descargas\\imc2020_shp\\colonias_imc2020.shp")
-ESEM_ValleMX <- read_sf("D:\\Descargas\\Socio-economica Edomex-cdmx\\VALLE_DE_MEXICO.shp")
-ESEM_EDOMEX <- filter(ESEM_ValleMX, CVE_ENT == "15")
-ESEM_EDOMEX <- st_transform(ESEM_EDOMEX, st_crs(sec_mex))
+ESEM_ValleMX <- read_sf("D:\\Descargas\\Socio-economica Edomex-SINALOA\\VALLE_DE_MEXICO.shp")
+ESEM_SINALOA <- filter(ESEM_ValleMX, CVE_ENT == "25")
+ESEM_SINALOA <- st_transform(ESEM_SINALOA, st_crs(sec_mex))
 
 Secciones_Switcher$SECCION <- as.numeric(Secciones_Switcher$SECCION)
 Secciones_Switcher$ENTIDAD <- as.numeric(Secciones_Switcher$ENTIDAD)
@@ -40,14 +40,14 @@ sec_mex <- sec_mex %>%
     select(-PADRON_HOMBRES, -PADRON_MUJERES,  -PADRON_ELECTORAL, -LISTA_HOMBRES, -LISTA_MUJERES, -LISTA_NOMINAL)
 
 # Reemplaza los espacios por saltos de línea en la columna NOMBRE
-Municipios_EDOMEX$NOMBRE <- str_replace_all(Municipios_EDOMEX$NOMBRE, " ", "\n")
+Municipios_SINALOA$NOMBRE <- str_replace_all(Municipios_SINALOA$NOMBRE, " ", "\n")
 
 # Suponiendo que tu dataframe se llama 'Municipios_HIDALGO'
-Municipios_EDOMEX <- Municipios_EDOMEX %>%
+Municipios_SINALOA <- Municipios_SINALOA %>%
   mutate(NOMBRE = paste0(tools::toTitleCase(tolower(NOMBRE))))
 
 # Renombrar las clases sociales
-ESEM_EDOMEX$NIVEL <- recode(ESEM_EDOMEX$NIVEL,
+ESEM_SINALOA$NIVEL <- recode(ESEM_SINALOA$NIVEL,
                          "A/B" = "Muy Alto",
                          "C" = "Alto",
                          "C-" = "Medio alto",
@@ -81,33 +81,33 @@ Resultados <- Resultados %>%
 Resultados <- Resultados %>%
     rename_with(~ paste0(., "_21"), -c(FAM_21, SHH_21, ENTIDAD, SECCION))
 
-Resultados_EDOMEX <- filter(Resultados, ENTIDAD == 15)
-Secciones_EDOMEX <- filter(sec_mex, ENTIDAD == 15)
-Secciones_EDOMEX_DF20<- filter(Secciones_EDOMEX, DISTRITO_FEDERAL== 20)
-Manzanas_EDOMEX_DF20 <- filter(Manzanas_EDOMEX, DISTRITO_F == 20)
-# Obtener los valores únicos de MUNICIPIO y DISTRITO_L de Secciones_EDOMEX_DF20 
-Municipios_DF20 <- unique(Secciones_EDOMEX_DF20$MUNICIPIO)
-Valores_DL_DF20 <- unique(Secciones_EDOMEX_DF20$DISTRITO_LOCAL)
-DistritoF_EDOMEX_DF20 <- filter(DistritoF_EDOMEX, DISTRITO == 20)
-ESEM_EDOMEX <- st_transform(ESEM_EDOMEX, st_crs(Secciones_EDOMEX_DF20 ))
-ESEM_EDOMEX_DF20<- st_intersection(Secciones_EDOMEX_DF20, ESEM_EDOMEX )
-Colonias_EDOMEX <- filter(Colonias_MX, CVE_ENT == "15")
-Colonias_EDOMEX <- st_transform(Colonias_EDOMEX, st_crs(DistritoF_EDOMEX_DF20 ))
-Colonias_EDOMEX_DF20 <- st_intersection(DistritoF_EDOMEX_DF20 , Colonias_EDOMEX)
+Resultados_SINALOA <- filter(Resultados, ENTIDAD == 25)
+Secciones_SINALOA <- filter(sec_mex, ENTIDAD == 25)
+Secciones_SINALOA_DF6<- filter(Secciones_SINALOA, DISTRITO_FEDERAL== 6)
+Manzanas_SINALOA_DF6 <- filter(Manzanas_SINALOA, DISTRITO_F == 6)
+# Obtener los valores únicos de MUNICIPIO y DISTRITO_L de Secciones_SINALOA_DF6 
+Municipios_DF6 <- unique(Secciones_SINALOA_DF6$MUNICIPIO)
+Valores_DL_DF6 <- unique(Secciones_SINALOA_DF6$DISTRITO_LOCAL)
+DistritoF_SINALOA_DF6 <- filter(DistritoF_SINALOA, DISTRITO == 6)
+ESEM_SINALOA <- st_transform(ESEM_SINALOA, st_crs(Secciones_SINALOA_DF6 ))
+ESEM_SINALOA_DF6<- st_intersection(Secciones_SINALOA_DF6, ESEM_SINALOA )
+Colonias_SINALOA <- filter(Colonias_MX, CVE_ENT == "25")
+Colonias_SINALOA <- st_transform(Colonias_SINALOA, st_crs(DistritoF_SINALOA_DF6 ))
+Colonias_SINALOA_DF6 <- st_intersection(DistritoF_SINALOA_DF6 , Colonias_SINALOA)
 
-# Filtrar Municipios_EDOMEX
-Municipios_EDOMEX_DF20 <- Municipios_EDOMEX[Municipios_EDOMEX$MUNICIPIO %in% Municipios_DF20, ]
+# Filtrar Municipios_SINALOA
+Municipios_SINALOA_DF6 <- Municipios_SINALOA[Municipios_SINALOA$MUNICIPIO %in% Municipios_DF6, ]
 
-# Filtrar DistritoL_EDOMEX
-DistritoL_EDOMEX_DF20 <- DistritoL_EDOMEX[DistritoL_EDOMEX$DISTRITO_L %in% Valores_DL_DF20, ]
+# Filtrar DistritoL_SINALOA
+DistritoL_SINALOA_DF6 <- DistritoL_SINALOA[DistritoL_SINALOA$DISTRITO_L %in% Valores_DL_DF6, ]
 
 # Unir los dataframes por SECCION y ENTIDAD
-Resultados_DF20 <- left_join(Secciones_EDOMEX_DF20, Resultados_EDOMEX, by = c("SECCION", "ENTIDAD"))
-Resultados_DF20 <- st_drop_geometry(Resultados_DF20)
-Resultados_DF20 <- left_join(Resultados_DF20, Secciones_Switcher, by = c("SECCION", "ENTIDAD"))
-Resultados_DF20 <- left_join(Resultados_DF20, Lista_Nominal_Selected, by = c("SECCION", "ENTIDAD"))
+Resultados_DF6 <- left_join(Secciones_SINALOA_DF6, Resultados_SINALOA, by = c("SECCION", "ENTIDAD"))
+Resultados_DF6 <- st_drop_geometry(Resultados_DF6)
+Resultados_DF6 <- left_join(Resultados_DF6, Secciones_Switcher, by = c("SECCION", "ENTIDAD"))
+Resultados_DF6 <- left_join(Resultados_DF6, Lista_Nominal_Selected, by = c("SECCION", "ENTIDAD"))
 
-Resultados_DF20 <- Resultados_DF20 %>% 
+Resultados_DF6 <- Resultados_DF6 %>% 
     mutate( porFAM_21 = (FAM_21 /TOTAL_VOTOS_21)*100) %>% 
     mutate( porPRI_21 = (PRI_21 /TOTAL_VOTOS_21)*100) %>% 
     mutate( porPRD_21 = (PRD_21 /TOTAL_VOTOS_21)*100) %>% 
@@ -125,13 +125,14 @@ Resultados_DF20 <- Resultados_DF20 %>%
     mutate( Vdif = FAM_21 - SHH_21) 
 
 # Crear quintiles
-quintilesPRD <- quantile(Resultados_DF20$diferenciaPRD, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesM <- quantile(Resultados_DF20$porSHH_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesD <- quantile(Resultados_DF20$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesparti <- quantile(Resultados_DF20$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesLN <- quantile(Resultados_DF20$LISTA_NOMINAL_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesPAN <- quantile(Resultados_DF20$diferenciaPAN, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
-quintilesPRI <- quantile(Resultados_DF20$diferenciaPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesD <- quantile(Resultados_DF6$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesparti <- quantile(Resultados_DF6$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesLN <- quantile(Resultados_DF6$LISTA_NOMINAL_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMC <- quantile(Resultados_DF6$MC_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesM <- quantile(Resultados_DF6$MORENA_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPRD <- quantile(Resultados_DF6$PRD_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPRI <- quantile(Resultados_DF6$PRI_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPVEM <- quantile(Resultados_DF6$PVEM_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
 # Definir etiquetas personalizadas
 labels_custom <- function(breaks) {
@@ -144,15 +145,16 @@ labels_custom <- function(breaks) {
 }
 
 # Agrega columna con quintiles y etiquetas personalizadas
-Resultados_DF20$quintilPRD <- cut(Resultados_DF20$diferenciaPRD, breaks = quintilesPRD, include.lowest = TRUE, labels = labels_custom(quintilesPRD))
-Resultados_DF20$quintilM <- cut(Resultados_DF20$porSHH_21, breaks = quintilesM, include.lowest = TRUE, labels = labels_custom(quintilesM))
-Resultados_DF20$quintilD <- cut(Resultados_DF20$diferencia, breaks = quintilesD, include.lowest = TRUE, labels = labels_custom(quintilesD))
-Resultados_DF20$quintilparti <- cut(Resultados_DF20$participacion, breaks = quintilesparti, include.lowest = TRUE, labels = labels_custom(quintilesparti))
-Resultados_DF20$quintilLN <- cut(Resultados_DF20$LISTA_NOMINAL_21, breaks = quintilesLN, include.lowest = TRUE, labels = labels_custom(quintilesLN))
-Resultados_DF20$quintilPRI <- cut(Resultados_DF20$diferenciaPRI, breaks = quintilesPRI, include.lowest = TRUE, labels = labels_custom(quintilesPRI))
-Resultados_DF20$quintilPAN <- cut(Resultados_DF20$diferenciaPAN, breaks = quintilesPAN, include.lowest = TRUE, labels = labels_custom(quintilesPAN))
+Resultados_DF6$quintilD <- cut(Resultados_DF6$diferencia, breaks = quintilesD, include.lowest = TRUE, labels = labels_custom(quintilesD))
+Resultados_DF6$quintilparti <- cut(Resultados_DF6$participacion, breaks = quintilesparti, include.lowest = TRUE, labels = labels_custom(quintilesparti))
+Resultados_DF6$quintilLN <- cut(Resultados_DF6$LISTA_NOMINAL_21, breaks = quintilesLN, include.lowest = TRUE, labels = labels_custom(quintilesLN))
+Resultados_DF6$quintilMC <- cut(Resultados_DF6$MC_21, breaks = quintilesMC, include.lowest = TRUE, labels = labels_custom(quintilesMC))
+Resultados_DF6$quintilM <- cut(Resultados_DF6$MORENA_21, breaks = quintilesM, include.lowest = TRUE, labels = labels_custom(quintilesM))
+Resultados_DF6$quintilPRD <- cut(Resultados_DF6$PRD_21, breaks = quintilesPRD, include.lowest = TRUE, labels = labels_custom(quintilesPRD))
+Resultados_DF6$quintilPRI <- cut(Resultados_DF6$PRI_21, breaks = quintilesPRI, include.lowest = TRUE, labels = labels_custom(quintilesPRI))
+Resultados_DF6$quintilPVEM <- cut(Resultados_DF6$PVEM_21, breaks = quintilesPVEM, include.lowest = TRUE, labels = labels_custom(quintilesPVEM))
 
-Resultados_DF20 <- Resultados_DF20 %>%
+Resultados_DF6 <- Resultados_DF6 %>%
     rowwise() %>%
     mutate(GanadorC_21 = {
         votos <- c(FAM = FAM_21, SHH = SHH_21, MC = MC_21, RSP = RSP_21,ES = PES_21,FXM = FXM_21)
@@ -164,7 +166,7 @@ Resultados_DF20 <- Resultados_DF20 %>%
         }
     })
 
-Resultados_DF20 <- Resultados_DF20 %>%
+Resultados_DF6 <- Resultados_DF6 %>%
     rowwise() %>%
     mutate(Ganador_21 = {
         votos <- c(PAN = PAN_21, PRI = PRI_21, PRD = PRD_21, PVEM = PVEM_21, PT = PT_21, MC = MC_21, RSP = RSP_21,ES = PES_21,MORENA = MORENA_21,FXM = FXM_21)
@@ -176,7 +178,7 @@ Resultados_DF20 <- Resultados_DF20 %>%
         }
     })
 
-Resultados_DF20 <- Resultados_DF20 %>%
+Resultados_DF6 <- Resultados_DF6 %>%
     mutate(Sugerencia = case_when(
         # Prioritaria: La más alta participación y lista nominal, y en el quintil 3 de diferencia
         quintilLN == labels_custom(quintilesLN)[5] & quintilD == labels_custom(quintilesD)[5] & quintilparti == labels_custom(quintilesparti)[3] ~ "Sugerencia prioritaria",
@@ -195,11 +197,11 @@ Resultados_DF20 <- Resultados_DF20 %>%
         TRUE ~ "Sección no sugerida"
     ))
 
-Resultados_DF20 <- Resultados_DF20 %>%
+Resultados_DF6 <- Resultados_DF6 %>%
     select(-NOMBRE_ENTIDAD, -MUNICIPIO, -NOMBRE_MUNICIPIO, 
            -DISTRITO_FEDERAL, -NOMBRE_DISTRITO_FEDERAL, -DISTRITO_LOCAL)
 
-mapa_DF20 <- left_join(Secciones_EDOMEX_DF20 , Resultados_DF20, by = c("SECCION", "ENTIDAD"))
+mapa_DF6 <- left_join(Secciones_SINALOA_DF6 , Resultados_DF6, by = c("SECCION", "ENTIDAD"))
 
 # Corrección en la definición de rangosQuintiles para mantener la consistencia
 rangosQuintiles <- list(
@@ -211,7 +213,7 @@ rangosQuintiles <- list(
 )
 
 # Corrección en la creación de las columnas CompetitividadD y CompetitividadPRD
-mapa_DF20 <- mapa_DF20 %>%
+mapa_DF6 <- mapa_DF6 %>%
   mutate(CompetitividadD = case_when(
     quintilD == labels_custom(quintilesD)[1] ~ "Muy poca Competitividad",
     quintilD == labels_custom(quintilesD)[2] ~ "Poca Competitividad",
@@ -256,24 +258,24 @@ mapa_DF20 <- mapa_DF20 %>%
   ))
 
 # Transformar sistema de coordenadas
-mapa_DF20 <- st_transform(mapa_DF20, crs = 4326)
-Secciones_EDOMEX_DF20<- st_transform(Secciones_EDOMEX_DF20 , crs = 4326)
-Manzanas_EDOMEX_DF20 <- st_transform(Manzanas_EDOMEX_DF20, crs = 4326)
-DistritoF_EDOMEX_DF20 <- st_transform(DistritoF_EDOMEX_DF20, crs = 4326)
-Municipios_EDOMEX_DF20 <- st_transform(Municipios_EDOMEX_DF20, crs = 4326)
-DistritoL_EDOMEX_DF20 <- st_transform(DistritoL_EDOMEX_DF20, crs = 4326)
-Colonias_EDOMEX_DF20 <- st_transform(Colonias_EDOMEX_DF20, crs = 4326)
-ESEM_EDOMEX_DF20<- st_transform(ESEM_EDOMEX_DF20, crs = 4326)
+mapa_DF6 <- st_transform(mapa_DF6, crs = 4326)
+Secciones_SINALOA_DF6<- st_transform(Secciones_SINALOA_DF6 , crs = 4326)
+Manzanas_SINALOA_DF6 <- st_transform(Manzanas_SINALOA_DF6, crs = 4326)
+DistritoF_SINALOA_DF6 <- st_transform(DistritoF_SINALOA_DF6, crs = 4326)
+Municipios_SINALOA_DF6 <- st_transform(Municipios_SINALOA_DF6, crs = 4326)
+DistritoL_SINALOA_DF6 <- st_transform(DistritoL_SINALOA_DF6, crs = 4326)
+Colonias_SINALOA_DF6 <- st_transform(Colonias_SINALOA_DF6, crs = 4326)
+ESEM_SINALOA_DF6<- st_transform(ESEM_SINALOA_DF6, crs = 4326)
 
 # Renombrar los resultados 
-mapa_DF20$GanadorC_21 <- recode(mapa_DF20$GanadorC_21,
+mapa_DF6$GanadorC_21 <- recode(mapa_DF6$GanadorC_21,
                                   "EMPATE" = "Empate",
                                   "FAM" = "Fuerza & Corazón por México",
                                   "SHH" = "Sigamos Haciendo Historia",
                                   "MC" = "Movimiento Ciudadano")
 
-# Reordenar los niveles del factor Sugerencia en el dataframe mapa_DF20
-mapa_DF20$Sugerencia <- factor(mapa_DF20$Sugerencia,
+# Reordenar los niveles del factor Sugerencia en el dataframe mapa_DF6
+mapa_DF6$Sugerencia <- factor(mapa_DF6$Sugerencia,
                                      levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
 
 # Definir los colores para cada nivel de sugerencia
@@ -282,7 +284,7 @@ colores_SUGERENCIA <- colorFactor(
                                      levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
 
 # Reordenar los niveles del factor Ganador en 2021
-mapa_DF20$GanadorC_21 <- factor(mapa_DF20$GanadorC_21,
+mapa_DF6$GanadorC_21 <- factor(mapa_DF6$GanadorC_21,
                                      levels = c("Sigamos Haciendo Historia", "Fuerza & Corazón por México", "Movimiento Ciudadano","Empate"))
 
 # Definir los colores para cada Ganador Coalición
@@ -291,7 +293,7 @@ colores_GanadorC_21 <- colorFactor(
     levels = c("Empate", "Sigamos Haciendo Historia", "Fuerza & Corazón por México"))
 
 # Reordenar los niveles del factor CompetitividadD
-mapa_DF20$CompetitividadD <- factor(mapa_DF20$CompetitividadD,
+mapa_DF6$CompetitividadD <- factor(mapa_DF6$CompetitividadD,
                                           levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
 # Definir los colores para cada nivel de competitividadD
@@ -300,7 +302,7 @@ colores_CompetitividadD <- colorFactor(
     domain = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
 
 # Reordenar los niveles del factor CompetitividadPRD
-mapa_DF20$CompetitividadPRD <- factor(mapa_DF20$CompetitividadPRD,
+mapa_DF6$CompetitividadPRD <- factor(mapa_DF6$CompetitividadPRD,
 levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Definir los colores para cada nivel de CompetitividadPRD
@@ -309,7 +311,7 @@ palette = c("#FFCC00", "yellow", "orange", "white", "#FFFFE0"),
     domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Reordenar los niveles del factor CompetitividadPAN
-mapa_DF20$CompetitividadPAN <- factor(mapa_DF20$CompetitividadPAN,
+mapa_DF6$CompetitividadPAN <- factor(mapa_DF6$CompetitividadPAN,
 levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Definir los colores para cada nivel de CompetitividadPAN
@@ -318,7 +320,7 @@ palette = c("blue", "#6699FF", "darkblue", "white", "#E0FFFF"),
     domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Reordenar los niveles del factor CompetitividadPRI
-mapa_DF20$CompetitividadPRI<- factor(mapa_DF20$CompetitividadPRI,
+mapa_DF6$CompetitividadPRI<- factor(mapa_DF6$CompetitividadPRI,
 levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Definir los colores para cada nivel de CompetitividadPRI
@@ -327,15 +329,15 @@ palette = c("red", "#FF6666", "darkred", "white", "#FFE0E0"),
     domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
 
 # Reordenar los niveles del factor Switcher
-mapa_DF20$Switcher <- factor(mapa_DF20$Switcher,
+mapa_DF6$Switcher <- factor(mapa_DF6$Switcher,
                                       levels = c("NO", "SI"))
 # Definir los colores para Switcher
 colores_Switcher <- colorFactor(
     palette = c("white", "#4B0082"), 
     levels = c("NO", "SI"))
 
-# Reordenar los niveles del factor LN en el dataframe mapa_DF20
-mapa_DF20$Tamaños_lista <- factor(mapa_DF20$Tamaños_lista,
+# Reordenar los niveles del factor LN en el dataframe mapa_DF6
+mapa_DF6$Tamaños_lista <- factor(mapa_DF6$Tamaños_lista,
                                      levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
 
 # Definir los colores para cada nivel de Lista Nominal
@@ -344,7 +346,7 @@ colores_LN <- colorFactor(
     domain = c("La más baja", "Baja", "Media","Alta","La más alta"))
 
 # Reordenar los niveles del factor Participacion en el dataframe LN
-mapa_DF20$Porcen_parti <- factor(mapa_DF20$Porcen_parti,
+mapa_DF6$Porcen_parti <- factor(mapa_DF6$Porcen_parti,
                                      levels = c("Muy poca participación", "Poca participación", "Participación media","Alta participación","Muy alta participación"))
 
 # Definir los colores para cada nivel de Participacion
@@ -359,7 +361,7 @@ colores_Gene <- colorFactor(
 )
 
 # Reordenar los niveles del factor Participacion en el dataframe LN
-mapa_DF20$Gene_prepo <- factor(mapa_DF20$Gene_prepo,
+mapa_DF6$Gene_prepo <- factor(mapa_DF6$Gene_prepo,
                                      levels = c("GEN_Z","MILLENNIALS", "GEN_X", "BOOMERS","SILENT","Sin datos"))
 
 # Define los colores para cada nivel de ESEM
@@ -369,7 +371,7 @@ colores_ESEM <- colorFactor(
 )
 
 # Reordenar los niveles del factor ESEM
-ESEM_EDOMEX_DF20$NIVEL <- factor(ESEM_EDOMEX_DF20$NIVEL,
+ESEM_SINALOA_DF6$NIVEL <- factor(ESEM_SINALOA_DF6$NIVEL,
                              levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado"))
 
 # Crear un mapa base con el fondo de OpenStreetMap
@@ -379,7 +381,7 @@ mapa <- leaflet() %>%
 # Agregar la primera capa de polígonos de las colonias
 mapa <- mapa %>%
     addPolygons(
-        data = Colonias_EDOMEX_DF20,
+        data = Colonias_SINALOA_DF6,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~COLONIA,
@@ -392,7 +394,7 @@ mapa <- mapa %>%
 # Agregar la primera capa de polígonos de manzanas
 mapa <- mapa %>%
     addPolygons(
-        data = Manzanas_EDOMEX_DF20,
+        data = Manzanas_SINALOA_DF6,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
@@ -405,7 +407,7 @@ mapa <- mapa %>%
 # Agregar la  capa de polígonos a nivel de Secciones
 mapa <- mapa %>%
     addPolygons(
-        data = Secciones_EDOMEX_DF20 ,
+        data = Secciones_SINALOA_DF6 ,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
@@ -417,7 +419,7 @@ mapa <- mapa %>%
 
 mapa <- mapa %>%
     addPolygons(
-        data = ESEM_EDOMEX_DF20,
+        data = ESEM_SINALOA_DF6,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~NIVEL,
@@ -426,10 +428,11 @@ mapa <- mapa %>%
         opacity = 0.8,          # Opacidad de los bordes
         group = "AGEB"     # Nombre del grupo de la capa
     )
+
 # Agregar la  capa de polígonos a nivel municipios
 mapa <- mapa %>%
     addPolygons(
-        data = Municipios_EDOMEX_DF20,
+        data = Municipios_SINALOA_DF6,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~NOMBRE,
@@ -441,7 +444,7 @@ mapa <- mapa %>%
 # Agregar la segunda capa de Distritos Locales
 mapa <- mapa %>%
     addPolygons(
-        data = DistritoF_EDOMEX_DF20,
+        data = DistritoF_SINALOA_DF6,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~DISTRITO,
@@ -453,7 +456,7 @@ mapa <- mapa %>%
 
 mapa <- mapa %>%
     addPolygons(
-        data = DistritoL_EDOMEX_DF20,
+        data = DistritoL_SINALOA_DF6,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~DISTRITO_L,
@@ -463,10 +466,10 @@ mapa <- mapa %>%
         group = "Distrito Local"     # Nombre del grupo de la capa
     )
 
-# Agregar la  capa de polígonos con los datos de mapa_DF20 y el color según el GanadorC_21
+# Agregar la  capa de polígonos con los datos de mapa_DF6 y el color según el GanadorC_21
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_Switcher(Switcher),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -491,10 +494,10 @@ mapa <- mapa %>%
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
         group = "Switcher"       # Nombre del grupo de la capa
     ) 
-# Agregar la tercer capa de polígonos con los datos de mapa_DF20 y el color según el Switcher_coalición
+# Agregar la tercer capa de polígonos con los datos de mapa_DF6 y el color según el Switcher_coalición
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_GanadorC_21(GanadorC_21),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -518,10 +521,10 @@ mapa <- mapa %>%
         group = "Coalición Ganadora"       # Nombre del grupo de la capa
     ) 
 
-# Agregar la tercer capa de polígonos con los datos de mapa_DF20 y el color según el sugerencia
+# Agregar la tercer capa de polígonos con los datos de mapa_DF6 y el color según el sugerencia
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_SUGERENCIA(Sugerencia),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -557,10 +560,10 @@ mapa <- mapa %>%
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
         group = "Sugerencia"       # Nombre del grupo de la capa
     ) 
-# Agregar la quinta capa de polígonos con los datos de mapa_DF20 y el color según la competitividad
+# Agregar la quinta capa de polígonos con los datos de mapa_DF6 y el color según la competitividad
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_CompetitividadD(CompetitividadD),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -582,7 +585,7 @@ mapa <- mapa %>%
 
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_CompetitividadPRD(CompetitividadPRD),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -592,7 +595,7 @@ mapa <- mapa %>%
                        "En la sección, para el Frente sin el PRD hay:", CompetitividadPRD, "<br>",
                        "Voto de la coalición sin el PRD:", VsinPRD, "<br>",
                        "Porcentaje de votos sin el PRD:", paste(round(diferenciaPRD, 2), "%"), "<br>",
-                       "Intervalo de porcentaje sin el PRD:", quintilPRD, "<br>",
+                       "Intervalo de porcentaje por el PRD:", quintilPRD, "<br>",
                        "Votos por el FAM:", FAM_21, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
                        "Votos por el PRD:", PRD_21, "<br>",
@@ -612,7 +615,7 @@ mapa <- mapa %>%
 
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_CompetitividadPAN(CompetitividadPAN),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -622,7 +625,7 @@ mapa <- mapa %>%
                        "En la sección, para el Frente sin el PAN hay:", CompetitividadPAN, "<br>",
                        "Voto de la coalición sin el PAN:", VsinPAN, "<br>",
                        "Porcentaje de votos sin el PAN:",paste(round(diferenciaPAN, 2), "%"), "<br>",
-                       "Intervalo de porcentaje sin el PAN:", quintilPAN, "<br>",
+                       "Intervalo de votos por el PAN:", quintilPAN, "<br>",
                        "Votos por el FAM:", FAM_21, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
                        "Votos por el PAN:", PAN_21, "<br>",
@@ -642,7 +645,7 @@ mapa <- mapa %>%
 
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_CompetitividadPRI(CompetitividadPRI),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -652,7 +655,7 @@ mapa <- mapa %>%
                        "En la sección, para el Frente sin el PRI hay:", CompetitividadPRI, "<br>",
                        "Voto de la coalición sin el PRI:", VsinPRI, "<br>",
                        "Porcentaje de votos sin el PRI:",paste(round(diferenciaPRI, 2), "%"), "<br>",
-                       "Intervalo de porcentaje sin el PRI:", quintilPRI, "<br>",
+                       "Intervalo de votos por el PRI:", quintilPRI, "<br>",
                        "Votos por el FAM:", FAM_21, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
                        "Votos por el PRI:", PRI_21, "<br>",
@@ -673,7 +676,7 @@ mapa <- mapa %>%
 # Agregar capa de polígonos para Participación
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_participacion(Porcen_parti),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -690,7 +693,7 @@ mapa <- mapa %>%
 
 mapa <- mapa %>%
     addPolygons(
-        data = ESEM_EDOMEX_DF20,
+        data = ESEM_SINALOA_DF6,
         fillColor = ~colores_ESEM(NIVEL),
         fillOpacity = 0.8,
         label = ~NIVEL,
@@ -705,7 +708,7 @@ mapa <- mapa %>%
 # Agregar capa de polígonos para Lista Nominal
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_LN(Tamaños_lista),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -722,7 +725,7 @@ mapa <- mapa %>%
 # Agregar capa de polígonos para Gener
 mapa <- mapa %>%
     addPolygons(
-        data = mapa_DF20,
+        data = mapa_DF6,
         fillColor = ~colores_Gene(Gene_prepo),
         fillOpacity = 0.8,
         label = ~SECCION,
@@ -756,7 +759,7 @@ mapa <- mapa %>%
 # Agregar las leyendas al mapa
 mapa <- mapa %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_GanadorC_21, # Establecer los colores de la leyenda usando colores
         values = ~GanadorC_21, # Establecer los valores de la leyenda
         title = "Ganador de la última elección", # Establecer el título de la leyenda
@@ -765,7 +768,7 @@ mapa <- mapa %>%
         group = "Coalición Ganadora"  # Grupo de la leyenda
     ) %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_CompetitividadD, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadD, # Establecer los valores de la leyenda
         labels = textoLeyendaD, # Texto de la leyenda preparado que incluye intervalos
@@ -775,7 +778,7 @@ mapa <- mapa %>%
         group = "Competitividad"  # Grupo de la leyenda
     ) %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_CompetitividadPRD, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadPRD, # Establecer los valores de la leyenda
         title = "Peso del PRD en su coalición",
@@ -784,7 +787,7 @@ mapa <- mapa %>%
         group = "Competitividad PRD"  # Grupo de la leyenda
   ) %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_CompetitividadPRI, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadPRI, # Establecer los valores de la leyenda
         title = "Peso del PRI en su coalición",
@@ -793,7 +796,7 @@ mapa <- mapa %>%
         group = "Competitividad PRI"  # Grupo de la leyenda
       ) %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_CompetitividadPAN, # Establecer los colores de la leyenda usando colores
         values = ~CompetitividadPAN, # Establecer los valores de la leyenda
         title = "Peso del PAN en su coalición",
@@ -802,7 +805,7 @@ mapa <- mapa %>%
         group = "Competitividad PAN"  # Grupo de la leyenda
     ) %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_Switcher, # Establecer los colores de la leyenda usando colores
         values = ~Switcher, # Establecer los valores de la leyenda
         title = "Secciones Switcher",
@@ -811,7 +814,7 @@ mapa <- mapa %>%
         group = "Switcher"  # Grupo de la leyenda
     ) %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_SUGERENCIA, # Establecer los colores de la leyenda usando colores
         values = ~Sugerencia, # Establecer los valores de la leyenda
         title = "Secciones Sugeridas",
@@ -820,7 +823,7 @@ mapa <- mapa %>%
         group = "Sugerencia"  # Grupo de la leyenda
     )  %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_participacion, # Establecer los colores de la leyenda usando colores
         values = ~Porcen_parti, # Establecer los valores de la leyenda
         title = "Intervalos de Participación",
@@ -829,7 +832,7 @@ mapa <- mapa %>%
         group = "Participacion"  # Grupo de la leyenda
     )  %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_LN, # Establecer los colores de la leyenda usando colores
         values = ~Tamaños_lista, # Establecer los valores de la leyenda
         title = "Lista Nominal por Sección",
@@ -838,7 +841,7 @@ mapa <- mapa %>%
         group = "Lista Nominal"  # Grupo de la leyenda
     )  %>%
     addLegend(
-        data = mapa_DF20,
+        data = mapa_DF6,
         pal = colores_Gene, # Establecer los colores de la leyenda usando colores
         values = ~Gene_prepo, # Establecer los valores de la leyenda
         title = "Generación preponderante",
@@ -852,7 +855,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: center;'>
-                Distrito Federal 20 del Estado de México<br>
+                Distrito Federal 6 de Sinaloa (Mazatlán)<br>
                 Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
 
                 Todos los Derechos Reservados<br><br>
@@ -866,11 +869,11 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
-                META sugeridad de votos: 57,000<br>
-                Lista Nominal para 2024: 238,311 <br><br>
-                Votos Totales en el 2021: 113,892<br>
-                Votos Totales del FAM en 2021 45,987<br>
-                Votos Totales de MORENA-PT en 2021: 53,732<br>
+                META sugeridad de votos: 72,000<br>
+                Lista Nominal para 2024: 365,066 <br><br>
+                Votos Totales en el 2021: 161,162<br>
+                Votos Totales del FAM en 2021 63,575<br>
+                Votos Totales de MORENA-PT en 2021: 65,438<br>
             </div>",
         position = "topleft"
     )
