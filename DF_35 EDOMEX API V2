@@ -27,9 +27,7 @@ Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\202
 Municipios_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\MUNICIPIO.shp")
 Secciones_Switcher <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\secciones_switcher.csv")
 Colonias_MX <- read_sf("D:\\Descargas\\imc2020_shp\\colonias_imc2020.shp")
-ESEM_ValleMX <- read_sf("D:\\Descargas\\Socio-economica Edomex-cdmx\\VALLE_DE_MEXICO.shp")
-ESEM_EDOMEX <- filter(ESEM_ValleMX, CVE_ENT == "15")
-ESEM_EDOMEX <- st_transform(ESEM_EDOMEX, st_crs(sec_mex))
+
 
 Secciones_Switcher$SECCION <- as.numeric(Secciones_Switcher$SECCION)
 Secciones_Switcher$ENTIDAD <- as.numeric(Secciones_Switcher$ENTIDAD)
@@ -47,16 +45,6 @@ Municipios_EDOMEX$NOMBRE <- str_replace_all(Municipios_EDOMEX$NOMBRE, " ", "\n")
 Municipios_EDOMEX <- Municipios_EDOMEX %>%
   mutate(NOMBRE = paste0(tools::toTitleCase(tolower(NOMBRE))))
 
-# Renombrar las clases sociales
-ESEM_EDOMEX$NIVEL <- recode(ESEM_EDOMEX$NIVEL,
-                         "A/B" = "Muy Alto",
-                         "C" = "Alto",
-                         "C-" = "Medio alto",
-                         "C+" = "Medio",
-                         "D" = "Medio bajo",
-                         "D+" = "Bajo",
-                         "E" = "Muy Bajo",
-                         "N/D" = "No determinado")
 
 Resultados <- Resultados %>%
     select(-CIRCUNSCRIPCION, -NOMBRE_ESTADO, -ID_DISTRITO_FEDERAL, 
@@ -98,8 +86,7 @@ Municipios_DL35 <- unique(Secciones_EDOMEX_DL35$MUNICIPIO)
 Valores_DF_DL35 <- unique(Secciones_EDOMEX_DL35$DISTRITO_FEDERAL)
 
 DistritoL_EDOMEX_DL35 <- filter(DistritoL_EDOMEX, DISTRITO_L == 35)
-ESEM_EDOMEX <- st_transform(ESEM_EDOMEX, st_crs(Secciones_EDOMEX_DL35 ))
-ESEM_EDOMEX_DL35<- st_intersection(Secciones_EDOMEX_DL35, ESEM_EDOMEX )
+
 
 Colonias_EDOMEX <- filter(Colonias_MX, CVE_ENT == "15")
 Colonias_EDOMEX <- st_transform(Colonias_EDOMEX, st_crs(DistritoL_EDOMEX_DL35 ))
@@ -353,7 +340,6 @@ DistritoL_EDOMEX_DL35 <- st_transform(DistritoL_EDOMEX_DL35, crs = 4326)
 Municipios_EDOMEX_DL35 <- st_transform(Municipios_EDOMEX_DL35, crs = 4326)
 DistritoF_EDOMEX_DL35 <- st_transform(DistritoF_EDOMEX_DL35, crs = 4326)
 Colonias_EDOMEX_DL35 <- st_transform(Colonias_EDOMEX_DL35, crs = 4326)
-ESEM_EDOMEX_DL35<- st_transform(ESEM_EDOMEX_DL35, crs = 4326)
 
 # Renombrar los resultados 
 mapa_DL35$GanadorC_23 <- recode(mapa_DL35$GanadorC_23,
@@ -488,15 +474,8 @@ colores_Gene <- colorFactor(
 mapa_DL35$Gene_prepo <- factor(mapa_DL35$Gene_prepo,
                                      levels = c("GEN_Z","MILLENNIALS", "GEN_X", "BOOMERS","SILENT","Sin datos"))
 
-# Define los colores para cada nivel de ESEM
-colores_ESEM <- colorFactor(
-    palette = c("blue", "#00CC00", "#99FF99", "#FFFF99", "#FFCC99", "#FF3300", "brown", "#808080"),
-    levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado")
-)
 
-# Reordenar los niveles del factor ESEM
-ESEM_EDOMEX_DL35$NIVEL <- factor(ESEM_EDOMEX_DL35$NIVEL,
-                             levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado"))
+
 
 # Crear un mapa base con el fondo de OpenStreetMap
 mapa <- leaflet() %>%
@@ -541,17 +520,7 @@ mapa <- mapa %>%
         group = "Secciones"     # Nombre del grupo de la capa
     )
 
-mapa <- mapa %>%
-    addPolygons(
-        data = ESEM_EDOMEX_DL35,
-        fillColor = "white",    # Color de fondo blanco
-        fillOpacity = 0.5,      # Transparencia del fondo
-        label = ~NIVEL,
-        color = "black",        # Color de los bordes
-        weight = 1,             # Grosor de los bordes
-        opacity = 0.8,          # Opacidad de los bordes
-        group = "AGEB"     # Nombre del grupo de la capa
-    )
+
 # Agregar la  capa de polígonos a nivel municipios
 mapa <- mapa %>%
     addPolygons(
@@ -903,19 +872,6 @@ mapa <- mapa %>%
         group = "Participacion"
     )
 
-mapa <- mapa %>%
-    addPolygons(
-        data = ESEM_EDOMEX_DL35,
-        fillColor = ~colores_ESEM(NIVEL),
-        fillOpacity = 0.8,
-        label = ~NIVEL,
-        color = "white",
-        weight = 1,
-        popup = ~paste("Estrato:", NIVEL, "<br>",
-                       "Número de Seccion:", SECCION, "<br>",
-                       "Numero de AGEB:", AGEB),
-        group = "ESEM"       # Nombre del grupo de la capa
-    ) 
 
 # Agregar capa de polígonos para Lista Nominal
 mapa <- mapa %>%
@@ -964,7 +920,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addLayersControl(
         baseGroups = c("Manzanas","Colonias", "Secciones","AGEB", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora","ESEM", "Competitividad","Perdida FAM","Competitividad PRD","Competitividad PRI","Perdida PRI","Competitividad PAN", "Competitividad Otro","Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
+        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRD","Competitividad PRI","Perdida PRI","Competitividad PAN", "Competitividad Otro","Switcher","Participacion", "Lista Nominal", "Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -1093,7 +1049,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: center;'>
-                Distrito Federal 20 del Estado de México<br>
+                Distrito Local 35 del Estado de México<br>
                 Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
 
                 Todos los Derechos Reservados<br><br>
@@ -1108,13 +1064,14 @@ mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
                 META sugeridad de votos: 57,000<br>
-                Lista Nominal para 2024: 238,311 <br><br>
-                Votos Totales en el 2021: 113,892<br>
-                Votos Totales en el 2023: 117,537<br>
-                Votos Totales del FAM en 2021 45,987<br>
-                Votos Totales del FAM en 2023 46822<br>
-                Votos Totales de SHH en 2021: 53,732<br>
-                Votos Totales de SHH en 2023: 67,732<br>
+                Lista Nominal para 2024: 292,494 <br><br>
+                Votos Totales en el 2021: 172,981<br>
+                Votos Totales en el 2023: 182,049<br>
+                Votos Totales del FAM en 2021 88,161<br>
+                Votos Totales del FAM en 2023 97,470<br>
+                Votos Totales de SHH en 2021: 56,440<br>
+                Votos Totales de SHH en 2023: 79,990<br>
+                Votos Totales de otros partidos en 2021: 24,713<br>
             </div>",
         position = "topleft"
     )
