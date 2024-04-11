@@ -87,7 +87,6 @@ Valores_DF_DL35 <- unique(Secciones_EDOMEX_DL35$DISTRITO_FEDERAL)
 
 DistritoL_EDOMEX_DL35 <- filter(DistritoL_EDOMEX, DISTRITO_L == 35)
 
-
 Colonias_EDOMEX <- filter(Colonias_MX, CVE_ENT == "15")
 Colonias_EDOMEX <- st_transform(Colonias_EDOMEX, st_crs(DistritoL_EDOMEX_DL35 ))
 Colonias_EDOMEX_DL35 <- st_intersection(DistritoL_EDOMEX_DL35 , Colonias_EDOMEX)
@@ -96,7 +95,7 @@ Colonias_EDOMEX_DL35 <- st_intersection(DistritoL_EDOMEX_DL35 , Colonias_EDOMEX)
 Municipios_EDOMEX_DL35 <- Municipios_EDOMEX[Municipios_EDOMEX$MUNICIPIO %in% Municipios_DL35, ]
 
 # Filtrar DistritoF_EDOMEX
-DistritoF_EDOMEX_DL3 <- DistritoF_EDOMEX[DistritoF_EDOMEX$DISTRITO %in% Valores_DF_DL35, ]
+DistritoF_EDOMEX_DL35 <- DistritoF_EDOMEX[DistritoF_EDOMEX$DISTRITO %in% Valores_DF_DL35, ]
 
 # Unir los dataframes por SECCION y ENTIDAD
 Resultados_DL35 <- left_join(Secciones_EDOMEX_DL35, Resultados23, by = c("SECCION"))
