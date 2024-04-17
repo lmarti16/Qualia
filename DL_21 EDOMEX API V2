@@ -22,7 +22,7 @@ sec_mex <- read_sf("D:\\Descargas\\secciones_2024.gpkg\\secciones_2024.gpkg")
 DistritoF_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\DISTRITO_FEDERAL.shp")
 DistritoL_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\DISTRITO_LOCAL.shp")
 Resultados <- read_csv("D:\\52556\\Documents\\Secretaria_GralPRI\\Resultados_resec.csv")
-Resultados23 <- read_csv("D:\\Descargas\\Resultados_edomex\\GUBERNATURA_csv\\2023_SEE_GOB_MEX_SEC.csv")
+Resultados23 <- read_csv("D:\\52556\\Documents\\Oro_Manzur\\Resultados_goberEdomex23.csv")
 Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\2024_LN.csv")
 Municipios_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\MUNICIPIO.shp")
 Secciones_Switcher <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\secciones_switcher.csv")
@@ -71,7 +71,7 @@ Resultados <- Resultados %>%
     rename_with(~ paste0(., "_21"), -c(FAM_21, SHH_21, ENTIDAD, SECCION))
 
 Resultados23 <- Resultados23 %>%
-    select(-CIRCUNSCRIPCION, -ID_ESTADO, -NOMBRE_ESTADO, -ID_DISTRITO_LOCAL, 
+    select(-CIRCUNSCRIPCION, -ENTIDAD, -NOMBRE_ESTADO, -ID_DISTRITO_LOCAL, 
            -CABECERA_DISTRITAL_LOCAL, -ID_MUNICIPIO, -MUNICIPIO, -CASILLAS)
 
 # Convertir todas las columnas a numérico
@@ -1095,7 +1095,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: center;'>
-                Distrito Federal 20 del Estado de México<br>
+                Distrito Local 21 del Estado de México<br>
                 Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
 
                 Todos los Derechos Reservados<br><br>
@@ -1109,14 +1109,14 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
-                META sugeridad de votos: 57,000<br>
-                Lista Nominal para 2024: 238,311 <br><br>
-                Votos Totales en el 2021: 113,892<br>
-                Votos Totales en el 2023: 117,537<br>
-                Votos Totales del FAM en 2021 45,987<br>
-                Votos Totales del FAM en 2023 46822<br>
-                Votos Totales de SHH en 2021: 53,732<br>
-                Votos Totales de SHH en 2023: 67,732<br>
+                META sugeridad de votos: 55,000<br>
+                Lista Nominal para 2024: 28,1394 <br><br>
+                Votos Totales en el 2021: 121,048<br>
+                Votos Totales en el 2023: 112,796<br>
+                Votos Totales del FAM en 2021: 49,721<br>
+                Votos Totales del FAM en 2023 45,994<br>
+                Votos Totales de SHH en 2021: 58,702<br>
+                Votos Totales de SHH en 2023: 63,475<br>
             </div>",
         position = "topleft"
     )
