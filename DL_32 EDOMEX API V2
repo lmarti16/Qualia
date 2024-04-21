@@ -127,6 +127,7 @@ Resultados_DL32 <- Resultados_DL32 %>%
     mutate( porPAN_23 = (PAN_23 /TOTAL_VOTOS_23)*100) %>% 
     mutate( porMORENA_23 = (SHH_23 /TOTAL_VOTOS_23)*100) %>% 
     mutate( porSHH_23 = (SHH_23 /TOTAL_VOTOS_23)*100) %>% 
+    mutate( porMC_21 = (MC_21 /TOTAL_VOTOS_21)*100) %>% 
     mutate( participacion = (TOTAL_VOTOS_23 /LISTA_NOMINAL_23)*100) %>% 
     mutate( diferencia =  porFAM_23 - porSHH_23) %>%
     mutate( diferenciaPRD = porFAM_23 - porPRD_23) %>%
@@ -138,7 +139,7 @@ Resultados_DL32 <- Resultados_DL32 %>%
     mutate( Vdif = FAM_23 - SHH_23) %>%
     mutate( Tdif = FAM_23 - FAM_21) %>%
     mutate( TPRI = PRI_23 - PRI_21) %>%
-    mutate( Otro_P = PES_21 + RSP_21+ FXM_21+ MC_21) 
+    mutate( Otro_P = PES_21 + RSP_21+ FXM_21) 
 
 # Crear quintiles
 quintilesPRD <- quantile(Resultados_DL32$diferenciaPRD, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
@@ -151,6 +152,8 @@ quintilesPRI <- quantile(Resultados_DL32$diferenciaPRI, probs = c(0, 0.2, 0.4, 0
 quintilesTdif <- quantile(Resultados_DL32$Tdif, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesTPRI <- quantile(Resultados_DL32$TPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 quintilesOtro <- quantile(Resultados_DL32$Otro_P, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesSHH <- quantile(Resultados_DL32$SHH_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMC <- quantile(Resultados_DL32$MC_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
 
 # Definir etiquetas personalizadas
 labels_custom <- function(breaks) {
@@ -173,6 +176,8 @@ Resultados_DL32$quintilPAN <- cut(Resultados_DL32$diferenciaPAN, breaks = quinti
 Resultados_DL32$quintilTdif  <- cut(Resultados_DL32$Tdif , breaks = quintilesTdif , include.lowest = TRUE, labels = labels_custom(quintilesTdif))
 Resultados_DL32$quintilTPRI  <- cut(Resultados_DL32$TPRI , breaks = quintilesTPRI , include.lowest = TRUE, labels = labels_custom(quintilesTPRI))
 Resultados_DL32$quintilOtro  <- cut(Resultados_DL32$Otro_P , breaks = quintilesOtro , include.lowest = TRUE, labels = labels_custom(quintilesOtro))
+Resultados_DL32$quintilSHH  <- cut(Resultados_DL32$SHH_23 , breaks = quintilesSHH , include.lowest = TRUE, labels = labels_custom(quintilesSHH))
+Resultados_DL32$quintilMC <- cut(Resultados_DL32$MC_21 , breaks = quintilesMC , include.lowest = TRUE, labels = labels_custom(quintilesMC))
 
 Resultados_DL32 <- Resultados_DL32 %>%
     rowwise() %>%
@@ -214,7 +219,7 @@ Resultados_DL32 <- Resultados_DL32 %>%
 Resultados_DL32 <- Resultados_DL32 %>%
     rowwise() %>%
     mutate(Ganador_otro = {
-        votos <- c(MC = MC_21, RSP = RSP_21,ES = PES_21,FXM = FXM_21)
+        votos <- c(RSP = RSP_21,ES = PES_21,FXM = FXM_21)
         votos[is.na(votos)] <- 0 # Convertir NA a 0
         if (all(votos == 0)) {
             NA_character_ # Retornar NA si todos los votos son 0
@@ -345,7 +350,21 @@ mapa_DL32 <- mapa_DL32 %>%
     quintilOtro == labels_custom(quintilesOtro)[3] ~ "Media",
     quintilOtro == labels_custom(quintilesOtro)[4] ~ "Alta",
     quintilOtro == labels_custom(quintilesOtro)[5] ~ "La más alta"
-  )) 
+  )) %>%
+  mutate(CompetitividadMC = case_when(
+    quintilMC == labels_custom(quintilesMC)[1] ~ "La más baja",
+    quintilMC == labels_custom(quintilesMC)[2] ~ "Baja",
+    quintilMC == labels_custom(quintilesMC)[3] ~ "Media",
+    quintilMC == labels_custom(quintilesMC)[4] ~ "Alta",
+    quintilMC == labels_custom(quintilesMC)[5] ~ "La más alta"
+  ))%>%
+  mutate(CompetitividadSHH= case_when(
+    quintilSHH == labels_custom(quintilesSHH)[1] ~ "La más baja",
+    quintilSHH == labels_custom(quintilesSHH)[2] ~ "Baja",
+    quintilSHH == labels_custom(quintilesSHH)[3] ~ "Media",
+    quintilSHH == labels_custom(quintilesSHH)[4] ~ "Alta",
+    quintilSHH == labels_custom(quintilesSHH)[5] ~ "La más alta"
+  ))
 
 # Transformar sistema de coordenadas
 mapa_DL32 <- st_transform(mapa_DL32, crs = 4326)
@@ -462,14 +481,29 @@ colores_LN <- colorFactor(
     palette = c("#d95f0e", "#fec44f", "#993404", "#ffffd4", "#fe9929"), 
     domain = c("La más baja", "Baja", "Media","Alta","La más alta"))
 
-# Reordenar los niveles del factor LN en el dataframe mapa_DL32
+# Reordenar los niveles del factor CompetitividadOtro en el dataframe mapa_DL32
 mapa_DL32$CompetitividadOtro <- factor(mapa_DL32$CompetitividadOtro,
                                      levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
 
-# Definir los colores para cada nivel de Lista Nominal
+# Definir los colores para cada nivel de Otros
 colores_Otro <- colorFactor(
 palette = c("#a040a0", "#dfbfdf", "#800080", "#ffffff", "#c080c0"), 
     domain = c("La más baja", "Baja", "Media","Alta","La más alta"))
+
+# Reordenar los niveles del factor LN en el dataframe mapa_DL32
+mapa_DL32$CompetitividadMC <- factor(mapa_DL32$CompetitividadMC,
+                                     levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
+colores_MC <- colorFactor(
+    palette = c("#ff4500", "#ff8c00", "#ffd700", "#ffffe0", "#ffffff"), 
+    levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
+
+# Reordenar los niveles del factor LN en el dataframe mapa_DL32
+mapa_DL32$CompetitividadSHH <- factor(mapa_DL32$CompetitividadSHH,
+                                     levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
+colores_SHH <- colorFactor(
+  palette = c("#8b4513", "#a0522d", "#cd853f", "#f4a460", "#ffffff"), 
+    levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
+
 
 # Reordenar los niveles del factor Participacion en el dataframe LN
 mapa_DL32$Porcen_parti <- factor(mapa_DL32$Porcen_parti,
@@ -736,7 +770,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -762,12 +796,58 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
         group = "Competitividad Otro"       # Nombre del grupo de la capa
    )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_DL32,
+        fillColor = ~colores_MC(CompetitividadMC),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para los otro partidos hay:", CompetitividadMC, "<br>",
+                       "Votos por MORENA en 2021:", MC_21, "<br>",
+                       "Intervalo de votos por MC:", quintilMC, "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad MC"       # Nombre del grupo de la capa
+   )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_DL32,
+        fillColor = ~colores_SHH(CompetitividadSHH),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para los otro partidos hay:", CompetitividadSHH, "<br>",
+                       "Votos por MORENA en 2023:", SHH_23, "<br>",
+                       "Votos por MORENA en 2021:", MORENA_21, "<br>",
+                       "Intervalo de votos por MORENA:", quintilSHH, "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad MORENA"       # Nombre del grupo de la capa
+   )
+
 mapa <- mapa %>%
     addPolygons(
         data = mapa_DL32,
@@ -966,7 +1046,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addLayersControl(
         baseGroups = c("Manzanas","Colonias", "Secciones","AGEB", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora","ESEM", "Competitividad","Perdida FAM","Competitividad PRD","Competitividad PRI","Perdida PRI","Competitividad PAN", "Competitividad Otro","Switcher","Participacion", "Lista Nominal", "ESEM" ,"Generacion","Sugerencia"),
+        overlayGroups = c("Coalición Ganadora","ESEM", "Competitividad","Perdida FAM","Competitividad PRD","Competitividad PRI","Perdida PRI","Competitividad PAN","Competitividad MC","Competitividad MORENA", "Competitividad Otro","Switcher","Participacion", "Lista Nominal", "ESEM" ,"Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -1098,7 +1178,25 @@ mapa <- mapa %>%
         position = "bottomleft",
         layerId = "LeyendaESEM",
         group = "ESEM"  # Grupo de la leyenda
-    ) 
+    ) %>%
+    addLegend(
+        data = mapa_DL32,
+        pal = colores_MC, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadMC, # Establecer los valores de la leyenda
+        title = "Competitividad de MC",
+        position = "bottomleft",
+        layerId = "LeyendaMC",
+        group = "Competitividad MC"  # Grupo de la leyenda
+  )%>%
+    addLegend(
+        data = mapa_DL32,
+        pal = colores_SHH, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadSHH, # Establecer los valores de la leyenda
+        title = "Competitividad de MORENA",
+        position = "bottomleft",
+        layerId = "LeyendaMORENA",
+        group = "Competitividad MORENA"  # Grupo de la leyenda
+  )
 
 # Agregar el control de HTML al mapa
 mapa <- mapa %>%
