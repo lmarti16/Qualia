@@ -1089,7 +1089,16 @@ mapa <- mapa %>%
         position = "bottomleft",
         layerId = "LeyendaOtro",
         group = "Competitividad Otro"  # Grupo de la leyenda
-  )
+  )%>%
+   addLegend(
+        data = ESEM_EDOMEX_DL32,
+        pal = colores_ESEM, # Establecer los colores de la leyenda usando colores
+        values = ~NIVEL, # Establecer los valores de la leyenda
+        title = "Estratos socioeconómicos",
+        position = "bottomleft",
+        layerId = "LeyendaESEM",
+        group = "ESEM"  # Grupo de la leyenda
+    ) 
 
 # Agregar el control de HTML al mapa
 mapa <- mapa %>%
