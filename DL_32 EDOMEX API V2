@@ -791,7 +791,6 @@ mapa <- mapa %>%
                        "Votos por el PES en 21:", PES_21, "<br>",
                        "Votos por RSP en 21:", RSP_21, "<br>",
                        "Votos por FXM en 21:", FXM_21, "<br>",
-                       "Votos por MC en 21:", MC_21, "<br>",
                        "De los otros partidos, cual es preponderante:", Ganador_otro, "<br>",
                        "Coalición Ganadora actual:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
