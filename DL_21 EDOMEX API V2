@@ -72,7 +72,7 @@ Resultados <- Resultados %>%
 
 Resultados23 <- Resultados23 %>%
     select(-CIRCUNSCRIPCION, -ENTIDAD, -NOMBRE_ESTADO, -ID_DISTRITO_LOCAL, 
-           -CABECERA_DISTRITAL_LOCAL, -ID_MUNICIPIO, -MUNICIPIO, -CASILLAS)
+           -CABECERA_DISTRITAL_LOCAL, -ID_MUNICIPIO, -MUNICIPIO)
 
 # Convertir todas las columnas a numérico
 Resultados23 <- Resultados23 %>%
@@ -1216,7 +1216,7 @@ mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
                 META sugeridad de votos: 55,000<br>
-                Lista Nominal para 2024: 28,1394 <br><br>
+                Lista Nominal para 2024: 281,394 <br><br>
                 Votos Totales en el 2021: 121,048<br>
                 Votos Totales en el 2023: 112,796<br>
                 Votos Totales del FAM en 2021: 49,721<br>
