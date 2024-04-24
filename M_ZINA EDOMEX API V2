@@ -47,7 +47,7 @@ Municipios_EDOMEX <- Municipios_EDOMEX %>%
 
 Resultados <- Resultados %>%
     select(-CIRCUNSCRIPCION, -NOMBRE_ESTADO, -ID_DISTRITO_FEDERAL, 
-           -CABECERA_DISTRITAL_FEDERAL, -ID_MUNICIPIO, -MUNICIPIO, -CASILLAS)
+           -CABECERA_DISTRITAL_FEDERAL, -ID_MUNICIPIO, -MUNICIPIO)
 
 # Convertir todas las columnas a numérico
 Resultados <- Resultados %>%
@@ -59,7 +59,7 @@ Resultados <- Resultados %>%
 
 Resultados23 <- Resultados23 %>%
     select(-CIRCUNSCRIPCION, -ENTIDAD, -NOMBRE_ESTADO, -ID_DISTRITO_LOCAL, 
-           -CABECERA_DISTRITAL_LOCAL, -ID_MUNICIPIO, -MUNICIPIO, -CASILLAS)
+           -CABECERA_DISTRITAL_LOCAL, -ID_MUNICIPIO, -MUNICIPIO)
 
 # Convertir todas las columnas a numérico
 Resultados23 <- Resultados23 %>%
@@ -73,8 +73,6 @@ Resultados23 <- Resultados23 %>%
 # Renombrar columnas excepto las especificadas
 Resultados23 <- Resultados23 %>%
     rename_with(~ paste0(., "_23"), -c(FAM_23, SHH_23, SECCION))
-
-
 
 Resultados_EDOMEX <- filter(Resultados, ENTIDAD == 15)
 Secciones_EDOMEX <- filter(sec_mex, ENTIDAD == 15)
