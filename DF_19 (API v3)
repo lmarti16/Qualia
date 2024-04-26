@@ -553,6 +553,22 @@ colores_Gene <- colorFactor(
 mapa_DF19$Gene_prepo <- factor(mapa_DF19$Gene_prepo,
                                      levels = c("GEN_Z","MILLENNIALS", "GEN_X", "BOOMERS","SILENT","Sin datos"))
 
+
+# Define los colores para cada nivel de ESEM
+colores_ESEM <- colorFactor(
+    palette = c("blue", "#00CC00", "#99FF99", "#FFFF99", "#FFCC99", "#FF3300", "brown", "#808080"),
+    levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado")
+)
+
+# Reordenar los niveles del factor ESEM
+ESEM_CDMX_DF19$NIVEL <- factor(ESEM_CDMX_DF19$NIVEL,
+                             levels = c("Muy Alto", "Alto", "Medio alto", "Medio", "Medio bajo", "Bajo", "Muy Bajo", "No determinado"))
+
+
+ESEM_CDMX_DF19 <- ESEM_CDMX_DF19 %>%
+  filter(st_geometry_type(geom) %in% c("POLYGON", "MULTIPOLYGON")) %>%
+  st_cast("POLYGON")
+
 # Crear un mapa base con el fondo de OpenStreetMap
 mapa <- leaflet() %>%
     addProviderTiles(provider = "OpenStreetMap")
@@ -618,6 +634,17 @@ mapa <- mapa %>%
         opacity = 0.8,          # Opacidad de los bordes
         group = "Circunscripciones"     # Nombre del grupo de la capa
     )
+mapa <- mapa %>%
+    addPolygons(
+        data = ESEM_CDMX_DF5,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
+        label = ~NIVEL,
+        color = "black",        # Color de los bordes
+        weight = 1,             # Grosor de los bordes
+        opacity = 0.8,          # Opacidad de los bordes
+        group = "AGEB"     # Nombre del grupo de la capa
+    )
 # Agregar la segunda capa de Distritos Locales
 mapa <- mapa %>%
     addPolygons(
@@ -658,7 +685,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora en 2021:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Partido preponderante en 2012:", Ganador_12, "<br>",
                        "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
                        "Votos por el FAM en la última eleccción:", FAM_21, "<br>",
@@ -685,14 +712,13 @@ mapa <- mapa %>%
                        "¿Es sección Switcher?:", Switcher, "<br>",
                        "La sección:", Switcher_coalición, "<br>",
                        "Coalición Ganadora en 2021:", GanadorC_21, "<br>",
-                       "Coalición Ganadora en 2021:", GanadorC_21, "<br>",
                         "Votos por el FAM:", FAM_21, "<br>",
                        "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
                        "Votos por JHH:", SHH_21, "<br>",
                        "Porcentaje de votos por JHH:", paste(round(porSHH_21, 2), "%"), "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Competitividad de la Sección FAM:", CompetitividadD, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
@@ -715,7 +741,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora en 2021:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
                        "Competitividad de la Sección PRD:", CompetitividadPRD, "<br>",
                        "Votos por el FAM en la última eleccción:", FAM_21, "<br>",
@@ -757,7 +783,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora en 2021:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -788,7 +814,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -813,7 +839,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -835,7 +861,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -851,14 +877,14 @@ mapa <- mapa %>%
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "En la sección, para los otro partidos hay:", CompetitividadSHH, "<br>",
-                       "Votos por MORENA en 2021:", SHH_21, "<br>",
+                       "En la sección, para Morena hay:", CompetitividadSHH, "<br>",
+                       "Votos por MORENA en 2021:", MORENA_21, "<br>",
                        "Votos por MORENA en 2018:", MORENA_18, "<br>",
                        "Intervalo de votos por MORENA:", quintilSHH, "<br>",
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -971,13 +997,13 @@ mapa <- mapa %>%
                        "Votos por el PAN en 2021:", PAN_21, "<br>",
                        "Votos por el PAN en 2018:", PAN_18, "<br>",
                        "Porcentaje de votos por el PAN:", paste(round(porPAN_21, 2), "%"), "<br>",
-                       "Votos por MORENA en 2021:", SHH_21, "<br>",
-                       "Votos por MORENA en 2018:", SHH_18, "<br>",
+                       "Votos por MORENA en 2021:", MORENA_21, "<br>",
+                       "Votos por MORENA en 2018:", MORENA_18, "<br>",
                        "Porcentaje de votos por Morena:", paste(round(porMORENA_21, 2), "%"), "<br>",
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -1001,6 +1027,23 @@ mapa <- mapa %>%
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
         group = "Participacion"
     )
+mapa <- mapa %>%
+    addPolygons(
+        data = ESEM_CDMX_DF5,
+        fillColor = ~colores_ESEM(NIVEL),
+        fillOpacity = 0.8,
+        label = ~NIVEL,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Estrato:", NIVEL, "<br>",
+                       "Número de Seccion:", SECCION, "<br>","<br>",
+                       
+                       "Circunscripción:", Circunscripción_CDMX, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
+        group = "ESEM"       # Nombre del grupo de la capa
+    ) 
 
 # Agregar capa de polígonos para Lista Nominal
 mapa <- mapa %>%
@@ -1048,8 +1091,8 @@ mapa <- mapa %>%
 # Agregar el control de capas al mapa
 mapa <- mapa %>%
     addLayersControl(
-        baseGroups = c("Manzanas","Colonias", "Circunscripciones", "Secciones", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRD","Competitividad PRI","Perdida PAN","Competitividad PAN","Competitividad MC","Competitividad MORENA", "Competitividad Otro","Switcher","Participacion", "Lista Nominal" ,"Generacion","Sugerencia"),
+        baseGroups = c("Manzanas","Colonias", "Circunscripciones","AGEB" ,"Secciones", "Municipios","Distrito Local","Distrito Federal"),
+        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRD","Competitividad PRI","Perdida PAN","Competitividad PAN","Competitividad MC","Competitividad MORENA", "Competitividad Otro","Switcher","Participacion", "ESEM","Lista Nominal" ,"Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
