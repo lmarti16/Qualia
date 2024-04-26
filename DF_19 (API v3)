@@ -261,7 +261,7 @@ Resultados_DF19 <- Resultados_DF19 %>%
 Resultados_DF19 <- Resultados_DF19 %>%
     rowwise() %>%
     mutate(Ganador_FAM= {
-        votos <- c(PAN = PAN_21, PRI = PRI_21, PRD = PRD_21, NAEM = NAEM_21)
+        votos <- c(PAN = PAN_21, PRI = PRI_21, PRD = PRD_21)
         votos[is.na(votos)] <- 0 # Convertir NA a 0
         if (all(votos == 0)) {
             NA_character_ # Retornar NA si todos los votos son 0
@@ -305,7 +305,7 @@ Resultados_DF19 <- Resultados_DF19 %>%
     select(-NOMBRE_ENTIDAD, -MUNICIPIO, -NOMBRE_MUNICIPIO, 
            -DISTRITO_FEDERAL, -NOMBRE_DISTRITO_FEDERAL, -DISTRITO_LOCAL,-Circunscripción_CDMX, - ID_circu)
 
-mapa_DF19 <- left_join(Secciones_EDOMEX_DF19 , Resultados_DF19, by = c("SECCION", "ENTIDAD"))
+mapa_DF19 <- left_join(Secciones_CDMX_DF19 , Resultados_DF19, by = c("SECCION", "ENTIDAD"))
 
 # Corrección en la definición de rangosQuintiles para mantener la consistencia
 rangosQuintiles <- list(
@@ -398,12 +398,12 @@ mapa_DF19 <- mapa_DF19 %>%
 
 # Transformar sistema de coordenadas
 mapa_DF19 <- st_transform(mapa_DF19, crs = 4326)
-Secciones_EDOMEX_DF19<- st_transform(Secciones_EDOMEX_DF19 , crs = 4326)
-Manzanas_EDOMEX_DF19 <- st_transform(Manzanas_EDOMEX_DF19, crs = 4326)
-DistritoF_EDOMEX_DF19 <- st_transform(DistritoF_EDOMEX_DF19, crs = 4326)
-Municipios_EDOMEX_DF19 <- st_transform(Municipios_EDOMEX_DF19, crs = 4326)
-DistritoL_EDOMEX_DF19 <- st_transform(DistritoL_EDOMEX_DF19, crs = 4326)
-Colonias_EDOMEX_DF19 <- st_transform(Colonias_EDOMEX_DF19, crs = 4326)
+Secciones_CDMX_DF19<- st_transform(Secciones_CDMX_DF19 , crs = 4326)
+Manzanas_CDMX_DF19 <- st_transform(Manzanas_CDMX_DF19, crs = 4326)
+DistritoF_CDMX_DF19 <- st_transform(DistritoF_CDMX_DF19, crs = 4326)
+Municipios_CDMX_DF19 <- st_transform(Municipios_CDMX_DF19, crs = 4326)
+DistritoL_CDMX_DF19 <- st_transform(DistritoL_CDMX_DF19, crs = 4326)
+Colonias_CDMX_DF19 <- st_transform(Colonias_CDMX_DF19, crs = 4326)
 
 # Renombrar los resultados 
 mapa_DF19$GanadorC_21 <- recode(mapa_DF19$GanadorC_21,
@@ -560,7 +560,7 @@ mapa <- leaflet() %>%
 # Agregar la primera capa de polígonos de las colonias
 mapa <- mapa %>%
     addPolygons(
-        data = Colonias_EDOMEX_DF19,
+        data = Colonias_CDMX_DF19,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~COLONIA,
@@ -573,7 +573,7 @@ mapa <- mapa %>%
 # Agregar la primera capa de polígonos de manzanas
 mapa <- mapa %>%
     addPolygons(
-        data = Manzanas_EDOMEX_DF19,
+        data = Manzanas_CDMX_DF19,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
@@ -586,7 +586,7 @@ mapa <- mapa %>%
 # Agregar la  capa de polígonos a nivel de Secciones
 mapa <- mapa %>%
     addPolygons(
-        data = Secciones_EDOMEX_DF19 ,
+        data = Secciones_CDMX_DF19 ,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
@@ -598,7 +598,7 @@ mapa <- mapa %>%
 # Agregar la  capa de polígonos a nivel municipios
 mapa <- mapa %>%
     addPolygons(
-        data = Municipios_EDOMEX_DF19,
+        data = Municipios_CDMX_DF19,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~NOMBRE,
@@ -621,7 +621,7 @@ mapa <- mapa %>%
 # Agregar la segunda capa de Distritos Locales
 mapa <- mapa %>%
     addPolygons(
-        data = DistritoF_EDOMEX_DF19,
+        data = DistritoF_CDMX_DF19,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~DISTRITO,
@@ -633,7 +633,7 @@ mapa <- mapa %>%
 
 mapa <- mapa %>%
     addPolygons(
-        data = DistritoL_EDOMEX_DF19,
+        data = DistritoL_CDMX_DF19,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~DISTRITO_L,
