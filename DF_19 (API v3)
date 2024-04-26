@@ -636,7 +636,7 @@ mapa <- mapa %>%
     )
 mapa <- mapa %>%
     addPolygons(
-        data = ESEM_CDMX_DF5,
+        data = ESEM_CDMX_DF19,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~NIVEL,
@@ -814,7 +814,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2015:", Ganador_15, "<br>",<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -839,7 +839,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2015:", Ganador_15, "<br>",<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -861,7 +861,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2015:", Ganador_15, "<br>",<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -884,7 +884,7 @@ mapa <- mapa %>%
                        "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
-                       "Partido preponderante en 2015:", Ganador_15, "<br>",<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -1029,7 +1029,7 @@ mapa <- mapa %>%
     )
 mapa <- mapa %>%
     addPolygons(
-        data = ESEM_CDMX_DF5,
+        data = ESEM_CDMX_DF19,
         fillColor = ~colores_ESEM(NIVEL),
         fillOpacity = 0.8,
         label = ~NIVEL,
@@ -1233,7 +1233,16 @@ mapa <- mapa %>%
         position = "bottomleft",
         layerId = "LeyendaMORENA",
         group = "Competitividad MORENA"  # Grupo de la leyenda
-  )
+    )%>%
+ addLegend(
+        data = ESEM_CDMX_DF19,
+        pal = colores_ESEM, # Establecer los colores de la leyenda usando colores
+        values = ~NIVEL, # Establecer los valores de la leyenda
+        title = "Estratos socioeconómicos",
+        position = "bottomleft",
+        layerId = "LeyendaESEM",
+        group = "ESEM"  # Grupo de la leyenda
+    ) 
 
 # Agregar el control de HTML al mapa
 mapa <- mapa %>%
