@@ -1196,7 +1196,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: center;'>
-                San Miguel DF19cantepec, Estado de México<br>
+                Distrito Federal 19, Ciudad de México<br>
                 Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
 
                 Todos los Derechos Reservados<br><br>
@@ -1210,14 +1210,15 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
-                META sugeridad de votos: 45,000<br>
-                Lista Nominal para 2024: 154,497<br><br>
-                Votos Totales en el 2018: 79,310<br>
-                Votos Totales en el 2021: 87,282<br>
-                Votos Totales del FAM en 2018: 33,976<br>
-                Votos Totales del FAM en 2021 42,405<br>
-                Votos Totales de SHH en 2018: 35,689<br>
-                Votos Totales de SHH en 2021: 42,092<br>
+                META sugeridad de votos: 120,000<br>
+                Secciones Electorales para 2024: 275<br>
+                Lista Nominal para 2024: 331,778<br><br>
+                Votos Totales en el 2021: 195,521<br>
+                Votos Totales en el 2018: 248,532<br>
+                Votos Totales del FAM en 2021: 106,387<br>
+                Votos Totales del FAM en 2018 105,031<br>
+                Votos Totales de SHH en 2021: 72,054<br>
+                Votos Totales de SHH en 2018: 121,243<br>
             </div>",
         position = "topleft"
     )
