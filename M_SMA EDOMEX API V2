@@ -75,13 +75,13 @@ Resultados23 <- Resultados23 %>%
 
 Resultados_EDOMEX <- filter(Resultados, ENTIDAD == 15)
 Secciones_EDOMEX <- filter(sec_mex, ENTIDAD == 15)
-Secciones_EDOMEX_SMA <- filter(Secciones_EDOMEX, MUNICIPIO== 77)
-Manzanas_EDOMEX_SMA <- filter(Manzanas_EDOMEX, MUNICIPIO == 77)
+Secciones_EDOMEX_SMA <- filter(Secciones_EDOMEX, MUNICIPIO== 11)
+Manzanas_EDOMEX_SMA <- filter(Manzanas_EDOMEX, MUNICIPIO == 11)
 # Obtener los valores únicos de MUNICIPIO y DISTRITO_L de Secciones_EDOMEX_SMA 
 Valores_DF_EDOMEX_SMA <- unique(Secciones_EDOMEX_SMA$DISTRITO_FEDERAL)
 Valores_DL_EDOMEX_SMA <- unique(Secciones_EDOMEX_SMA$DISTRITO_LOCAL)
 
-Municipios_EDOMEX_SMA  <- filter(Municipios_EDOMEX, MUNICIPIO == 77)
+Municipios_EDOMEX_SMA  <- filter(Municipios_EDOMEX, MUNICIPIO == 11)
 Colonias_EDOMEX <- filter(Colonias_MX, CVE_ENT == "15")
 Colonias_EDOMEX <- st_transform(Colonias_EDOMEX, st_crs(Municipios_EDOMEX_SMA ))
 Colonias_EDOMEX_SMA <- st_intersection(Municipios_EDOMEX_SMA , Colonias_EDOMEX)
@@ -1241,13 +1241,12 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: center;'>
-                Municipio de Santa María Atenco, Estado de México<br>
+                Municipio de Santa Salvador Atenco, Estado de México<br>
                 Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
 
                 Todos los Derechos Reservados<br><br>
                 NOTA:El uso y distribución de la API es responsabilidad del cliente<br>
                 Contacto: qualiaasesores@gmail.com<br>
-
             </div>",
         position = "bottomright"
     )
@@ -1255,16 +1254,15 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
-                META sugeridad de votos: 20,000<br>
-                Lista Nominal para 2024: 75,104 <br><br>
-                Votos Totales en el 2021: 42,555<br>
-                Votos Totales en el 2023: 45,913<br>
-                Votos Totales del FAM en 2021: 16,584<br>
-                Votos Totales del FAM en 2023 19,277<br>
-                Votos Totales de SHH en 2021: 15,249<br>
-                Votos Totales deL PT en 2021: 674<br>
-                Votos Totales de SHH en 2023: 25,545<br>
-
+                META sugeridad de votos: 12,000<br>
+                Lista Nominal para 2024: 51,120<br><br>
+                Votos Totales en el 2021: 25,467<br>
+                Votos Totales en el 2023: 22,225<br>
+                Votos Totales del FAM en 2021: 9,432<br>
+                Votos Totales del FAM en 2023 9,227<br>
+                Votos Totales de SHH en 2021: 11,997br>
+                Votos Totales deL PT en 2021: 384<br>
+                Votos Totales de SHH en 2023: 12,493<br>
             </div>",
         position = "topleft"
     )
