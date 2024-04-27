@@ -661,7 +661,7 @@ mapa <- mapa %>%
                        
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
+                       "Distrito Federal:", DISTRITO_FEDERAL), 
         group = "Switcher"       # Nombre del grupo de la capa
     ) 
 # Agregar la tercer capa de polígonos con los datos de mapa_DL17 y el color según el Switcher_coalición
@@ -687,7 +687,7 @@ mapa <- mapa %>%
                        "Competitividad de la Sección FAM:", CompetitividadD, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
+                       "Distrito Federal:", DISTRITO_FEDERAL), 
         group = "Coalición Ganadora"       # Nombre del grupo de la capa
     ) 
 
@@ -728,7 +728,7 @@ mapa <- mapa %>%
                        "Participación:", paste(round(participacion*1, 2), "%"), "<br>", "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Sugerencia"       # Nombre del grupo de la capa
     ) 
 # Agregar la quinta capa de polígonos con los datos de mapa_DL17 y el color según la competitividad
@@ -751,7 +751,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad"       # Nombre del grupo de la capa
     ) 
 
@@ -782,7 +782,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad PRD"       # Nombre del grupo de la capa
     )
 mapa <- mapa %>%
@@ -807,7 +807,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad Otro"       # Nombre del grupo de la capa
    )
 
@@ -829,7 +829,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad MC"       # Nombre del grupo de la capa
    )
 
@@ -852,7 +852,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2015:", Ganador_15, "<br>","<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad MORENA"       # Nombre del grupo de la capa
    )
 
@@ -883,7 +883,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad PAN"       # Nombre del grupo de la capa
     )
 
@@ -914,7 +914,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad PRI"       # Nombre del grupo de la capa
     )
 
@@ -943,7 +943,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2018:", Ganador_18, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Perdida FAM"       # Nombre del grupo de la capa
     )
 
@@ -971,7 +971,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Perdida PAN"       # Nombre del grupo de la capa
     )
 mapa <- mapa %>%
@@ -997,7 +997,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad PT"       # Nombre del grupo de la capa
     )
 mapa <- mapa %>%
@@ -1023,7 +1023,7 @@ mapa <- mapa %>%
                        "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Competitividad PVEM"       # Nombre del grupo de la capa
     )
 # Agregar capa de polígonos para Participación
@@ -1040,7 +1040,7 @@ mapa <- mapa %>%
                        "Participación:", paste(round(participacion*1, 2), "%"), "<br>", "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Participacion"
     )
 
@@ -1058,7 +1058,7 @@ mapa <- mapa %>%
                        "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>", "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
-                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+                       "Distrito Federal:", DISTRITO_FEDERAL),
         group = "Lista Nominal"
     )
 # Agregar capa de polígonos para Gener
@@ -1270,15 +1270,15 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
-                META sugeridad de votos: 120,000<br>
-                Secciones Electorales para 2024: 275<br>
-                Lista Nominal para 2024: 331,778<br><br>
-                Votos Totales en el 2021: 195,521<br>
-                Votos Totales en el 2018: 248,532<br>
-                Votos Totales del FAM en 2021: 106,387<br>
-                Votos Totales del FAM en 2018 105,031<br>
-                Votos Totales de SHH en 2021: 72,054<br>
-                Votos Totales de SHH en 2018: 121,243<br>
+                META sugeridad de votos: 30,000<br>
+                Secciones Electorales para 2024: 100<br>
+                Lista Nominal para 2024: 167,466<br><br>
+                Votos Totales en el 2021: 80,945<br>
+                Votos Totales en el 2018: 90,522<br>
+                Votos Totales del FAM en 2021: 44,126<br>
+                Votos Totales del FAM en 2018 32,165<br>
+                Votos Totales de SHH en 2021: 28,420<br>
+                Votos Totales de SHH en 2018: 34,923<br>
             </div>",
         position = "topleft"
     )
