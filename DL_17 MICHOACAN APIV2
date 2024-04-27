@@ -18,24 +18,17 @@ library(RColorBrewer)
 library(units)
 
 # Leer archivo SHP usando read_sf()
-Manzanas_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\16 MICHOACAN\\MANZANA.shp")
+Manzanas_MICHOACAN <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\16 MICHOACAN\\MANZANA.shp")
 sec_mex <- read_sf("D:\\Descargas\\secciones_2024.gpkg\\secciones_2024.gpkg")
-DistritoF_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\16 MICHOACAN\\DISTRITO_FEDERAL.shp")
-DistritoL_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\16 MICHOACAN\\DISTRITO_LOCAL.shp")
+DistritoF_MICHOACAN <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\16 MICHOACAN\\DISTRITO_FEDERAL.shp")
+DistritoL_MICHOACAN <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\16 MICHOACAN\\DISTRITO_LOCAL.shp")
 Resultados21 <- read_csv("D:\\52556\\Documents\\Secretaria_GralPRI\\Resultados_resec.csv")
 Resultados18 <- read_csv("D:\\52556\\Documents\\twitter\\Resultados_18(resec).csv")
 Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\2024_LN.csv")
-Municipios_CDMX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\16 MICHOACAN\\MUNICIPIO.shp")
+Municipios_MICHOACAN <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\16 MICHOACAN\\MUNICIPIO.shp")
 Secciones_Switcher <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\secciones_switcher.csv")
 Colonias_MX <- read_sf("D:\\Descargas\\imc2020_shp\\colonias_imc2020.shp")
-Circunscripcion <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\Circunscripciones.shp")
-Nocircunscripcion <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\Circunscripcion_CDMX.csv")
 
-Circunscripcion  <- Circunscripcion  %>%
-    rename(MUNICIPIO = MUNICIP, NOMBRE_MUNICIPIO = NOMBRE_, Circunscripción_CDMX = Cr_CDMX)
-
-Nocircunscripcion$Circunscripción_CDMX  <- as.numeric(Nocircunscripcion$Circunscripción_CDMX)
-Nocircunscripcion$SECCION <- as.numeric(Nocircunscripcion$SECCION)
 Secciones_Switcher$SECCION <- as.numeric(Secciones_Switcher$SECCION)
 Secciones_Switcher$ENTIDAD <- as.numeric(Secciones_Switcher$ENTIDAD)
 
@@ -46,10 +39,10 @@ sec_mex <- sec_mex %>%
     select(-PADRON_HOMBRES, -PADRON_MUJERES,  -PADRON_ELECTORAL, -LISTA_HOMBRES, -LISTA_MUJERES, -LISTA_NOMINAL)
 
 # Reemplaza los espacios por saltos de línea en la columna NOMBRE
-Municipios_CDMX$NOMBRE <- str_replace_all(Municipios_CDMX$NOMBRE, " ", "\n")
+Municipios_MICHOACAN$NOMBRE <- str_replace_all(Municipios_MICHOACAN$NOMBRE, " ", "\n")
 
-# Suponiendo que tu dataframe se llama 'Municipios_CDMX'
-Municipios_CDMX <- Municipios_CDMX %>%
+# Suponiendo que tu dataframe se llama 'Municipios_MICHOACAN'
+Municipios_MICHOACAN <- Municipios_MICHOACAN %>%
   mutate(NOMBRE = paste0(tools::toTitleCase(tolower(NOMBRE))))
 
 # Asumiendo que tu tibble se llama Secciones_Switcher
@@ -87,43 +80,39 @@ Resultados18 <- Resultados18 %>%
 Resultados18 <- Resultados18 %>%
     rename_with(~ paste0(., "_18"), -c(FAM_18, SHH_18, ENTIDAD, SECCION))
 
-Resultados_CDMX <- filter(Resultados21, ENTIDAD == 16)
-Resultados_CDMX <- left_join(Resultados_CDMX, Resultados18, by = c("SECCION", "ENTIDAD"))
-Secciones_CDMX <- filter(sec_mex, ENTIDAD == 16)
-Secciones_CDMX <- left_join(Secciones_CDMX, Nocircunscripcion, by = c("SECCION"))
+Resultados_MICHOACAN <- filter(Resultados21, ENTIDAD == 16)
+Resultados_MICHOACAN <- left_join(Resultados_MICHOACAN, Resultados18, by = c("SECCION", "ENTIDAD"))
+Secciones_MICHOACAN <- filter(sec_mex, ENTIDAD == 16)
 
-# Crear un identificador único combinando Circunscripción_CDMX y ENTIDAD
-Secciones_CDMX$ID_circu <- paste(Secciones_CDMX$Circunscripción_CDMX, Secciones_CDMX$NOMBRE_MUNICIPIO, sep = "_")
-Circunscripcion$ID_circu <- paste(Circunscripcion$Circunscripción_CDMX, Circunscripcion$NOMBRE_MUNICIPIO, sep = "_")
 
-Secciones_CDMX_DL17<- filter(Secciones_CDMX, DISTRITO_LOCAL== 17)
-Manzanas_CDMX_DL17 <- filter(Manzanas_CDMX, DISTRITO_L == 17)
-DistritoF_CDMX_DL17 <- filter(DistritoF_CDMX, DISTRITO_L == 19)
+Secciones_MICHOACAN_DL17<- filter(Secciones_MICHOACAN, DISTRITO_LOCAL== 17)
+Manzanas_MICHOACAN_DL17 <- filter(Manzanas_MICHOACAN, DISTRITO_L == 17)
+DistritoL_MICHOACAN_DL17 <- filter(DistritoL_MICHOACAN, DISTRITO_L == 17)
 
-# Obtener los valores únicos de MUNICIPIO y DISTRITO_L de Secciones_CDMX_DL17 
-Municipios_DL17 <- unique(Secciones_CDMX_DL17$MUNICIPIO)
-Valores_DF_DL17 <- unique(Secciones_CDMX_DL17$DISTRITO_FEDERAL)
+# Obtener los valores únicos de MUNICIPIO y DISTRITO_L de Secciones_MICHOACAN_DL17 
+Municipios_DL17 <- unique(Secciones_MICHOACAN_DL17$MUNICIPIO)
+Valores_DF_DL17 <- unique(Secciones_MICHOACAN_DL17$DISTRITO_FEDERAL)
 
-# Filtrar DistritoF_CDMX, DistritoL_CDMX y circunscupcion
-Municipios_CDMX_DL17 <- Municipios_CDMX[Municipios_CDMX$MUNICIPIO %in% Municipios_DL17, ]
-DistritoF_CDMX_DL17 <- DistritoF_CDMX[DistritoF_CDMX$DISTRITO %in% Valores_DF_DL17, ]
+# Filtrar DistritoF_MICHOACAN, DistritoL_MICHOACAN y circunscupcion
+Municipios_MICHOACAN_DL17 <- Municipios_MICHOACAN[Municipios_MICHOACAN$MUNICIPIO %in% Municipios_DL17, ]
+DistritoF_MICHOACAN_DL17 <- DistritoF_MICHOACAN[DistritoF_MICHOACAN$DISTRITO %in% Valores_DF_DL17, ]
 
 #Define Colonias
-Colonias_CDMX <- filter(Colonias_MX, CVE_ENT == "09")
-Colonias_CDMX <- st_transform(Colonias_CDMX, st_crs(DistritoF_CDMX_DL17 ))
-Colonias_CDMX_DL17 <- st_intersection(DistritoF_CDMX_DL17 , Colonias_CDMX)
+Colonias_MICHOACAN <- filter(Colonias_MX, CVE_ENT == "16")
+Colonias_MICHOACAN <- st_transform(Colonias_MICHOACAN, st_crs(DistritoL_MICHOACAN_DL17 ))
+Colonias_MICHOACAN_DL17 <- st_intersection(DistritoL_MICHOACAN_DL17 , Colonias_MICHOACAN)
 
 # Calculamos el área de cada geometría resultante
-Colonias_CDMX_DL17$area <- st_area(Colonias_CDMX_DL17)
+Colonias_MICHOACAN_DL17$area <- st_area(Colonias_MICHOACAN_DL17)
 
 # Definimos un umbral mínimo de área como un objeto de tipo 'units'
 umbral_area <- set_units(1000, m^2) # Ajusta este valor según tus necesidades
 
 # Filtramos para excluir geometrías con área menor al umbral
-Colonias_CDMX_DL17 <- Colonias_CDMX_DL17[Colonias_CDMX_DL17$area > umbral_area, ]
+Colonias_MICHOACAN_DL17 <- Colonias_MICHOACAN_DL17[Colonias_MICHOACAN_DL17$area > umbral_area, ]
 
 # Unir los dataframes por SECCION y ENTIDAD
-Resultados_DL17 <- left_join(Secciones_CDMX_DL17, Resultados_CDMX, by = c("SECCION", "ENTIDAD"))
+Resultados_DL17 <- left_join(Secciones_MICHOACAN_DL17, Resultados_MICHOACAN, by = c("SECCION", "ENTIDAD"))
 Resultados_DL17 <- st_drop_geometry(Resultados_DL17)
 Resultados_DL17 <- left_join(Resultados_DL17, Secciones_Switcher, by = c("SECCION", "ENTIDAD"))
 Resultados_DL17 <- left_join(Resultados_DL17, Lista_Nominal_Selected, by = c("SECCION", "ENTIDAD"))
@@ -286,9 +275,9 @@ Resultados_DL17 <- Resultados_DL17 %>%
 
 Resultados_DL17 <- Resultados_DL17 %>%
     select(-NOMBRE_ENTIDAD, -MUNICIPIO, -NOMBRE_MUNICIPIO, 
-           -DISTRITO_FEDERAL, -NOMBRE_DISTRITO_FEDERAL, -DISTRITO_LOCAL,-Circunscripción_CDMX, - ID_circu)
+           -DISTRITO_FEDERAL, -NOMBRE_DISTRITO_FEDERAL, -DISTRITO_LOCAL)
 
-mapa_DL17 <- left_join(Secciones_CDMX_DL17 , Resultados_DL17, by = c("SECCION", "ENTIDAD"))
+mapa_DL17 <- left_join(Secciones_MICHOACAN_DL17 , Resultados_DL17, by = c("SECCION", "ENTIDAD"))
 
 # Corrección en la definición de rangosQuintiles para mantener la consistencia
 rangosQuintiles <- list(
@@ -395,12 +384,12 @@ mapa_DL17 <- mapa_DL17 %>%
 
 # Transformar sistema de coordenadas
 mapa_DL17 <- st_transform(mapa_DL17, crs = 4326)
-Secciones_CDMX_DL17<- st_transform(Secciones_CDMX_DL17 , crs = 4326)
-Manzanas_CDMX_DL17 <- st_transform(Manzanas_CDMX_DL17, crs = 4326)
-DistritoF_CDMX_DL17 <- st_transform(DistritoF_CDMX_DL17, crs = 4326)
-Municipios_CDMX_DL17 <- st_transform(Municipios_CDMX_DL17, crs = 4326)
-DistritoL_CDMX_DL17 <- st_transform(DistritoL_CDMX_DL17, crs = 4326)
-Colonias_CDMX_DL17 <- st_transform(Colonias_CDMX_DL17, crs = 4326)
+Secciones_MICHOACAN_DL17<- st_transform(Secciones_MICHOACAN_DL17 , crs = 4326)
+Manzanas_MICHOACAN_DL17 <- st_transform(Manzanas_MICHOACAN_DL17, crs = 4326)
+DistritoF_MICHOACAN_DL17 <- st_transform(DistritoF_MICHOACAN_DL17, crs = 4326)
+Municipios_MICHOACAN_DL17 <- st_transform(Municipios_MICHOACAN_DL17, crs = 4326)
+DistritoL_MICHOACAN_DL17 <- st_transform(DistritoL_MICHOACAN_DL17, crs = 4326)
+Colonias_MICHOACAN_DL17 <- st_transform(Colonias_MICHOACAN_DL17, crs = 4326)
 
 # Renombrar los resultados 
 mapa_DL17$GanadorC_21 <- recode(mapa_DL17$GanadorC_21,
@@ -574,7 +563,7 @@ mapa <- leaflet() %>%
 # Agregar la primera capa de polígonos de las colonias
 mapa <- mapa %>%
     addPolygons(
-        data = Colonias_CDMX_DL17,
+        data = Colonias_MICHOACAN_DL17,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~COLONIA,
@@ -587,7 +576,7 @@ mapa <- mapa %>%
 # Agregar la primera capa de polígonos de manzanas
 mapa <- mapa %>%
     addPolygons(
-        data = Manzanas_CDMX_DL17,
+        data = Manzanas_MICHOACAN_DL17,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
@@ -600,7 +589,7 @@ mapa <- mapa %>%
 # Agregar la  capa de polígonos a nivel de Secciones
 mapa <- mapa %>%
     addPolygons(
-        data = Secciones_CDMX_DL17 ,
+        data = Secciones_MICHOACAN_DL17 ,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~SECCION,
@@ -612,7 +601,7 @@ mapa <- mapa %>%
 # Agregar la  capa de polígonos a nivel municipios
 mapa <- mapa %>%
     addPolygons(
-        data = Municipios_CDMX_DL17,
+        data = Municipios_MICHOACAN_DL17,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~NOMBRE,
@@ -621,21 +610,10 @@ mapa <- mapa %>%
         opacity = 0.8,          # Opacidad de los bordes
         group = "Municipios"     # Nombre del grupo de la capa
     )
-mapa <- mapa %>%
-    addPolygons(
-        data = Circunscripcion_CDMX_DL17,
-        fillColor = "white",    # Color de fondo blanco
-        fillOpacity = 0.5,      # Transparencia del fondo
-        label = ~ID_circu,
-        color = "black",        # Color de los bordes
-        weight = 1,             # Grosor de los bordes
-        opacity = 0.8,          # Opacidad de los bordes
-        group = "Circunscripciones"     # Nombre del grupo de la capa
-    )
 # Agregar la segunda capa de Distritos Locales
 mapa <- mapa %>%
     addPolygons(
-        data = DistritoF_CDMX_DL17,
+        data = DistritoF_MICHOACAN_DL17,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~DISTRITO,
@@ -647,7 +625,7 @@ mapa <- mapa %>%
 
 mapa <- mapa %>%
     addPolygons(
-        data = DistritoL_CDMX_DL17,
+        data = DistritoL_MICHOACAN_DL17,
         fillColor = "white",    # Color de fondo blanco
         fillOpacity = 0.5,      # Transparencia del fondo
         label = ~DISTRITO_L,
@@ -1007,16 +985,16 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección, para el PT hay:", CompetitividadPT, "<br>",
                        "Votos del PT en 2021:", PT_21, "<br>",
-                       "Aumento o disminución de votos para PT:", SHH_23-PT_21, "<br>",
+                       "Aumento o disminución de votos para PT del 18 al 21:", PT_21-PT_18, "<br>",
                        "Intervalo de votos por el PT:", quintilPT, "<br>",
-                       "Votos por el FAM:", FAM_23, "<br>",
-                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
-                       "Votos por SHH:", SHH_23, "<br>",
-                       "Porcentaje de votos por SHH:", paste(round(porSHH_23, 2), "%"), "<br>",
-                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
-                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Votos por el FAM:", FAM_21, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
+                       "Votos por SHH:", SHH_21, "<br>",
+                       "Porcentaje de votos por SHH:", paste(round(porSHH_21, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -1033,16 +1011,16 @@ mapa <- mapa %>%
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
                        "En la sección, para el PVEM hay:", CompetitividadPVEM, "<br>",
                        "Votos del PVEM en 2021:", PVEM_21, "<br>",
-                       "Aumento o disminución de votos para PVEM:", SHH_23-PVEM_21, "<br>",
+                       "Aumento o disminución de votos para PT del 18 al 21:", PVEM_21-PVEM_18, "<br>",
                        "Intervalo de votos por el PVEM:", quintilPVEM, "<br>",
-                       "Votos por el FAM:", FAM_23, "<br>",
-                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
-                       "Votos por SHH:", SHH_23, "<br>",
-                       "Porcentaje de votos por SHH:", paste(round(porSHH_23, 2), "%"), "<br>",
-                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
-                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Votos por el FAM:", FAM_21, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_21, 2), "%"), "<br>",
+                       "Votos por SHH:", SHH_21, "<br>",
+                       "Porcentaje de votos por SHH:", paste(round(porSHH_21, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_21, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
-                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
@@ -1112,8 +1090,8 @@ mapa <- mapa %>%
 # Agregar el control de capas al mapa
 mapa <- mapa %>%
     addLayersControl(
-        baseGroups = c("Manzanas","Colonias", "Circunscripciones","Secciones", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRI","Competitividad PRD","Competitividad PAN","Competitividad MORENA","Competitividad PT","Perdida PT","Competitividad PVEM","Competitividad MC", "Competitividad Otro","Switcher","Participacion", "Lista Nominal" ,"Generacion","Sugerencia"),
+        baseGroups = c("Manzanas","Colonias","Secciones", "Municipios","Distrito Local","Distrito Federal"),
+        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRI","Competitividad PRD","Competitividad PAN","Competitividad MORENA","Competitividad PT","Perdida PAN","Competitividad PVEM","Competitividad MC", "Competitividad Otro","Switcher","Participacion", "Lista Nominal" ,"Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
@@ -1272,13 +1250,13 @@ mapa <- mapa %>%
         position = "bottomleft",
         layerId = "LeyendaPVEM",
         group = "Competitividad PVEM"  # Grupo de la leyenda
-    ) %>%
+    ) 
 
 # Agregar el control de HTML al mapa
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: center;'>
-                Distrito Federal 19, Ciudad de México<br>
+                Distrito Local 17, Michoacán<br>
                 Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
 
                 Todos los Derechos Reservados<br><br>
