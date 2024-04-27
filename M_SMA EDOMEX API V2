@@ -1241,7 +1241,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: center;'>
-                Municipio de Santa Salvador Atenco, Estado de México<br>
+                Municipio de San Salvador Atenco, Estado de México<br>
                 Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
 
                 Todos los Derechos Reservados<br><br>
@@ -1260,7 +1260,7 @@ mapa <- mapa %>%
                 Votos Totales en el 2023: 22,225<br>
                 Votos Totales del FAM en 2021: 9,432<br>
                 Votos Totales del FAM en 2023 9,227<br>
-                Votos Totales de SHH en 2021: 11,997br>
+                Votos Totales de SHH en 2021: 11,997<br>
                 Votos Totales deL PT en 2021: 384<br>
                 Votos Totales de SHH en 2023: 12,493<br>
             </div>",
