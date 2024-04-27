@@ -320,12 +320,12 @@ mapa_EDOMEX_SMA <- mapa_EDOMEX_SMA %>%
     quintilTdif == labels_custom(quintilesTdif)[2] ~ "Segunda Mayor perdida de votos",
     quintilTdif == labels_custom(quintilesTdif)[1] ~ "Mayor perdida de votos"
   )) %>%
-  mutate(PerdidaPRI = case_when(
-    quintilTPT == labels_custom(quintilesTPT)[5] ~ "Ganó o Perdió pocos Votos",
-    quintilTPT == labels_custom(quintilesTPT)[4] ~ "Cuarta Mayor perdida de votos",
-    quintilTPT == labels_custom(quintilesTPT)[3] ~ "Tercera Mayor perdida de votos",
-    quintilTPT == labels_custom(quintilesTPT)[2] ~ "Segunda Mayor perdida de votos",
-    quintilTPT == labels_custom(quintilesTPT)[1] ~ "Mayor perdida de votos"
+  mutate(PerdidaPT = case_when(
+    quintilTPT == labels_custom(quintilesTPT)[5] ~ "El Mayor Beneficio por la coalición",
+    quintilTPT == labels_custom(quintilesTPT)[4] ~ "El segundo Mayor Beneficio por la coalición",
+    quintilTPT == labels_custom(quintilesTPT)[3] ~ "El tercer Mayor Beneficio por la coalición",
+    quintilTPT == labels_custom(quintilesTPT)[2] ~ "El cuarto Mayor Beneficio por la coalición",
+    quintilTPT == labels_custom(quintilesTPT)[1] ~ "El Menor Beneficio por la coalición"
   )) %>%
   mutate(CompetitividadOtro = case_when(
     quintilOtro == labels_custom(quintilesOtro)[1] ~ "La más baja",
@@ -361,9 +361,7 @@ mapa_EDOMEX_SMA <- mapa_EDOMEX_SMA %>%
     quintilPVEM == labels_custom(quintilesPVEM)[3] ~ "Media",
     quintilPVEM == labels_custom(quintilesPVEM)[4] ~ "Alta",
     quintilPVEM == labels_custom(quintilesPVEM)[5] ~ "La más alta"
-  ))%>%
-
-
+  ))
 
 
 # Transformar sistema de coordenadas
@@ -410,13 +408,13 @@ colores_Ganador_FAM <- colorFactor(
     levels = c("PAN", "PRD", "PRI"))
 
 # Reordenar los niveles del factor CompetitividadPRI
-mapa_EDOMEX_SMA$PerdidaPRI<- factor(mapa_EDOMEX_SMA$PerdidaPRI,
-levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera Mayor perdida de votos", "Cuarta Mayor perdida de votos", "Ganó o Perdió pocos Votos"))
+mapa_EDOMEX_SMA$PerdidaPT<- factor(mapa_EDOMEX_SMA$PerdidaPT,
+levels = c("El Menor Beneficio por la coalición", "El cuarto Mayor Beneficio por la coalición", "El tercer Mayor Beneficio por la coalición", "El segundo Mayor Beneficio por la coalición", "El Mayor Beneficio por la coalición"))
 
 # Definir los colores para cada nivel de CompetitividadPRI
-colores_PerdidaPRI <- colorFactor(
+colores_PerdidaPT <- colorFactor(
 palette = c("darkred", "red", "#FF6666", "#FFE0E0", "white"), 
-levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera Mayor perdida de votos", "Cuarta Mayor perdida de votos", "Ganó o Perdió pocos Votos"))
+levels = c("El Menor Beneficio por la coalición", "El cuarto Mayor Beneficio por la coalición", "El tercer Mayor Beneficio por la coalición", "El segundo Mayor Beneficio por la coalición", "El Mayor Beneficio por la coalición"))
 
 # Reordenar los niveles del factor CompetitividadPRI
 mapa_EDOMEX_SMA$PerdidaFAM<- factor(mapa_EDOMEX_SMA$PerdidaFAM,
@@ -460,17 +458,17 @@ levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
 
 # Definir los colores para cada nivel de CompetitividadPRD
 colores_CompetitividadPT <- colorFactor(
-palette = c("#8B4513", "#A0522D", "#CD853F", "#FFDEAD", "white)
+palette = c("#d50000", "#ff1744", "#ff5252", "#ffc400", "white"),
 levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
 
 # Reordenar los niveles del factor CompetitividadPT
 mapa_EDOMEX_SMA$CompetitividadPVEM<- factor(mapa_EDOMEX_SMA$CompetitividadPVEM,
 levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
 
-# Definir los colores para cada nivel de CompetitividadPRD
-colores_CompetitividadPVEM< <- colorFactor(
-palette = c("darkgreen", "green", "#66FF66", "#E0FFE0", "white")
-levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
+# Definir los colores para cada nivel de CompetitividaPVEM
+colores_CompetitividadPVEM<- colorFactor(
+    palette = c("darkgreen", "green", "#66FF66", "#E0FFE0", "white"),
+    levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
 
 # Reordenar los niveles del factor CompetitividadPRI
 mapa_EDOMEX_SMA$CompetitividadPRI<- factor(mapa_EDOMEX_SMA$CompetitividadPRI,
@@ -732,7 +730,7 @@ mapa <- mapa %>%
                        "En la sección hay:", CompetitividadD, "<br>",
                        "Intervalo de competividad:", quintilD, "<br>",
                        "Diferencia de porcentaje:", paste(round(diferencia, 2), "%"), "<br>",
-                       "Diferencia de votos (FAM-SHH):", Vdif, "<br>",
+                       "Diferencia de votos (SHH-FAM):", Vdif, "<br>",
                        "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
@@ -991,21 +989,18 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addPolygons(
         data = mapa_EDOMEX_SMA,
-        fillColor = ~colores_PerdidaPRI(PerdidaPRI),
+        fillColor = ~colores_PerdidaPT(PerdidaPT),
         fillOpacity = 0.8,
         label = ~SECCION,
         color = "white",
         weight = 1,
         popup = ~paste("Numero de Sección:", SECCION, "<br>",
-                       "En la sección, para el Frente sin el PRI hay:", PerdidaPRI, "<br>",
-                       "Votos que ha ganado o perdido el PRI de 23 a 21:", TPT, "<br>",
-                       "Intervalo de votos que ha perdido el PRI:", quintilTPT, "<br>",
-                       "Votos por el PRI en 2023:", PRI_23, "<br>",
-                       "Votos por el PRI en 2021:", PRI_21, "<br>",
-                       "Porcentaje de votos por el PRI:", paste(round(porPRI_23, 2), "%"), "<br>",
-                       "Votos por MORENA en 2023:", SHH_23, "<br>",
+                       "En la sección, para el PT hay:", PerdidaPT, "<br>",
+                       "Votos que ganó el PT gracias a la coalición:", TPT, "<br>",
+                       "Intervalo de votos que benefició al PT su coalición en 2023:", quintilTPT, "<br>",
+                       "Votos por SHH en 2023:", SHH_23, "<br>",
+                       "Votos por el PT en 2021:", PT_21, "<br>",
                        "Votos por MORENA en 2021:", SHH_21, "<br>",
-                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
                        "Coalición Ganadora actual:", GanadorC_23, "<br>",
                        "Partido preponderante en 2023:", Ganador_23, "<br>",
                        "Partido preponderante en 2021:", Ganador_21, "<br>",
@@ -1013,7 +1008,7 @@ mapa <- mapa %>%
                        "Municipio:", NOMBRE_MUNICIPIO, "<br>",
                        "Distrito Local:", DISTRITO_LOCAL, "<br>",
                        "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
-        group = "Perdida PRI"       # Nombre del grupo de la capa
+        group = "Perdida PT"       # Nombre del grupo de la capa
     )
 
 # Agregar capa de polígonos para Participación
@@ -1130,7 +1125,7 @@ mapa <- mapa %>%
         values = ~CompetitividadPAN, # Establecer los valores de la leyenda
         title = "Peso del PAN en su coalición",
         position = "bottomleft",
-        layerId = "LeyendaPAN,
+        layerId = "LeyendaPAN",
         group = "Competitividad PAN"  # Grupo de la leyenda
     ) %>%
     addLegend(
@@ -1260,14 +1255,16 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addControl(
         html = "<div style='margin-bottom: 10px; text-align: justify;'>
-                META sugeridad de votos: 28,000<br>
-                Lista Nominal para 2024: 108,277 <br><br>
-                Votos Totales en el 2021: 55,101<br>
-                Votos Totales en el 2023: 56,227<br>
-                Votos Totales del FAM en 2021: 21,169<br>
-                Votos Totales del FAM en 2023 26,404<br>
-                Votos Totales de SHH en 2021: 24,603<br>
-                Votos Totales de SHH en 2023: 28,461<br>
+                META sugeridad de votos: 20,000<br>
+                Lista Nominal para 2024: 75,104 <br><br>
+                Votos Totales en el 2021: 42,555<br>
+                Votos Totales en el 2023: 45,913<br>
+                Votos Totales del FAM en 2021: 16,584<br>
+                Votos Totales del FAM en 2023 19,277<br>
+                Votos Totales de SHH en 2021: 15,249<br>
+                Votos Totales deL PT en 2021: 674<br>
+                Votos Totales de SHH en 2023: 25,545<br>
+
             </div>",
         position = "topleft"
     )
