@@ -1091,7 +1091,7 @@ mapa <- mapa %>%
 mapa <- mapa %>%
     addLayersControl(
         baseGroups = c("Manzanas","Colonias","Secciones", "Municipios","Distrito Local","Distrito Federal"),
-        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRI","Competitividad PRD","Competitividad PAN","Competitividad MORENA","Competitividad PT","Perdida PAN","Competitividad PVEM","Competitividad MC", "Competitividad Otro","Switcher","Participacion", "Lista Nominal" ,"Generacion","Sugerencia"),
+        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRI","Competitividad PRD","Competitividad PAN","Perdida PAN","Competitividad MORENA","Competitividad PT","Competitividad PVEM","Competitividad MC", "Competitividad Otro","Switcher","Participacion", "Lista Nominal" ,"Generacion","Sugerencia"),
         options = layersControlOptions(collapsed = FALSE)
     )
 
