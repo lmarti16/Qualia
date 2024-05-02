@@ -1,0 +1,1280 @@
+# Cargar librerías
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(reshape2)	
+library(tidyr)
+library(readxl)
+library(colorspace)
+library(ggspatial)
+library(ggthemes)
+library(wesanderson)
+library(pdftools)
+library(leaflet)
+library(rio)
+library(stringr)
+library(RColorBrewer)
+
+# Leer archivo SHP usando read_sf()
+Manzanas_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\MANZANA.shp")
+sec_mex <- read_sf("D:\\Descargas\\secciones_2024.gpkg\\secciones_2024.gpkg")
+DistritoF_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\DISTRITO_FEDERAL.shp")
+DistritoL_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\DISTRITO_LOCAL.shp")
+Resultados <- read_csv("D:\\52556\\Documents\\Secretaria_GralPRI\\Resultados_resec.csv")
+Resultados23 <- read_csv("D:\\52556\\Documents\\Oro_Manzur\\Resultados_goberEdomex23.csv")
+Lista_Nominal_Selected <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\2024_LN.csv")
+Municipios_EDOMEX <- read_sf("D:\\Descargas\\SHAPEFILES_MEX\\15 MEXICO\\MUNICIPIO.shp")
+Secciones_Switcher <- read_sf("D:\\52556\\Documents\\Secretaria_GralPRI\\secciones_switcher.csv")
+Colonias_MX <- read_sf("D:\\Descargas\\imc2020_shp\\colonias_imc2020.shp")
+
+Secciones_Switcher$SECCION <- as.numeric(Secciones_Switcher$SECCION)
+Secciones_Switcher$ENTIDAD <- as.numeric(Secciones_Switcher$ENTIDAD)
+
+Lista_Nominal_Selected <- Lista_Nominal_Selected %>%
+  mutate(across(-Gene_prepo, as.numeric))
+
+sec_mex <- sec_mex %>%
+    select(-PADRON_HOMBRES, -PADRON_MUJERES,  -PADRON_ELECTORAL, -LISTA_HOMBRES, -LISTA_MUJERES, -LISTA_NOMINAL)
+
+# Reemplaza los espacios por saltos de línea en la columna NOMBRE
+Municipios_EDOMEX$NOMBRE <- str_replace_all(Municipios_EDOMEX$NOMBRE, " ", "\n")
+
+# Suponiendo que tu dataframe se llama 'Municipios_HIDALGO'
+Municipios_EDOMEX <- Municipios_EDOMEX %>%
+  mutate(NOMBRE = paste0(tools::toTitleCase(tolower(NOMBRE))))
+
+Resultados <- Resultados %>%
+    select(-CIRCUNSCRIPCION, -NOMBRE_ESTADO, -ID_DISTRITO_FEDERAL, 
+           -CABECERA_DISTRITAL_FEDERAL, -ID_MUNICIPIO, -MUNICIPIO, -CASILLAS)
+
+# Convertir todas las columnas a numérico
+Resultados <- Resultados %>%
+    mutate(across(everything(), as.numeric))
+
+# Renombrar columnas excepto las especificadas
+Resultados <- Resultados %>%
+    rename_with(~ paste0(., "_21"), -c(FAM_21, SHH_21, ENTIDAD, SECCION))
+
+Resultados23 <- Resultados23 %>%
+    select(-CIRCUNSCRIPCION, -ENTIDAD, -NOMBRE_ESTADO, -ID_DISTRITO_LOCAL, 
+           -CABECERA_DISTRITAL_LOCAL, -ID_MUNICIPIO, -MUNICIPIO)
+
+# Convertir todas las columnas a numérico
+Resultados23 <- Resultados23 %>%
+    mutate(across(everything(), as.numeric))
+
+# Sumar votos para FAM_23 y SHH_23
+Resultados23 <- Resultados23 %>% 
+  mutate(FAM_23 = PAN + PRI + PRD + NAEM + PAN_PRI_PRD_NAEM + PAN_PRI_PRD + PAN_PRI_NAEM + PAN_PRD_NAEM + PRI_PRD_NAEM + PAN_PRI + PAN_PRD + PAN_NAEM + PRI_PRD + PRI_NAEM + PRD_NAEM,
+         SHH_23 =PVEM_PT_MORENA)
+
+# Renombrar columnas excepto las especificadas
+Resultados23 <- Resultados23 %>%
+    rename_with(~ paste0(., "_23"), -c(FAM_23, SHH_23, SECCION))
+
+Resultados_EDOMEX <- filter(Resultados, ENTIDAD == 15)
+Secciones_EDOMEX <- filter(sec_mex, ENTIDAD == 15)
+Secciones_EDOMEX_TEXCOCO <- filter(Secciones_EDOMEX, MUNICIPIO== 100)
+Manzanas_EDOMEX_TEXCOCO <- filter(Manzanas_EDOMEX, MUNICIPIO == 100)
+# Obtener los valores únicos de MUNICIPIO y DISTRITO_L de Secciones_EDOMEX_TEXCOCO 
+Valores_DF_EDOMEX_TEXCOCO <- unique(Secciones_EDOMEX_TEXCOCO$DISTRITO_FEDERAL)
+Valores_DL_EDOMEX_TEXCOCO <- unique(Secciones_EDOMEX_TEXCOCO$DISTRITO_LOCAL)
+
+Municipios_EDOMEX_TEXCOCO  <- filter(Municipios_EDOMEX, MUNICIPIO == 100)
+Colonias_EDOMEX <- filter(Colonias_MX, CVE_ENT == "15")
+Colonias_EDOMEX <- st_transform(Colonias_EDOMEX, st_crs(Municipios_EDOMEX_TEXCOCO ))
+Colonias_EDOMEX_TEXCOCO <- st_intersection(Municipios_EDOMEX_TEXCOCO , Colonias_EDOMEX)
+
+# Filtrar DistritoF_EDOMEX
+DistritoF_EDOMEX_TEXCOCO <- DistritoF_EDOMEX[DistritoF_EDOMEX$DISTRITO %in% Valores_DF_EDOMEX_TEXCOCO, ]
+
+# Filtrar DistritoL_EDOMEX
+DistritoL_EDOMEX_TEXCOCO <- DistritoL_EDOMEX[DistritoL_EDOMEX$DISTRITO_L %in% Valores_DL_EDOMEX_TEXCOCO, ]
+
+# Unir los dataframes por SECCION y ENTIDAD
+Resultados_EDOMEX_TEXCOCO <- left_join(Secciones_EDOMEX_TEXCOCO, Resultados23, by = c("SECCION"))
+Resultados_EDOMEX_TEXCOCO <- left_join(Resultados_EDOMEX_TEXCOCO, Resultados_EDOMEX, by = c("SECCION", "ENTIDAD"))
+Resultados_EDOMEX_TEXCOCO <- st_drop_geometry(Resultados_EDOMEX_TEXCOCO)
+Resultados_EDOMEX_TEXCOCO <- left_join(Resultados_EDOMEX_TEXCOCO, Secciones_Switcher, by = c("SECCION", "ENTIDAD"))
+Resultados_EDOMEX_TEXCOCO <- left_join(Resultados_EDOMEX_TEXCOCO, Lista_Nominal_Selected, by = c("SECCION", "ENTIDAD"))
+
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>% 
+    mutate( porFAM_23 = (FAM_23 /TOTAL_VOTOS_23)*100) %>% 
+    mutate( porPRI_23 = (PRI_23 /TOTAL_VOTOS_23)*100) %>% 
+    mutate( porPRD_23 = (PRD_23 /TOTAL_VOTOS_23)*100) %>% 
+    mutate( porPAN_23 = (PAN_23 /TOTAL_VOTOS_23)*100) %>% 
+    mutate( porMORENA_23 = (SHH_23 /TOTAL_VOTOS_23)*100) %>% 
+    mutate( porSHH_23 = (SHH_23 /TOTAL_VOTOS_23)*100) %>% 
+    mutate( porMC_21 = (MC_21 /TOTAL_VOTOS_21)*100) %>% 
+    mutate( participacion = (TOTAL_VOTOS_23 /LISTA_NOMINAL_23)*100) %>% 
+    mutate( diferencia =  porSHH_23 - porFAM_23) %>%
+    mutate( diferenciaPRD = porFAM_23 - porPRD_23) %>%
+    mutate( diferenciaPRI = porFAM_23 - porPRI_23) %>%
+    mutate( diferenciaPAN = porFAM_23 - porPAN_23)  %>%
+    mutate( VsinPAN = FAM_23 - PAN_23) %>%
+    mutate( VsinPRI = FAM_23 - PRI_23) %>%
+    mutate( VsinPRD = FAM_23 - PRD_23) %>%
+    mutate( Vdif = FAM_23 - SHH_23) %>%
+    mutate( Tdif = FAM_23 - FAM_21) %>%
+    mutate( TPT = SHH_23 - PT_21) %>%
+    mutate( Otro_P = PES_21 + RSP_21+ FXM_21) 
+
+# Crear quintiles
+quintilesPRD <- quantile(Resultados_EDOMEX_TEXCOCO$diferenciaPRD, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesM <- quantile(Resultados_EDOMEX_TEXCOCO$porSHH_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesD <- quantile(Resultados_EDOMEX_TEXCOCO$diferencia, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesparti <- quantile(Resultados_EDOMEX_TEXCOCO$participacion, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesLN <- quantile(Resultados_EDOMEX_TEXCOCO$LISTA_NOMINAL_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPAN <- quantile(Resultados_EDOMEX_TEXCOCO$diferenciaPAN, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPRI <- quantile(Resultados_EDOMEX_TEXCOCO$diferenciaPRI, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTdif <- quantile(Resultados_EDOMEX_TEXCOCO$Tdif, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesTPT <- quantile(Resultados_EDOMEX_TEXCOCO$TPT, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesOtro <- quantile(Resultados_EDOMEX_TEXCOCO$Otro_P, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesSHH <- quantile(Resultados_EDOMEX_TEXCOCO$SHH_23, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesMC <- quantile(Resultados_EDOMEX_TEXCOCO$MC_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPVEM <- quantile(Resultados_EDOMEX_TEXCOCO$PVEM_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+quintilesPT<- quantile(Resultados_EDOMEX_TEXCOCO$PT_21, probs = c(0, 0.2, 0.4, 0.6, 0.8, 1), na.rm = TRUE)
+
+# Definir etiquetas personalizadas
+labels_custom <- function(breaks) {
+  n <- length(breaks) - 1
+  labels <- character(n)
+  for (i in 1:n) {
+    labels[i] <- ifelse(i < n, paste0("(", ceiling(breaks[i]), ", ", floor(breaks[i + 1]), "]"), paste0("[", ceiling(breaks[i]), ", ", ceiling(breaks[i + 1]), "]"))
+  }
+  return(labels)
+}
+
+# Agrega columna con quintiles y etiquetas personalizadas
+Resultados_EDOMEX_TEXCOCO$quintilPRD <- cut(Resultados_EDOMEX_TEXCOCO$diferenciaPRD, breaks = quintilesPRD, include.lowest = TRUE, labels = labels_custom(quintilesPRD))
+Resultados_EDOMEX_TEXCOCO$quintilM <- cut(Resultados_EDOMEX_TEXCOCO$porSHH_23, breaks = quintilesM, include.lowest = TRUE, labels = labels_custom(quintilesM))
+Resultados_EDOMEX_TEXCOCO$quintilD <- cut(Resultados_EDOMEX_TEXCOCO$diferencia, breaks = quintilesD, include.lowest = TRUE, labels = labels_custom(quintilesD))
+Resultados_EDOMEX_TEXCOCO$quintilparti <- cut(Resultados_EDOMEX_TEXCOCO$participacion, breaks = quintilesparti, include.lowest = TRUE, labels = labels_custom(quintilesparti))
+Resultados_EDOMEX_TEXCOCO$quintilLN <- cut(Resultados_EDOMEX_TEXCOCO$LISTA_NOMINAL_23, breaks = quintilesLN, include.lowest = TRUE, labels = labels_custom(quintilesLN))
+Resultados_EDOMEX_TEXCOCO$quintilPRI <- cut(Resultados_EDOMEX_TEXCOCO$diferenciaPRI, breaks = quintilesPRI, include.lowest = TRUE, labels = labels_custom(quintilesPRI))
+Resultados_EDOMEX_TEXCOCO$quintilPAN <- cut(Resultados_EDOMEX_TEXCOCO$diferenciaPAN, breaks = quintilesPAN, include.lowest = TRUE, labels = labels_custom(quintilesPAN))
+Resultados_EDOMEX_TEXCOCO$quintilTdif  <- cut(Resultados_EDOMEX_TEXCOCO$Tdif , breaks = quintilesTdif , include.lowest = TRUE, labels = labels_custom(quintilesTdif))
+Resultados_EDOMEX_TEXCOCO$quintilTPT  <- cut(Resultados_EDOMEX_TEXCOCO$TPT , breaks = quintilesTPT , include.lowest = TRUE, labels = labels_custom(quintilesTPT))
+Resultados_EDOMEX_TEXCOCO$quintilOtro  <- cut(Resultados_EDOMEX_TEXCOCO$Otro_P , breaks = quintilesOtro , include.lowest = TRUE, labels = labels_custom(quintilesOtro))
+Resultados_EDOMEX_TEXCOCO$quintilSHH  <- cut(Resultados_EDOMEX_TEXCOCO$SHH_23 , breaks = quintilesSHH , include.lowest = TRUE, labels = labels_custom(quintilesSHH))
+Resultados_EDOMEX_TEXCOCO$quintilMC <- cut(Resultados_EDOMEX_TEXCOCO$MC_21 , breaks = quintilesMC , include.lowest = TRUE, labels = labels_custom(quintilesMC))
+Resultados_EDOMEX_TEXCOCO$quintilPVEM <- cut(Resultados_EDOMEX_TEXCOCO$PVEM_21 , breaks = quintilesPVEM , include.lowest = TRUE, labels = labels_custom(quintilesPVEM))
+Resultados_EDOMEX_TEXCOCO$quintilPT <- cut(Resultados_EDOMEX_TEXCOCO$PT_21 , breaks = quintilesPT , include.lowest = TRUE, labels = labels_custom(quintilesPT))
+
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>%
+    rowwise() %>%
+    mutate(GanadorC_23 = {
+        votos <- c(FAM = FAM_23, SHH = SHH_23)
+        votos[is.na(votos)] <- 0 # Convertir NA a 0
+        if (all(votos == 0)) {
+            NA_character_ # Retornar NA si todos los votos son 0
+        } else {
+            names(which.max(votos))
+        }
+    })
+
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>%
+    rowwise() %>%
+    mutate(Ganador_23 = {
+        votos <- c(PAN = PAN_23, PRI = PRI_23, PRD = PRD_23, NAEM = NAEM_23,MORENA = PVEM_PT_MORENA_23)
+        votos[is.na(votos)] <- 0 # Convertir NA a 0
+        if (all(votos == 0)) {
+            NA_character_ # Retornar NA si todos los votos son 0
+        } else {
+            names(which.max(votos))
+        }
+    })
+
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>%
+    rowwise() %>%
+    mutate(Ganador_21 = {
+        votos <- c(PAN = PAN_21, PRI = PRI_21, PRD = PRD_21, PVEM = PVEM_21, PT = PT_21, MC = MC_21, RSP = RSP_21,ES = PES_21,MORENA = MORENA_21,FXM = FXM_21)
+        votos[is.na(votos)] <- 0 # Convertir NA a 0
+        if (all(votos == 0)) {
+            NA_character_ # Retornar NA si todos los votos son 0
+        } else {
+            names(which.max(votos))
+        }
+    })
+
+
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>%
+    rowwise() %>%
+    mutate(Ganador_otro = {
+        votos <- c(RSP = RSP_21,ES = PES_21,FXM = FXM_21)
+        votos[is.na(votos)] <- 0 # Convertir NA a 0
+        if (all(votos == 0)) {
+            NA_character_ # Retornar NA si todos los votos son 0
+        } else {
+            names(which.max(votos))
+        }
+    })
+
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>%
+    rowwise() %>%
+    mutate(Ganador_FAM= {
+        votos <- c(PAN = PAN_23, PRI = PRI_23, PRD = PRD_23, NAEM = NAEM_23)
+        votos[is.na(votos)] <- 0 # Convertir NA a 0
+        if (all(votos == 0)) {
+            NA_character_ # Retornar NA si todos los votos son 0
+        } else {
+            names(which.max(votos))
+        }
+    })
+
+# Asumiendo que tu tibble se llama Secciones_Switcher
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>%
+  mutate(
+    Switcher = if_else(Ganador_23 != Ganador_21, "SI", "NO"),
+    Switcher_coalición = case_when(
+      Ganador_21 %in% c("MORENA", "PT", "ES") & Ganador_23 %in% c("PRI", "PAN", "PRD") ~ "Cambió a FAM",
+      Ganador_21 %in% c("PRI", "PAN", "PRD") & Ganador_23 %in% c("MORENA") ~ "Cambio a SHH",
+      TRUE ~ NA_character_ # Para cualquier otra condición no especificada
+    )
+  )
+
+
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>%
+    mutate(Sugerencia = case_when(
+        # Prioritaria: La más alta participación y lista nominal, y en el quintil 3 de diferencia
+        quintilLN == labels_custom(quintilesLN)[5] & quintilD == labels_custom(quintilesD)[5] & quintilparti == labels_custom(quintilesparti)[3] ~ "Sugerencia prioritaria",
+        
+        # Secundaria: Primera o segunda más alta participación, también primera o segunda más alta lista nominal, y en el quintil 3 de diferencia
+        (quintilLN %in% c(labels_custom(quintilesLN)[4], labels_custom(quintilesLN)[5]) &
+             quintilparti %in% c(labels_custom(quintilesparti)[4], labels_custom(quintilesparti)[5]) &
+             quintilD == labels_custom(quintilesD)[3]) ~ "Sugerencia secundaria",
+        
+        # Terciaria: En el quintil 3 de diferencia, o todas las secciones en los quintiles 4-5 de LN o de participación
+        quintilD == labels_custom(quintilesD)[3] |
+            quintilLN %in% c(labels_custom(quintilesLN)[5]) |
+            quintilparti %in% c(labels_custom(quintilesparti)[5]) ~ "Sugerencia terciaria",
+        
+        # Caso predeterminado
+        TRUE ~ "Sección no sugerida"
+    ))
+
+Resultados_EDOMEX_TEXCOCO <- Resultados_EDOMEX_TEXCOCO %>%
+    select(-NOMBRE_ENTIDAD, -MUNICIPIO, -NOMBRE_MUNICIPIO, 
+           -DISTRITO_FEDERAL, -NOMBRE_DISTRITO_FEDERAL, -DISTRITO_LOCAL)
+
+mapa_EDOMEX_TEXCOCO <- left_join(Secciones_EDOMEX_TEXCOCO , Resultados_EDOMEX_TEXCOCO, by = c("SECCION", "ENTIDAD"))
+
+# Corrección en la definición de rangosQuintiles para mantener la consistencia
+rangosQuintiles <- list(
+  F = quintilesPRD,
+  M = quintilesM,
+  D = quintilesD,
+  P = quintilesparti, # Cambiado a quintilesparti para mantener la consistencia
+  LN = quintilesLN
+)
+
+# Corrección en la creación de las columnas CompetitividadD y CompetitividadPRD
+mapa_EDOMEX_TEXCOCO <- mapa_EDOMEX_TEXCOCO %>%
+  mutate(CompetitividadD = case_when(
+    quintilD == labels_custom(quintilesD)[1] ~ "Muy poca Competitividad",
+    quintilD == labels_custom(quintilesD)[2] ~ "Poca Competitividad",
+    quintilD == labels_custom(quintilesD)[3] ~ "Competitividad media",
+    quintilD == labels_custom(quintilesD)[4] ~ "Alta Competitividad",
+    quintilD == labels_custom(quintilesD)[5] ~ "Muy alta Competitividad"
+  )) %>%
+  mutate(CompetitividadPRD = case_when(
+    quintilPRD == labels_custom(quintilesPRD)[5] ~ "Muy Poco Impacto",
+    quintilPRD == labels_custom(quintilesPRD)[4] ~ "Poco Impacto",
+    quintilPRD == labels_custom(quintilesPRD)[3] ~ "Impacto Medio",
+    quintilPRD == labels_custom(quintilesPRD)[2] ~ "Alto Impacto",
+    quintilPRD == labels_custom(quintilesPRD)[1] ~ "Muy Alto Impacto"
+  )) %>%
+  mutate(Tamaños_lista = case_when(
+    quintilLN == labels_custom(quintilesLN)[1] ~ "La más baja",
+    quintilLN == labels_custom(quintilesLN)[2] ~ "Baja",
+    quintilLN == labels_custom(quintilesLN)[3] ~ "Media",
+    quintilLN == labels_custom(quintilesLN)[4] ~ "Alta",
+    quintilLN == labels_custom(quintilesLN)[5] ~ "La más alta"
+  )) %>%
+  mutate(Porcen_parti = case_when(
+    quintilparti == labels_custom(quintilesparti)[1] ~ "Muy poca participación",
+    quintilparti == labels_custom(quintilesparti)[2] ~ "Poca participación",
+    quintilparti == labels_custom(quintilesparti)[3] ~ "Participación media",
+    quintilparti == labels_custom(quintilesparti)[4] ~ "Alta participación",
+    quintilparti == labels_custom(quintilesparti)[5] ~ "Muy alta participación"
+  )) %>%
+  mutate(CompetitividadPRI = case_when(
+    quintilPRI == labels_custom(quintilesPRI)[5] ~ "Muy Poco Impacto",
+    quintilPRI == labels_custom(quintilesPRI)[4] ~ "Poco Impacto",
+    quintilPRI == labels_custom(quintilesPRI)[3] ~ "Impacto Medio",
+    quintilPRI == labels_custom(quintilesPRI)[2] ~ "Alto Impacto",
+    quintilPRI == labels_custom(quintilesPRI)[1] ~ "Muy Alto Impacto"
+  )) %>%
+  mutate(CompetitividadPAN = case_when(
+    quintilPAN == labels_custom(quintilesPAN)[5] ~ "Muy Poco Impacto",
+    quintilPAN == labels_custom(quintilesPAN)[4] ~ "Poco Impacto",
+    quintilPAN == labels_custom(quintilesPAN)[3] ~ "Impacto Medio",
+    quintilPAN == labels_custom(quintilesPAN)[2] ~ "Alto Impacto",
+    quintilPAN == labels_custom(quintilesPAN)[1] ~ "Muy Alto Impacto"
+  )) %>%
+  mutate(PerdidaFAM = case_when(
+    quintilTdif == labels_custom(quintilesTdif)[5] ~ "Ganó o Perdió pocos Votos",
+    quintilTdif == labels_custom(quintilesTdif)[4] ~ "Cuarta Mayor perdida de votos",
+    quintilTdif == labels_custom(quintilesTdif)[3] ~ "Tercera Mayor perdida de votos",
+    quintilTdif == labels_custom(quintilesTdif)[2] ~ "Segunda Mayor perdida de votos",
+    quintilTdif == labels_custom(quintilesTdif)[1] ~ "Mayor perdida de votos"
+  )) %>%
+  mutate(PerdidaPT = case_when(
+    quintilTPT == labels_custom(quintilesTPT)[5] ~ "El Mayor Beneficio por la coalición",
+    quintilTPT == labels_custom(quintilesTPT)[4] ~ "El segundo Mayor Beneficio por la coalición",
+    quintilTPT == labels_custom(quintilesTPT)[3] ~ "El tercer Mayor Beneficio por la coalición",
+    quintilTPT == labels_custom(quintilesTPT)[2] ~ "El cuarto Mayor Beneficio por la coalición",
+    quintilTPT == labels_custom(quintilesTPT)[1] ~ "El Menor Beneficio por la coalición"
+  )) %>%
+  mutate(CompetitividadOtro = case_when(
+    quintilOtro == labels_custom(quintilesOtro)[1] ~ "La más baja",
+    quintilOtro == labels_custom(quintilesOtro)[2] ~ "Baja",
+    quintilOtro == labels_custom(quintilesOtro)[3] ~ "Media",
+    quintilOtro == labels_custom(quintilesOtro)[4] ~ "Alta",
+    quintilOtro == labels_custom(quintilesOtro)[5] ~ "La más alta"
+  )) %>%
+  mutate(CompetitividadMC = case_when(
+    quintilMC == labels_custom(quintilesMC)[1] ~ "La más baja",
+    quintilMC == labels_custom(quintilesMC)[2] ~ "Baja",
+    quintilMC == labels_custom(quintilesMC)[3] ~ "Media",
+    quintilMC == labels_custom(quintilesMC)[4] ~ "Alta",
+    quintilMC == labels_custom(quintilesMC)[5] ~ "La más alta"
+  ))%>%
+  mutate(CompetitividadSHH= case_when(
+    quintilSHH == labels_custom(quintilesSHH)[1] ~ "La más baja",
+    quintilSHH == labels_custom(quintilesSHH)[2] ~ "Baja",
+    quintilSHH == labels_custom(quintilesSHH)[3] ~ "Media",
+    quintilSHH == labels_custom(quintilesSHH)[4] ~ "Alta",
+    quintilSHH == labels_custom(quintilesSHH)[5] ~ "La más alta"
+ )) %>%
+  mutate(CompetitividadPT = case_when(
+    quintilPT == labels_custom(quintilesPT)[1] ~ "La más baja",
+    quintilPT == labels_custom(quintilesPT)[2] ~ "Baja",
+    quintilPT == labels_custom(quintilesPT)[3] ~ "Media",
+    quintilPT == labels_custom(quintilesPT)[4] ~ "Alta",
+    quintilPT == labels_custom(quintilesPT)[5] ~ "La más alta"
+ )) %>%
+  mutate(CompetitividadPVEM = case_when(
+    quintilPVEM == labels_custom(quintilesPVEM)[1] ~ "La más baja",
+    quintilPVEM == labels_custom(quintilesPVEM)[2] ~ "Baja",
+    quintilPVEM == labels_custom(quintilesPVEM)[3] ~ "Media",
+    quintilPVEM == labels_custom(quintilesPVEM)[4] ~ "Alta",
+    quintilPVEM == labels_custom(quintilesPVEM)[5] ~ "La más alta"
+  ))
+
+
+# Transformar sistema de coordenadas
+mapa_EDOMEX_TEXCOCO <- st_transform(mapa_EDOMEX_TEXCOCO, crs = 4216)
+Secciones_EDOMEX_TEXCOCO<- st_transform(Secciones_EDOMEX_TEXCOCO , crs = 4216)
+Manzanas_EDOMEX_TEXCOCO <- st_transform(Manzanas_EDOMEX_TEXCOCO, crs = 4216)
+DistritoF_EDOMEX_TEXCOCO <- st_transform(DistritoF_EDOMEX_TEXCOCO, crs = 4216)
+Municipios_EDOMEX_TEXCOCO <- st_transform(Municipios_EDOMEX_TEXCOCO, crs = 4216)
+DistritoL_EDOMEX_TEXCOCO <- st_transform(DistritoL_EDOMEX_TEXCOCO, crs = 4216)
+Colonias_EDOMEX_TEXCOCO <- st_transform(Colonias_EDOMEX_TEXCOCO, crs = 4216)
+
+# Renombrar los resultados 
+mapa_EDOMEX_TEXCOCO$GanadorC_23 <- recode(mapa_EDOMEX_TEXCOCO$GanadorC_23,
+                                  "EMPATE" = "Empate",
+                                  "FAM" = "Fuerza & Corazón por México",
+                                  "SHH" = "Sigamos Haciendo Historia",
+                                  "MC" = "Movimiento Ciudadano")
+
+# Reordenar los niveles del factor Sugerencia en el dataframe mapa_EDOMEX_TEXCOCO
+mapa_EDOMEX_TEXCOCO$Sugerencia <- factor(mapa_EDOMEX_TEXCOCO$Sugerencia,
+                                     levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
+
+# Definir los colores para cada nivel de sugerencia
+colores_SUGERENCIA <- colorFactor(
+    palette = c("red", "darkblue","yellow", "white"), 
+                                     levels = c("Sugerencia prioritaria", "Sugerencia secundaria", "Sugerencia terciaria","Sección no sugerida"))
+
+# Reordenar los niveles del factor Ganador en 2023
+mapa_EDOMEX_TEXCOCO$GanadorC_23 <- factor(mapa_EDOMEX_TEXCOCO$GanadorC_23,
+                                     levels = c("Sigamos Haciendo Historia", "Fuerza & Corazón por México", "Movimiento Ciudadano","Empate"))
+
+# Definir los colores para cada Ganador Coalición
+colores_GanadorC_23 <- colorFactor(
+    palette = c("purple", "brown", "darkblue"), 
+    levels = c("Empate", "Sigamos Haciendo Historia", "Fuerza & Corazón por México"))
+
+# Reordenar los niveles del factor Ganador en 2023
+mapa_EDOMEX_TEXCOCO$Ganador_FAM <- factor(mapa_EDOMEX_TEXCOCO$Ganador_FAM,
+                                     levels = c("PAN", "PRD", "PRI"))
+
+# Definir los colores para cada Ganador Coalición
+colores_Ganador_FAM <- colorFactor(
+    palette = c("blue", "yellow", "red"), 
+    levels = c("PAN", "PRD", "PRI"))
+
+# Reordenar los niveles del factor CompetitividadPRI
+mapa_EDOMEX_TEXCOCO$PerdidaPT<- factor(mapa_EDOMEX_TEXCOCO$PerdidaPT,
+levels = c("El Menor Beneficio por la coalición", "El cuarto Mayor Beneficio por la coalición", "El tercer Mayor Beneficio por la coalición", "El segundo Mayor Beneficio por la coalición", "El Mayor Beneficio por la coalición"))
+
+# Definir los colores para cada nivel de CompetitividadPRI
+colores_PerdidaPT <- colorFactor(
+palette = c("darkred", "red", "#FF6666", "#FFE0E0", "white"), 
+levels = c("El Menor Beneficio por la coalición", "El cuarto Mayor Beneficio por la coalición", "El tercer Mayor Beneficio por la coalición", "El segundo Mayor Beneficio por la coalición", "El Mayor Beneficio por la coalición"))
+
+# Reordenar los niveles del factor CompetitividadPRI
+mapa_EDOMEX_TEXCOCO$PerdidaFAM<- factor(mapa_EDOMEX_TEXCOCO$PerdidaFAM,
+levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera Mayor perdida de votos", "Cuarta Mayor perdida de votos", "Ganó o Perdió pocos Votos"))
+
+# Definir los colores para cada nivel de CompetitividadPRI
+colores_PerdidaFAM <- colorFactor(
+palette = c("darkblue", "blue", "cyan", "#DEEDF6", "white"), 
+levels = c("Mayor perdida de votos", "Segunda Mayor perdida de votos", "Tercera Mayor perdida de votos", "Cuarta Mayor perdida de votos", "Ganó o Perdió pocos Votos"))
+
+# Reordenar los niveles del factor CompetitividadD
+mapa_EDOMEX_TEXCOCO$CompetitividadD <- factor(mapa_EDOMEX_TEXCOCO$CompetitividadD,
+                                          levels = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+
+# Definir los colores para cada nivel de competitividadD
+colores_CompetitividadD <- colorFactor(
+    palette = c("#66BD63", "#e5be01", "#006837", "#A50026", "#F46D43"), 
+    domain = c("Muy poca Competitividad", "Poca Competitividad", "Competitividad media", "Alta Competitividad", "Muy alta Competitividad"))
+
+# Reordenar los niveles del factor CompetitividadPRD
+mapa_EDOMEX_TEXCOCO$CompetitividadPRD <- factor(mapa_EDOMEX_TEXCOCO$CompetitividadPRD,
+levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+
+# Definir los colores para cada nivel de CompetitividadPRD
+colores_CompetitividadPRD <- colorFactor(
+palette = c("#FFCC00", "yellow", "orange", "white", "#FFFFE0"), 
+    domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+
+# Reordenar los niveles del factor CompetitividadPAN
+mapa_EDOMEX_TEXCOCO$CompetitividadPAN <- factor(mapa_EDOMEX_TEXCOCO$CompetitividadPAN,
+levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+
+# Definir los colores para cada nivel de CompetitividadPAN
+colores_CompetitividadPAN <- colorFactor(
+palette = c("blue", "#6699FF", "darkblue", "white", "#E0FFFF"), 
+domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+
+# Reordenar los niveles del factor CompetitividadPT
+mapa_EDOMEX_TEXCOCO$CompetitividadPT <- factor(mapa_EDOMEX_TEXCOCO$CompetitividadPT,
+levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
+
+# Definir los colores para cada nivel de CompetitividadPRD
+colores_CompetitividadPT <- colorFactor(
+palette = c("#d50000", "#ff1744", "#ff5252", "#ffc400", "white"),
+levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
+
+# Reordenar los niveles del factor CompetitividadPT
+mapa_EDOMEX_TEXCOCO$CompetitividadPVEM<- factor(mapa_EDOMEX_TEXCOCO$CompetitividadPVEM,
+levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
+
+# Definir los colores para cada nivel de CompetitividaPVEM
+colores_CompetitividadPVEM<- colorFactor(
+    palette = c("darkgreen", "green", "#66FF66", "#E0FFE0", "white"),
+    levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
+
+# Reordenar los niveles del factor CompetitividadPRI
+mapa_EDOMEX_TEXCOCO$CompetitividadPRI<- factor(mapa_EDOMEX_TEXCOCO$CompetitividadPRI,
+levels = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+
+# Definir los colores para cada nivel de CompetitividadPRI
+colores_CompetitividadPRI <- colorFactor(
+palette = c("red", "#FF6666", "darkred", "white", "#FFE0E0"), 
+    domain = c("Muy Poco Impacto", "Poco Impacto", "Impacto Medio", "Alto Impacto", "Muy Alto Impacto"))
+
+# Reordenar los niveles del factor Switcher
+mapa_EDOMEX_TEXCOCO$Switcher <- factor(mapa_EDOMEX_TEXCOCO$Switcher,
+                                      levels = c("NO", "SI"))
+# Definir los colores para Switcher
+colores_Switcher <- colorFactor(
+    palette = c("white", "#4B0082"), 
+    levels = c("NO", "SI"))
+
+# Reordenar los niveles del factor LN en el dataframe mapa_EDOMEX_TEXCOCO
+mapa_EDOMEX_TEXCOCO$Tamaños_lista <- factor(mapa_EDOMEX_TEXCOCO$Tamaños_lista,
+                                     levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
+
+# Definir los colores para cada nivel de Lista Nominal
+colores_LN <- colorFactor(
+    palette = c("#d95f0e", "#fec44f", "#993404", "#ffffd4", "#fe9929"), 
+    domain = c("La más baja", "Baja", "Media","Alta","La más alta"))
+
+# Reordenar los niveles del factor CompetitividadOtro en el dataframe mapa_EDOMEX_TEXCOCO
+mapa_EDOMEX_TEXCOCO$CompetitividadOtro <- factor(mapa_EDOMEX_TEXCOCO$CompetitividadOtro,
+                                     levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
+
+# Definir los colores para cada nivel de Otros
+colores_Otro <- colorFactor(
+palette = c("#a040a0", "#dfbfdf", "#800080", "#ffffff", "#c080c0"), 
+    domain = c("La más baja", "Baja", "Media","Alta","La más alta"))
+
+# Reordenar los niveles del factor LN en el dataframe mapa_EDOMEX_TEXCOCO
+mapa_EDOMEX_TEXCOCO$CompetitividadMC <- factor(mapa_EDOMEX_TEXCOCO$CompetitividadMC,
+                                     levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
+colores_MC <- colorFactor(
+    palette = c("#ff4500", "#ff8c00", "#ffd700", "#ffffe0", "#ffffff"), 
+    levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
+
+# Reordenar los niveles del factor LN en el dataframe mapa_EDOMEX_TEXCOCO
+mapa_EDOMEX_TEXCOCO$CompetitividadSHH <- factor(mapa_EDOMEX_TEXCOCO$CompetitividadSHH,
+                                     levels = c("La más baja", "Baja", "Media","Alta","La más alta"))
+colores_SHH <- colorFactor(
+  palette = c("#8b4513", "#a0522d", "#cd853f", "#f4a460", "#ffffff"), 
+    levels = c("La más alta", "Alta", "Media", "Baja", "La más baja"))
+
+
+# Reordenar los niveles del factor Participacion en el dataframe LN
+mapa_EDOMEX_TEXCOCO$Porcen_parti <- factor(mapa_EDOMEX_TEXCOCO$Porcen_parti,
+                                     levels = c("Muy poca participación", "Poca participación", "Participación media","Alta participación","Muy alta participación"))
+
+# Definir los colores para cada nivel de Participacion
+colores_participacion <- colorFactor(
+    palette = c("#2c7fb8", "#253494", "#ffffcc", "#41b6c4", "#a1dab4"), 
+    domain = c("Muy poca participación", "Poca participación", "Participación media","Alta participación","Muy alta participación"))
+
+# Definir los colores para cada generación correctamente
+colores_Gene <- colorFactor(
+    palette = c("#4DAF4A", "#984EA3", "#E41A1C", "#377EB8", "#EFB752", "grey"), 
+    domain = c("GEN_Z", "MILLENNIALS", "GEN_X", "BOOMERS", "SILENT", "Sin datos")
+)
+
+# Reordenar los niveles del factor Participacion en el dataframe LN
+mapa_EDOMEX_TEXCOCO$Gene_prepo <- factor(mapa_EDOMEX_TEXCOCO$Gene_prepo,
+                                     levels = c("GEN_Z","MILLENNIALS", "GEN_X", "BOOMERS","SILENT","Sin datos"))
+
+# Crear un mapa base con el fondo de OpenStreetMap
+mapa <- leaflet() %>%
+    addProviderTiles(provider = "OpenStreetMap")
+
+# Agregar la primera capa de polígonos de las colonias
+mapa <- mapa %>%
+    addPolygons(
+        data = Colonias_EDOMEX_TEXCOCO,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
+        label = ~COLONIA,
+        color = "black",        # Color de los bordes
+        weight = 1,             # Grosor de los bordes
+        opacity = 0.8,          # Opacidad de los bordes
+        group = "Colonias"     # Nombre del grupo de la capa
+    )
+
+# Agregar la primera capa de polígonos de manzanas
+mapa <- mapa %>%
+    addPolygons(
+        data = Manzanas_EDOMEX_TEXCOCO,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
+        label = ~SECCION,
+        color = "black",        # Color de los bordes
+        weight = 1,             # Grosor de los bordes
+        opacity = 0.8,          # Opacidad de los bordes
+        group = "Manzanas"     # Nombre del grupo de la capa
+    )
+
+# Agregar la  capa de polígonos a nivel de Secciones
+mapa <- mapa %>%
+    addPolygons(
+        data = Secciones_EDOMEX_TEXCOCO ,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
+        label = ~SECCION,
+        color = "black",        # Color de los bordes
+        weight = 1,             # Grosor de los bordes
+        opacity = 0.8,          # Opacidad de los bordes
+        group = "Secciones"     # Nombre del grupo de la capa
+    )
+
+# Agregar la  capa de polígonos a nivel municipios
+mapa <- mapa %>%
+    addPolygons(
+        data = Municipios_EDOMEX_TEXCOCO,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
+        label = ~NOMBRE,
+        color = "black",        # Color de los bordes
+        weight = 1,             # Grosor de los bordes
+        opacity = 0.8,          # Opacidad de los bordes
+        group = "Municipios"     # Nombre del grupo de la capa
+    )
+# Agregar la segunda capa de Distritos Locales
+mapa <- mapa %>%
+    addPolygons(
+        data = DistritoF_EDOMEX_TEXCOCO,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
+        label = ~DISTRITO,
+        color = "black",        # Color de los bordes
+        weight = 1,             # Grosor de los bordes
+        opacity = 0.8,          # Opacidad de los bordes
+        group = "Distrito Federal"     # Nombre del grupo de la capa
+    )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = DistritoL_EDOMEX_TEXCOCO,
+        fillColor = "white",    # Color de fondo blanco
+        fillOpacity = 0.5,      # Transparencia del fondo
+        label = ~DISTRITO_L,
+        color = "black",        # Color de los bordes
+        weight = 1,             # Grosor de los bordes
+        opacity = 0.8,          # Opacidad de los bordes
+        group = "Distrito Local"     # Nombre del grupo de la capa
+    )
+
+# Agregar la  capa de polígonos con los datos de mapa_EDOMEX_TEXCOCO y el color según el GanadorC_23
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_Switcher(Switcher),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "¿Es sección Switcher?:", Switcher, "<br>",
+                       "La sección:", Switcher_coalición, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Partido preponderante en 2015:", Ganador_15, "<br>",
+                       "Partido preponderante en 2012:", Ganador_12, "<br>",
+                       "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
+                       "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por JHH en la última eleccción:", SHH_23, "<br>",
+                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>","<br>",
+                       
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
+        group = "Switcher"       # Nombre del grupo de la capa
+    ) 
+# Agregar la tercer capa de polígonos con los datos de mapa_EDOMEX_TEXCOCO y el color según el Switcher_coalición
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_GanadorC_23(GanadorC_23),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "¿Es sección Switcher?:", Switcher, "<br>",
+                       "La sección:", Switcher_coalición, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                        "Votos por el FAM:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por JHH:", SHH_23, "<br>",
+                       "Porcentaje de votos por JHH:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Competitividad de la Sección FAM:", CompetitividadD, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL), 
+        group = "Coalición Ganadora"       # Nombre del grupo de la capa
+    ) 
+
+# Agregar la tercer capa de polígonos con los datos de mapa_EDOMEX_TEXCOCO y el color según el sugerencia
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_SUGERENCIA(Sugerencia),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "¿Es sección Switcher?:", Switcher, "<br>",
+                       "La sección:", Switcher_coalición, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Competitividad de la Sección FAM:", CompetitividadD, "<br>",
+                       "Competitividad de la Sección PRD:", CompetitividadPRD, "<br>",
+                       "Votos por el FAM en la última eleccción:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM en la última eleccción:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por JHH en la última eleccción:", SHH_23, "<br>",
+                       "Porcentaje de votos por SHH en la última eleccción:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Votos Nulos en la última eleccción:", NUM_VOTOS_NULOS_23, "<br>",
+                       "Población Generación Z(18-24 años):", GEN_Z_TOTAL, "<br>",
+                       "Porcentaje de Generación Z:", paste(round(GEN_Z_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Población Millennials(25-39 años):", MILLENNIALS_TOTAL, "<br>",
+                       "Porcentaje de Millennials:", paste(round(MILLENNIALS_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Población Generación X(40-54 años):", GEN_X_TOTAL, "<br>",
+                       "Porcentaje de Generación X:", paste(round(GEN_X_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Población Baby Boomers(55-65 años):", BOOMERS_TOTAL, "<br>",
+                       "Porcentaje de Baby Boomers:", paste(round(BOOMERS_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Población Silent Generation:(65 y más)", SILENT_TOTAL, "<br>",
+                       "Porcentaje Silent Generation:", paste(round(SILENT_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>",
+                       "Participación:", paste(round(participacion*1, 2), "%"), "<br>", "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Sugerencia"       # Nombre del grupo de la capa
+    ) 
+# Agregar la quinta capa de polígonos con los datos de mapa_EDOMEX_TEXCOCO y el color según la competitividad
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_CompetitividadD(CompetitividadD),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección hay:", CompetitividadD, "<br>",
+                       "Intervalo de competividad:", quintilD, "<br>",
+                       "Diferencia de porcentaje:", paste(round(diferencia, 2), "%"), "<br>",
+                       "Diferencia de votos (SHH-FAM):", Vdif, "<br>",
+                       "Coalición Ganadora en 2023:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad"       # Nombre del grupo de la capa
+    ) 
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_CompetitividadPRD(CompetitividadPRD),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el Frente sin el PRD hay:", CompetitividadPRD, "<br>",
+                       "Voto de la coalición sin el PRD:", VsinPRD, "<br>",
+                       "Porcentaje de votos sin el PRD:", paste(round(diferenciaPRD, 2), "%"), "<br>",
+                       "Intervalo de porcentaje sin el PRD:", quintilPRD, "<br>",
+                       "Votos por el FAM:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por el PRD:", PRD_23, "<br>",
+                       "Porcentaje de votos por el PRD:", paste(round(porPRD_23, 2), "%"), "<br>",
+                       "Votos por MORENA:", SHH_23, "<br>",
+                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
+                       "Votos por JHH:", SHH_23, "<br>",
+                       "Porcentaje de votos por JHH:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad PRD"       # Nombre del grupo de la capa
+    )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_CompetitividadPT(CompetitividadPT),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el PT hay:", CompetitividadPT, "<br>",
+                       "Votos del PT en 2021:", PT_21, "<br>",
+                       "Aumento o disminución de votos para PT:", SHH_23-PT_21, "<br>",
+                       "Intervalo de votos por el PT:", quintilPT, "<br>",
+                       "Votos por el FAM:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por SHH:", SHH_23, "<br>",
+                       "Porcentaje de votos por SHH:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad PT"       # Nombre del grupo de la capa
+    )
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_CompetitividadPVEM(CompetitividadPVEM),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el PVEM hay:", CompetitividadPVEM, "<br>",
+                       "Votos del PVEM en 2021:", PVEM_21, "<br>",
+                       "Aumento o disminución de votos para PVEM:", SHH_23-PVEM_21, "<br>",
+                       "Intervalo de votos por el PVEM:", quintilPVEM, "<br>",
+                       "Votos por el FAM:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por SHH:", SHH_23, "<br>",
+                       "Porcentaje de votos por SHH:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad PVEM"       # Nombre del grupo de la capa
+    )
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_Otro(CompetitividadOtro),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para los otro partidos hay:", CompetitividadOtro, "<br>",
+                       "Votos por otros partidos:", Otro_P, "<br>",
+                       "Intervalo de votos por otros partidos:", quintilOtro, "<br>",
+                       "Votos por el PES en 21:", PES_21, "<br>",
+                       "Votos por RSP en 21:", RSP_21, "<br>",
+                       "Votos por FXM en 21:", FXM_21, "<br>",
+                       "De los otros partidos, cual es preponderante:", Ganador_otro, "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad Otro"       # Nombre del grupo de la capa
+   )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_MC(CompetitividadMC),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para los otro partidos hay:", CompetitividadMC, "<br>",
+                       "Votos por MORENA en 2021:", MC_21, "<br>",
+                       "Intervalo de votos por MC:", quintilMC, "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>","<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad MC"       # Nombre del grupo de la capa
+   )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_SHH(CompetitividadSHH),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para los otro partidos hay:", CompetitividadSHH, "<br>",
+                       "Votos por MORENA en 2023:", SHH_23, "<br>",
+                       "Votos por MORENA en 2021:", MORENA_21, "<br>",
+                       "Intervalo de votos por MORENA:", quintilSHH, "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad MORENA"       # Nombre del grupo de la capa
+   )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_CompetitividadPAN(CompetitividadPAN),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el Frente sin el PAN hay:", CompetitividadPAN, "<br>",
+                       "Voto de la coalición sin el PAN:", VsinPAN, "<br>",
+                       "Porcentaje de votos sin el PAN:",paste(round(diferenciaPAN, 2), "%"), "<br>",
+                       "Intervalo de porcentaje sin el PAN:", quintilPAN, "<br>",
+                       "Votos por el FAM:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por el PAN:", PAN_23, "<br>",
+                       "Porcentaje de votos por el PAN:", paste(round(porPAN_23, 2), "%"), "<br>",
+                       "Votos por MORENA:", SHH_23, "<br>",
+                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
+                       "Votos por JHH:", SHH_23, "<br>",
+                       "Porcentaje de votos por JHH:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad PAN"       # Nombre del grupo de la capa
+    )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_CompetitividadPRI(CompetitividadPRI),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el Frente sin el PRI hay:", CompetitividadPRI, "<br>",
+                       "Voto de la coalición sin el PRI:", VsinPRI, "<br>",
+                       "Porcentaje de votos sin el PRI:",paste(round(diferenciaPRI, 2), "%"), "<br>",
+                       "Intervalo de porcentaje sin el PRI:", quintilPRI, "<br>",
+                       "Votos por el FAM:", FAM_23, "<br>",
+                       "Porcentaje de votos por el FAM:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por el PRI:", PRI_23, "<br>",
+                       "Porcentaje de votos por el PRI:", paste(round(porPRI_23, 2), "%"), "<br>",
+                       "Votos por MORENA:", SHH_23, "<br>",
+                       "Porcentaje de votos por Morena:", paste(round(porMORENA_23, 2), "%"), "<br>",
+                       "Votos por JHH:", SHH_23, "<br>",
+                       "Porcentaje de votos por JHH:", paste(round(porSHH_23, 2), "%"), "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Competitividad PRI"       # Nombre del grupo de la capa
+    )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_PerdidaFAM(PerdidaFAM),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el Frente sin el PRI hay:", PerdidaFAM, "<br>",
+                       "Votos que ha ganado o perdido el FAM de 23 a 21:", Tdif, "<br>",
+                       "Intervalo de votos que ha perdido el FAM:", quintilTdif, "<br>",
+                       "Votos por el FAM en 2023:", FAM_23, "<br>",
+                       "Votos por el FAM en 2021:", FAM_21, "<br>",
+                       "Porcentaje de votos por el FAM en 2023:", paste(round(porFAM_23, 2), "%"), "<br>",
+                       "Votos por SHH en 2023:", SHH_23, "<br>",
+                       "Votos por SHH en 2021:", SHH_21, "<br>",
+                       "Porcentaje de votos por el SHH en 2023:", paste(round(porMORENA_23, 2), "%"), "<br>",
+                       "Partido Preponderante del FAM en la sección:", Ganador_FAM, "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Perdida FAM"       # Nombre del grupo de la capa
+    )
+
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_PerdidaPT(PerdidaPT),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección, para el PT hay:", PerdidaPT, "<br>",
+                       "Votos que ganó el PT gracias a la coalición:", TPT, "<br>",
+                       "Intervalo de votos que benefició al PT su coalición en 2023:", quintilTPT, "<br>",
+                       "Votos por SHH en 2023:", SHH_23, "<br>",
+                       "Votos por el PT en 2021:", PT_21, "<br>",
+                       "Votos por MORENA en 2021:", SHH_21, "<br>",
+                       "Coalición Ganadora actual:", GanadorC_23, "<br>",
+                       "Partido preponderante en 2023:", Ganador_23, "<br>",
+                       "Partido preponderante en 2021:", Ganador_21, "<br>",
+                       "Partido preponderante en 2018:", Ganador_18, "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Perdida PT"       # Nombre del grupo de la capa
+    )
+
+# Agregar capa de polígonos para Participación
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_participacion(Porcen_parti),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección hay:", Porcen_parti, "<br>",
+                       "Participación:", paste(round(participacion*1, 2), "%"), "<br>", "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Participacion"
+    )
+
+# Agregar capa de polígonos para Lista Nominal
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_LN(Tamaños_lista),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "En la sección la lista nominal es:", Tamaños_lista, "<br>",
+                       "Lista Nominal para 2024:", LISTA_NOMINAL, "<br>", "<br>",
+                       "Municipio:", NOMBRE_MUNICIPIO, "<br>",
+                       "Distrito Local:", DISTRITO_LOCAL, "<br>",
+                       "Distrito Federal:", NOMBRE_DISTRITO_FEDERAL),
+        group = "Lista Nominal"
+    )
+# Agregar capa de polígonos para Gener
+mapa <- mapa %>%
+    addPolygons(
+        data = mapa_EDOMEX_TEXCOCO,
+        fillColor = ~colores_Gene(Gene_prepo),
+        fillOpacity = 0.8,
+        label = ~SECCION,
+        color = "white",
+        weight = 1,
+        popup = ~paste("Numero de Sección:", SECCION, "<br>",
+                       "¿Cuál es la generación preponderante en la sección?:", Gene_prepo, "<br>",
+                       "Población Generación Z(18-24 años):", GEN_Z_TOTAL, "<br>",
+                       "Porcentaje de Generación Z:", paste(round(GEN_Z_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Población Millennials(25-39 años):", MILLENNIALS_TOTAL, "<br>",
+                       "Porcentaje de Millennials:", paste(round(MILLENNIALS_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Población Generación X(40-54 años):", GEN_X_TOTAL, "<br>",
+                       "Porcentaje de Generación X:", paste(round(GEN_X_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Población Baby Boomers(55-65 años):", BOOMERS_TOTAL, "<br>",
+                       "Porcentaje de Baby Boomers:", paste(round(BOOMERS_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Población Silent Generation:(65 y más)", SILENT_TOTAL, "<br>",
+                       "Porcentaje Silent Generation:", paste(round(SILENT_TOTAL_PORCENTAJE*1, 2), "%"), "<br>",
+                       "Electores Hombres:", LISTA_HOMBRES, "<br>",
+                       "Electores  Mujeres:", LISTA_MUJERES, "<br>",
+                       "Lista Nominal para 2024:", LISTA_NOMINAL),
+        group = "Generacion"
+    )
+# Agregar el control de capas al mapa
+mapa <- mapa %>%
+    addLayersControl(
+        baseGroups = c("Manzanas","Colonias", "Secciones","Municipios","Distrito Local","Distrito Federal"),
+        overlayGroups = c("Coalición Ganadora", "Competitividad","Perdida FAM","Competitividad PRI","Competitividad PRD","Competitividad PAN","Competitividad MORENA","Competitividad PT","Perdida PT","Competitividad PVEM","Competitividad MC", "Competitividad Otro","Switcher","Participacion", "Lista Nominal" ,"Generacion","Sugerencia"),
+        options = layersControlOptions(collapsed = FALSE)
+    )
+
+# Agregar las leyendas al mapa
+mapa <- mapa %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_GanadorC_23, # Establecer los colores de la leyenda usando colores
+        values = ~GanadorC_23, # Establecer los valores de la leyenda
+        title = "Ganador de la última elección", # Establecer el título de la leyenda
+        position = "bottomleft",
+        layerId = "LeyendaGanadorC_23",
+        group = "Coalición Ganadora"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_CompetitividadD, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadD, # Establecer los valores de la leyenda
+        labels = textoLeyendaD, # Texto de la leyenda preparado que incluye intervalos
+        title = "Competitividad Electoral Comparada",
+        position = "bottomleft",
+        layerId = "LeyendaCompetitividad",
+        group = "Competitividad"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_CompetitividadPRD, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadPRD, # Establecer los valores de la leyenda
+        title = "Peso del PRD en su coalición",
+        position = "bottomleft",
+        layerId = "LeyendaPRD",
+        group = "Competitividad PRD"  # Grupo de la leyenda
+  ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_CompetitividadPRI, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadPRI, # Establecer los valores de la leyenda
+        title = "Peso del PRI en su coalición",
+        position = "bottomleft",
+        layerId = "LeyendaPRI",
+        group = "Competitividad PRI"  # Grupo de la leyenda
+      ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_CompetitividadPAN, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadPAN, # Establecer los valores de la leyenda
+        title = "Peso del PAN en su coalición",
+        position = "bottomleft",
+        layerId = "LeyendaPAN",
+        group = "Competitividad PAN"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_CompetitividadPT, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadPT, # Establecer los valores de la leyenda
+        title = "Competitividad del PT",
+        position = "bottomleft",
+        layerId = "LeyendaPT",
+        group = "Competitividad PT"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_CompetitividadPVEM, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadPVEM, # Establecer los valores de la leyenda
+        title = "Competitividad del PVEM",
+        position = "bottomleft",
+        layerId = "LeyendaPVEM",
+        group = "Competitividad PVEM"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_Switcher, # Establecer los colores de la leyenda usando colores
+        values = ~Switcher, # Establecer los valores de la leyenda
+        title = "Secciones Switcher",
+        position = "bottomleft",
+        layerId = "LeyendaSwitcher",
+        group = "Switcher"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_SUGERENCIA, # Establecer los colores de la leyenda usando colores
+        values = ~Sugerencia, # Establecer los valores de la leyenda
+        title = "Secciones Sugeridas",
+        position = "bottomleft",
+        layerId = "LeyendaSugerencia",
+        group = "Sugerencia"  # Grupo de la leyenda
+    )  %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_participacion, # Establecer los colores de la leyenda usando colores
+        values = ~Porcen_parti, # Establecer los valores de la leyenda
+        title = "Intervalos de Participación",
+        position = "bottomleft",
+        layerId = "Leyendaparticipa",
+        group = "Participacion"  # Grupo de la leyenda
+    )  %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_LN, # Establecer los colores de la leyenda usando colores
+        values = ~Tamaños_lista, # Establecer los valores de la leyenda
+        title = "Lista Nominal por Sección",
+        position = "bottomleft",
+        layerId = "Leyendalista",
+        group = "Lista Nominal"  # Grupo de la leyenda
+    )  %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_Gene, # Establecer los colores de la leyenda usando colores
+        values = ~Gene_prepo, # Establecer los valores de la leyenda
+        title = "Generación preponderante",
+        position = "bottomleft",
+        layerId = "Leyendagene",
+        group = "Generacion"  # Grupo de la leyenda
+    )  %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_PerdidaPT, # Establecer los colores de la leyenda usando colores
+        values = ~PerdidaPT, # Establecer los valores de la leyenda
+        title = "Aumento del voto del PT a SHH 21-23",
+        position = "bottomleft",
+        layerId = "LeyendaperdidaPR",
+        group = "Perdida PT"  # Grupo de la leyenda
+    )  %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_PerdidaFAM, # Establecer los colores de la leyenda usando colores
+        values = ~PerdidaFAM, # Establecer los valores de la leyenda
+        title = "Perdidas del FAM 23-21",
+        position = "bottomleft",
+        layerId = "Leyendaperdida fam",
+        group = "Perdida FAM"  # Grupo de la leyenda
+    ) %>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_Otro, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadOtro, # Establecer los valores de la leyenda
+        title = "Competitividad de otros partidos",
+        position = "bottomleft",
+        layerId = "LeyendaOtro",
+        group = "Competitividad Otro"  # Grupo de la leyenda
+  )%>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_MC, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadMC, # Establecer los valores de la leyenda
+        title = "Competitividad de MC",
+        position = "bottomleft",
+        layerId = "LeyendaMC",
+        group = "Competitividad MC"  # Grupo de la leyenda
+  )%>%
+    addLegend(
+        data = mapa_EDOMEX_TEXCOCO,
+        pal = colores_SHH, # Establecer los colores de la leyenda usando colores
+        values = ~CompetitividadSHH, # Establecer los valores de la leyenda
+        title = "Competitividad de MORENA",
+        position = "bottomleft",
+        layerId = "LeyendaMORENA",
+        group = "Competitividad MORENA"  # Grupo de la leyenda
+  )
+
+# Agregar el control de HTML al mapa
+mapa <- mapa %>%
+    addControl(
+        html = "<div style='margin-bottom: 10px; text-align: center;'>
+                Municipio de Texcoco, Estado de México<br>
+                Elaborado por Qualia: Asesoria Especializada con datos del INE y el INEGI<br>
+
+                Todos los Derechos Reservados<br><br>
+                NOTA:El uso y distribución de la API es responsabilidad del cliente<br>
+                Contacto: qualiaasesores@gmail.com<br>
+            </div>",
+        position = "bottomright"
+    )
+
+mapa <- mapa %>%
+    addControl(
+        html = "<div style='margin-bottom: 10px; text-align: justify;'>
+                META sugeridad de votos: 12,000<br>
+                Lista Nominal para 2024: 219,026<br><br>
+                Votos Totales en el 2021: 106,283<br>
+                Votos Totales en el 2023: 105,512<br>
+                Votos Totales del FAM en 2021: 34,012<br>
+                Votos Totales del FAM en 2023 46,286<br>
+                Votos Totales de SHH en 2021: 62,599<br>
+                Votos Totales deL PT en 2021: 1,051<br>
+                Votos Totales de SHH en 2023: 56,435<br>
+            </div>",
+        position = "topleft"
+    )
+
+sum(Resultados_EDOMEX_TEXCOCO$LISTA_NOMINAL,na.rm = all)
+sum(Resultados_EDOMEX_TEXCOCO$TOTAL_VOTOS_21,na.rm = all)
+sum(Resultados_EDOMEX_TEXCOCO$TOTAL_VOTOS_23,na.rm = all)
+sum(Resultados_EDOMEX_TEXCOCO$FAM_21,na.rm = all)
+sum(Resultados_EDOMEX_TEXCOCO$FAM_23,na.rm = all)
+sum(Resultados_EDOMEX_TEXCOCO$SHH_21,na.rm = all)
+sum(Resultados_EDOMEX_TEXCOCO$PT_21,na.rm = all)
+sum(Resultados_EDOMEX_TEXCOCO$SHH_23,na.rm = all)
+
+# Mostrar el mapa
+mapa
