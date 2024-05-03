@@ -1269,3 +1269,28 @@ mapa <- mapa %>%
 
 # Mostrar el mapa
 mapa
+
+
+# Asegúrate de tener el dataframe 'mapa_EDOMEX_SMA' cargado
+
+# Iterar sobre cada sección única
+for(seccion in unique(mapa_EDOMEX_SMA$SECCION)) {
+    # Filtrar los datos para la sección actual
+    datos_seccion <- filter(mapa_EDOMEX_SMA, SECCION == seccion)
+    
+    # Crear el mapa
+    mapa_seccion <- ggplot() +
+        annotation_map_tile(type = "osm", zoom = 15) +
+        geom_sf(data = datos_seccion, aes(fill = "white"), color = "black", size = 0.1, alpha = 0.7) +  # Ajustar aquí la transparencia
+        labs(title = paste("Sección", seccion, "- CDMX"),
+             subtitle = paste("Numero de Electores en la Lista Nominal:", datos_seccion$LISTA_NOMINAL[1]),
+             caption = "Elaborado por Qualia: Asesoría Especializada. Todos los Derechos Reservados.") +
+        theme_minimal() +
+        theme(panel.background = element_rect(fill = "white"),  # Configura el fondo de todo el panel
+              plot.background = element_rect(fill = "white"))   # Configura el fondo de todo el plot
+    
+    # Guardar el mapa como PDF
+    ggsave(paste0("D:/52556/Documents/ATENCO/Mapa_Seccion_", seccion, ".pdf"),
+           plot = mapa_seccion,
+           width = 8.5, height = 11, units = "in", device = "pdf")
+}
